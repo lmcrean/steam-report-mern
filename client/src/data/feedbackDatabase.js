@@ -1,62 +1,187 @@
 export const feedbackDatabase = {
-    "Science and Openness": {
-      environment: "exploratory and innovative",
-      careers: [
-        "Research Scientist",
-        "Innovation Lead",
-        "Scientific Explorer",
-        "R&D Specialist"
-      ],
-      feedback: "Your affinity for science combined with an open-minded approach suggests you'd excel in exploratory and innovative environments. Your curiosity and creativity will drive you forward in fields that value research and development."
-    },
-    "Technology and Conscientiousness": {
-      environment: "structured and data-driven",
-      careers: [
-        "Systems Analyst",
-        "Database Administrator",
-        "Software Engineer",
-        "Quality Assurance Lead"
-      ],
-      feedback: "Your technological aptitude combined with a conscientious nature suggests a structured and data-driven environment would suit you well. Your precision and organized workflow will be highly valued."
-    },
-    "English and Extraversion": {
-      environment: "interactive and collaborative",
-      careers: [
-        "Content Strategist",
-        "Communications Director",
-        "Publishing Manager",
-        "Public Relations"
-      ],
-      feedback: "Your English expertise combined with an extroverted personality makes an interactive and collaborative environment ideal for you. Your communication skills and team dynamics could shine."
-    },
-    "Art and Agreeableness": {
-      environment: "supportive and community-focused",
-      careers: [
-        "Art Therapist",
-        "Community Arts Director",
-        "Design Team Lead",
-        "Creative Workshop Facilitator"
-      ],
-      feedback: "Your artistic interests, paired with an agreeable nature, align well with supportive and community-focused environments. Your empathy and collaboration skills could make a real difference."
-    },
-    "Math and Neuroticism": {
-      environment: "predictable and well-defined",
-      careers: [
-        "Data Analyst",
-        "Financial Planner",
-        "Risk Assessment Specialist",
-        "Statistical Researcher"
-      ],
-      feedback: "With a solid background in math and a detail-oriented nature, you may find comfort in predictable and well-defined environments. Your analytical skills could serve well in roles requiring precision."
-    }
-    // Additional combinations will be loaded from the JSON file
+  "Science and Openness": {
+    highest_STEAM: "Science",
+    highest_OCEAN: "Openness",
+    environment: "exploratory and innovative",
+    thrive: "curiosity and creativity",
+    feedback: "Your affinity for science combined with an open-minded\napproach suggests you'd excel in exploratory and innovative\nenvironments. Your curiosity and creativity will drive you\nforward in fields that value research and development.\nConsider careers in cutting-edge research labs, or\ninnovative sectors like biotechnology or renewable energy."
+  },
+  "Science and Conscientiousness": {
+    highest_STEAM: "Science",
+    highest_OCEAN: "Conscientiousness",
+    environment: "structured and analytical",
+    thrive: "precision and methodical work",
+    feedback: "Based on your test results, it seems that you might be\nbest suited to a structured and analytical environment.\nYou'll thrive in a setting that values precision and\nmethodical work. A career in a research laboratory or a\nquality assurance role in a manufacturing company could be\nexcellent choices for you."
+  },
+  "Science and Extraversion": {
+    highest_STEAM: "Science",
+    highest_OCEAN: "Extraversion",
+    environment: "collaborative and dynamic",
+    thrive: "teamwork and communication",
+    feedback: "Your scientific aptitude paired with an extroverted nature\ncould see you flourishing in collaborative and dynamic\nenvironments. Your ability for teamwork and communication\nwill serve you well in roles that require collective effort\nand public engagement. Careers in science education,\nscience communication, or leading research teams could be\nvery rewarding."
+  },
+  "Science and Agreeableness": {
+    highest_STEAM: "Science",
+    highest_OCEAN: "Agreeableness",
+    environment: "supportive and cooperative",
+    thrive: "empathy and interpersonal skills",
+    feedback: "Your scientific interests, along with your agreeable nature,\nmay find a harmonious match in supportive and cooperative\nenvironments. Your empathy and interpersonal skills could\nshine in roles that require understanding and aiding\nothers. Consider careers in medical science, counseling,\nor non-profit organizations focused on scientific\neducation and outreach."
+  },
+  "Science and Neuroticism": {
+    highest_STEAM: "Science",
+    highest_OCEAN: "Neuroticism",
+    environment: "predictable and stable",
+    thrive: "attention to detail and thorough analysis",
+    feedback: "With a keen sense for science and a tendency towards\nthorough analysis, you may find comfort in predictable and\nstable environments. Your attention to detail could be a\nvaluable asset in fields that require meticulous\nobservation and analysis. Roles in clinical research, data\nanalysis, or quality control in scientific manufacturing\nmay suit you well."
+  },
+  "Technology and Openness": {
+    highest_STEAM: "Technology",
+    highest_OCEAN: "Openness",
+    environment: "innovative and exploratory",
+    thrive: "creativity and problem-solving",
+    feedback: "With your penchant for technology and a mindset open to new\nexperiences, you're likely to excel in innovative and\nexploratory environments. Your creativity and problem-\nsolving abilities will be your greatest assets. Roles in\nsoftware development, UX/UI design, or a start-up\nenvironment might be very fulfilling for you."
+  },
+  "Technology and Conscientiousness": {
+    highest_STEAM: "Technology",
+    highest_OCEAN: "Conscientiousness",
+    environment: "structured and data-driven",
+    thrive: "precision and organized workflow",
+    feedback: "Your technological aptitude combined with a conscientious\nnature suggests a structured and data-driven environment\nwould suit you well. Your precision and ability to\nmaintain an organized workflow will be highly valued in\nroles such as database administration, systems analysis,\nor project management in tech-oriented companies."
+  },
+  "Technology and Extraversion": {
+    highest_STEAM: "Technology",
+    highest_OCEAN: "Extraversion",
+    environment: "collaborative and interactive",
+    thrive: "teamwork and communication",
+    feedback: "Your tech-savviness paired with an extroverted personality\ncould flourish in collaborative and interactive\nenvironments. Your teamwork and communication skills could\nlead to success in roles like IT project management,\ncustomer relations in tech companies, or sales and\nmarketing in the tech sector."
+  },
+  "Technology and Agreeableness": {
+    highest_STEAM: "Technology",
+    highest_OCEAN: "Agreeableness",
+    environment: "supportive and user-centric",
+    thrive: "empathy and understanding user needs",
+    feedback: "Your technological prowess along with an agreeable nature\nalign well with supportive and user-centric environments.\nYour empathy and ability to understand user needs would be\ncrucial in roles such as user experience design, customer\nsupport in tech firms, or working in tech for social good\ninitiatives."
+  },
+  "Technology and Neuroticism": {
+    highest_STEAM: "Technology",
+    highest_OCEAN: "Neuroticism",
+    environment: "predictable and well-defined",
+    thrive: "attention to detail and thorough analysis",
+    feedback: "Your technological inclination and meticulous nature may\nfind a match in predictable and well-defined environments.\nYour attention to detail and thorough analysis could be\nwell utilized in roles like quality assurance testing,\ncybersecurity, or network administration where precision\nis paramount."
+  },
+  "English and Openness": {
+    highest_STEAM: "English",
+    highest_OCEAN: "Openness",
+    environment: "creative and exploratory",
+    thrive: "imagination and expression",
+    feedback: "Your affinity for English and openness to new experiences\nsuggests a creative and exploratory environment would suit\nyou well. Your imagination and expressive abilities would\nflourish in fields such as creative writing, journalism,\nor editorial roles in publishing."
+  },
+  "English and Conscientiousness": {
+    highest_STEAM: "English",
+    highest_OCEAN: "Conscientiousness",
+    environment: "structured and detail-oriented",
+    thrive: "precision and organized thought",
+    feedback: "With a strong background in English and a conscientious\nnature, you would thrive in a structured and detail-\noriented environment. Your precision and ability for\norganized thought could lead to success in roles like\nediting, academic research, or administrative positions\nin literary organizations."
+  },
+  "English and Extraversion": {
+    highest_STEAM: "English",
+    highest_OCEAN: "Extraversion",
+    environment: "interactive and collaborative",
+    thrive: "communication and team dynamics",
+    feedback: "Your English expertise combined with an extroverted\npersonality makes an interactive and collaborative\nenvironment ideal for you. Your communication skills and\nability to work well in team dynamics could be utilized\nin careers like public relations, literary event\ncoordination, or teaching."
+  },
+  "English and Agreeableness": {
+    highest_STEAM: "English",
+    highest_OCEAN: "Agreeableness",
+    environment: "supportive and cooperative",
+    thrive: "empathy and understanding",
+    feedback: "Your English background and agreeable nature align well\nwith supportive and cooperative environments. Your\nempathy and understanding could be instrumental in roles\nsuch as counseling, social work with a focus on literacy,\nor community outreach in cultural organizations."
+  },
+  "English and Neuroticism": {
+    highest_STEAM: "English",
+    highest_OCEAN: "Neuroticism",
+    environment: "stable and well-defined",
+    thrive: "meticulous analysis and thoughtful expression",
+    feedback: "With your strong English foundation and meticulous nature,\nyou might find comfort in stable and well-defined\nenvironments. Your aptitude for meticulous analysis and\nthoughtful expression could serve you well in roles like\ncopyediting, archival work, or legal research in the\nrealm of literary law."
+  },
+  "Art and Openness": {
+    highest_STEAM: "Art",
+    highest_OCEAN: "Openness",
+    environment: "innovative and free-form",
+    thrive: "creativity and experimentation",
+    feedback: "Your artistic skills paired with an open-minded approach\nflourish in innovative and free-form environments. Your\ncreativity and willingness to experiment are your\nstrongest assets, potentially leading to a fulfilling\ncareer in contemporary art, design, or other creative\nindustries."
+  },
+  "Art and Conscientiousness": {
+    highest_STEAM: "Art",
+    highest_OCEAN: "Conscientiousness",
+    environment: "structured and meticulous",
+    thrive: "precision and attention to detail",
+    feedback: "With your artistic aptitude and conscientious nature, a\nstructured and meticulous environment could suit you well.\nYour precision and attention to detail would be valued in\nfields like graphic design, illustration, or a role that\ninvolves curating art exhibitions."
+  },
+  "Art and Extraversion": {
+    highest_STEAM: "Art",
+    highest_OCEAN: "Extraversion",
+    environment: "collaborative and engaging",
+    thrive: "interaction and teamwork",
+    feedback: "Your artistic flair combined with an extroverted\npersonality could thrive in collaborative and engaging\nenvironments. Your ability for interaction and teamwork\ncould serve you well in roles such as art education,\ncommunity art projects, or working in a collaborative\nstudio setting."
+  },
+  "Art and Agreeableness": {
+    highest_STEAM: "Art",
+    highest_OCEAN: "Agreeableness",
+    environment: "supportive and community-focused",
+    thrive: "empathy and collaboration",
+    feedback: "Your artistic interests, paired with an agreeable nature,\nalign well with supportive and community-focused\nenvironments. Your empathy and ability to collaborate\ncould shine in roles that involve community art projects,\ntherapeutic art practices, or working in inclusive and\ndiverse creative spaces."
+  },
+  "Art and Neuroticism": {
+    highest_STEAM: "Art",
+    highest_OCEAN: "Neuroticism",
+    environment: "calm and well-defined",
+    thrive: "deep reflection and expressive outlets",
+    feedback: "With an artistic mindset and a reflective nature, you may\nfind solace in calm and well-defined environments. Your\nability for deep reflection and seeking expressive outlets\ncould lead to a rewarding career in fields like fine\narts, illustration, or expressive art therapy."
+  },
+  "Maths and Openness": {
+    highest_STEAM: "Maths",
+    highest_OCEAN: "Openness",
+    environment: "exploratory and innovative",
+    thrive: "problem-solving and creativity",
+    feedback: "Your mathematical aptitude, combined with an openness to\nnew experiences, would flourish in exploratory and\ninnovative environments. Your problem-solving skills and\ncreativity could lead to success in fields like\ntheoretical research, statistical analysis, or data-\ndriven tech startups."
+  },
+  "Maths and Conscientiousness": {
+    highest_STEAM: "Maths",
+    highest_OCEAN: "Conscientiousness",
+    environment: "structured and analytical",
+    thrive: "precision and methodical work",
+    feedback: "With a strong foundation in maths and a conscientious\nnature, a structured and analytical environment could\nsuit you well. Your precision and methodical approach to\nwork would be valued in fields like actuarial science,\naccounting, or operations research."
+  },
+  "Maths and Extraversion": {
+    highest_STEAM: "Maths",
+    highest_OCEAN: "Extraversion",
+    environment: "collaborative and dynamic",
+    thrive: "communication and teamwork",
+    feedback: "Your mathematical skills paired with an extroverted\npersonality could thrive in collaborative and dynamic\nenvironments. Your communication skills and ability to\nwork well in teams could lead to fulfilling roles in\neducation, consulting, or management positions in math-\noriented industries."
+  },
+  "Maths and Agreeableness": {
+    highest_STEAM: "Maths",
+    highest_OCEAN: "Agreeableness",
+    environment: "supportive and cooperative",
+    thrive: "empathy and interpersonal skills",
+    feedback: "Your mathematical expertise along with an agreeable nature\nalign well with supportive and cooperative environments.\nYour empathy and interpersonal skills could shine in\nroles such as statistical consulting for non-profits,\neducation, or collaborative research projects."
+  },
+  "Maths and Neuroticism": {
+    highest_STEAM: "Maths",
+    highest_OCEAN: "Neuroticism",
+    environment: "predictable and well-defined",
+    thrive: "meticulous analysis and problem-solving",
+    feedback: "With a solid background in maths and a meticulous nature,\nyou may find comfort in predictable and well-defined\nenvironments. Your ability for meticulous analysis and\nproblem-solving could serve you well in roles like data\nanalysis, financial planning, or risk management."
+  }
+};
+
+// Helper function to get career feedback based on STEAM category and OCEAN trait
+export const getCareerFeedback = (steamCategory, oceanTrait) => {
+  const key = `${steamCategory} and ${oceanTrait}`;
+  return feedbackDatabase[key] || {
+    environment: "dynamic and adaptable",
+    thrive: "versatility and adaptability",
+    feedback: "Your unique combination of skills and traits suggests you could succeed in various roles. Consider exploring positions that combine your technical abilities with your personality strengths."
   };
-  
-  export const getCareerFeedback = (steamCategory, oceanTrait) => {
-    const key = `${steamCategory} and ${oceanTrait}`;
-    return feedbackDatabase[key] || {
-      environment: "dynamic and adaptable",
-      careers: ["Various career paths available"],
-      feedback: "Your unique combination of skills and traits suggests you could succeed in various roles. Consider exploring positions that combine your technical abilities with your personality strengths."
-    };
-  };
+};
