@@ -17,18 +17,58 @@ postcss.config.js
 public/
   tailwind.svg
   vite.svg
+screenshots/
+  homepage/
+    2xl-1536px-2024-10-28T15-55-45-956Z.png
+    lg-1024px-2024-10-28T15-55-45-956Z.png
+    md-768px-2024-10-28T15-55-45-956Z.png
+    sm-640px-2024-10-28T15-55-45-956Z.png
+    xl-1280px-2024-10-28T15-55-45-956Z.png
+    xs-375px-2024-10-28T15-55-45-956Z.png
 src/
   App.css
   App.jsx
   assets/
     react.svg
+  components/
+    layout/
+      Header.jsx
+      MainLayout.jsx
+    quiz/
+      MenuScreen.jsx
+      PersonalityQuiz.jsx
+      QuizLeaderboard.jsx
+      QuizResults.jsx
+      SubjectQuiz.jsx
+    shared/
+      Alert.jsx
+      LoadingSpinner.jsx
+      ProgressBar.jsx
+      QuizCard.jsx
+      QuizNavigation.jsx
+      RadioGroup.jsx
+  context/
+    QuizContext.jsx
+  data/
+    feedbackDatabase.js
+    personalityQuestions.js
+    subjectQuestions.js
+  hooks/
+    useLocalStorage.js
+    useQuizState.js
   index.css
   main.jsx
+  utils/
+    scoreCalculator.js
+    validators.js
 tailwind.config.js
 tests/
-  app.spec.js
+  example.spec.js
+  responsive.spec.js
   utils/
     screenshot.js
+tests-examples/
+  demo-todo-app.spec.js
 vite.config.js
 ```
 
@@ -44,7 +84,8 @@ vite.config.js
     "dev": "vite --port 3000",
     "build": "vite build",
     "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "playwright test --ui"
   },
   "dependencies": {
     "react": "^18.2.0",
@@ -53,6 +94,8 @@ vite.config.js
     "tailwind": "^4.0.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.48.2",
+    "@types/node": "^22.8.1",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "@vitejs/plugin-react": "^4.0.0",
@@ -74,29 +117,49 @@ vite.config.js
 ## playwright.config.js
 
 ```js
-// playwright.config.js
-const { defineConfig } = require('@playwright/test');
+import { defineConfig, devices } from '@playwright/test';
 
-module.exports = defineConfig({
-  // Global setup and configuration
-  use: {
-    // Common settings for all tests
-    browserName: 'chromium',
-    headless: false,
-    viewport: { width: 1280, height: 720 },
-    ignoreHTTPSErrors: true,
+export default defineConfig({
+  testDir: './tests',
+  /* Maximum time one test can run for */
+  timeout: 30 * 1000,
+  expect: {
+    timeout: 5000
   },
-
-  // Project-specific configuration
+  /* Run tests in files in parallel */
+  fullyParallel: true,
+  /* Fail the build on CI if you accidentally left test.only in the source code. */
+  forbidOnly: !!process.env.CI,
+  /* Retry on CI only */
+  retries: process.env.CI ? 2 : 0,
+  /* Opt out of parallel tests on CI. */
+  workers: process.env.CI ? 1 : undefined,
+  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
+  reporter: 'html',
+  
+  /* Configure projects for major browsers */
   projects: [
     {
-      name: 'Responsive',
-      use: {
-        // Settings for the Responsive project
-        viewport: { width: 1280, height: 720 },
-      },
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
     },
   ],
+
+  /* Run your local dev server before starting the tests */
+  webServer: {
+    command: 'npm run dev',
+    port: 3000,
+    reuseExistingServer: !process.env.CI,
+  },
+
+  use: {
+    /* Base URL to use in actions like `await page.goto('/')`. */
+    baseURL: 'http://localhost:3000',
+    /* Collect trace when retrying the failed test */
+    trace: 'on-first-retry',
+    /* Take screenshot on failure */
+    screenshot: 'only-on-failure',
+  },
 });
 ```
 
@@ -117,130 +180,693 @@ export default {
 ## src\App.jsx
 
 ```jsx
-import { useState, useEffect } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
-import tailwindLogo from '/tailwind.svg'
+import React from 'react';
+import MainLayout from './components/layout/MainLayout';
+import Header from './components/layout/Header';
+import { QuizProvider } from './context/QuizContext';
+import './App.css';
 
-const App = () => {
-  const [count, setCount] = useState(0);
-  const [darkMode, setDarkMode] = useState(false);
-
-  useEffect(() => {
-    if (localStorage.theme === 'dark' || 
-        (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      setDarkMode(true);
-      document.documentElement.classList.add('dark');
-    }
-  }, []);
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    document.documentElement.classList.toggle('dark');
-    localStorage.theme = darkMode ? 'light' : 'dark';
-  };
-
+function App() {
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-slate-900 
-                    flex items-center justify-center p-6 w-[min(100vw)]
-                    transition-colors duration-300">
-      <div className="relative bg-white dark:bg-slate-800 rounded-xl shadow-lg 
-                    w-[min(90vw,400px)] min-h-[400px]
-                    flex flex-col items-center justify-between
-                    p-8
-                    transition-colors duration-300">
-        
-        {/* Dark Mode Toggle */}
-        <button
-          onClick={toggleDarkMode}
-          className="absolute top-4 right-4 p-2 rounded-lg
-                     bg-gray-100 dark:bg-gray-700 
-                     hover:bg-gray-200 dark:hover:bg-gray-600
-                     transition-colors duration-200"
-          aria-label="Toggle Dark Mode"
-        >
-          {darkMode ? (
-            <svg className="w-5 h-5 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-          ) : (
-            <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-            </svg>
-          )}
-        </button>
-
-        {/* Logo Section */}
-        <div className="flex items-center justify-center space-x-6 pt-8">
-          <a href="https://vitejs.dev" target="_blank" rel="noopener noreferrer" 
-             className="transform hover:scale-110 transition-transform duration-200">
-            <img src={viteLogo} className="w-12 h-12" alt="Vite logo" />
-          </a>
-          <a href="https://react.dev" target="_blank" rel="noopener noreferrer"
-             className="transform hover:scale-110 transition-transform duration-200">
-            <img src={reactLogo} className="w-12 h-12" alt="React logo" />
-          </a>
-          <a href="https://tailwindcss.com" target="_blank" rel="noopener noreferrer"
-     className="transform hover:scale-110 transition-transform duration-200">
-            <img src="/tailwind.svg" className="w-12 h-12" alt="Tailwind logo" />
-          </a>
-        </div>
-
-        {/* Title */}
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100 
-                       transition-colors duration-200 text-center">
-          Vite + React + Tailwind
-        </h1>
-
-        {/* Counter Section */}
-        <div className="flex flex-col items-center space-y-4">
-          <div className="flex items-center space-x-4">
-            <button onClick={() => setCount(c => Math.max(0, c - 1))}
-                    className="w-12 h-12 flex items-center justify-center 
-                              bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700
-                              text-white rounded-lg text-2xl font-bold transition-all duration-200">
-              -
-            </button>
-            <span className="text-3xl font-semibold text-gray-700 dark:text-gray-200 
-                           min-w-[3rem] text-center transition-colors duration-200">
-              {count}
-            </span>
-            <button onClick={() => setCount(c => c + 1)}
-                    className="w-12 h-12 flex items-center justify-center 
-                              bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700
-                              text-white rounded-lg text-2xl font-bold transition-all duration-200">
-              +
-            </button>
+    <QuizProvider>
+      <MainLayout>
+        <Header title="STEAM Career Quiz" />
+        <main className="flex-grow flex flex-col items-center justify-center p-6">
+          <div className="w-full max-w-2xl bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6">
+            {/* Quiz components will be rendered here */}
+            <p className="text-center text-gray-700 dark:text-gray-300">
+              Welcome to the STEAM Career Quiz! Let's discover your ideal career path.
+            </p>
           </div>
-          <button onClick={() => setCount(0)}
-                  className="px-6 py-2 bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700
-                            text-white rounded-lg transition-all duration-200">
-            Reset
-          </button>
-        </div>
+        </main>
+      </MainLayout>
+    </QuizProvider>
+  );
+}
 
-        {/* Info Section */}
-        <div className="w-full p-3 bg-gray-50 dark:bg-gray-700 rounded-lg 
-                       transition-colors duration-200">
-          <p className="text-gray-600 dark:text-gray-300 text-sm text-center">
-            Edit <code className="bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded">src/App.jsx</code> to test HMR
-          </p>
-        </div>
+export default App;
+```
 
-        {/* Documentation Link */}
-        <a href="https://tailwindcss.com/docs" target="_blank" rel="noopener noreferrer"
-           className="text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 
-                     text-sm underline transition-colors duration-200">
-          Click here to learn more about Tailwind CSS
-        </a>
+## src\components\layout\Header.jsx
+
+```jsx
+import React from 'react';
+
+const Header = ({ title }) => {
+  return (
+    <header className="py-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+          {title}
+        </h1>
+      </div>
+    </header>
+  );
+};
+
+export default Header;
+```
+
+## src\components\layout\MainLayout.jsx
+
+```jsx
+import React from 'react';
+
+const MainLayout = ({ children }) => {
+  return (
+    <div className="min-h-screen bg-gray-100 dark:bg-slate-900">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col min-h-screen">
+          {children}
+        </div>
       </div>
     </div>
   );
 };
 
-export default App;
+export default MainLayout;
+```
+
+## src\components\quiz\MenuScreen.jsx
+
+```jsx
+import React from 'react';
+import { useQuiz } from '../../context/QuizContext';
+import QuizCard from '../shared/QuizCard';
+
+const MenuScreen = () => {
+  const { setSection } = useQuiz();
+
+  const menuItems = [
+    {
+      title: 'Start Quiz',
+      description: 'Begin your STEAM career discovery journey',
+      action: () => setSection('username'),
+      primary: true
+    },
+    {
+      title: 'About OCEAN Test',
+      description: 'Learn about the personality assessment',
+      action: () => setSection('about-ocean')
+    },
+    {
+      title: 'About STEAM',
+      description: 'Understand the subject areas',
+      action: () => setSection('about-steam')
+    },
+    {
+      title: 'How to Play',
+      description: 'Get guidance on taking the quiz',
+      action: () => setSection('how-to-play')
+    }
+  ];
+
+  return (
+    <QuizCard title="Welcome to STEAM Career Quiz">
+      <div className="space-y-4">
+        <p className="text-gray-600 dark:text-gray-300 mb-6">
+          Discover your ideal career path through personality assessment and subject knowledge evaluation.
+        </p>
+        
+        <div className="grid gap-4 sm:grid-cols-2">
+          {menuItems.map((item, index) => (
+            <button
+              key={index}
+              onClick={item.action}
+              className={`
+                p-4 rounded-lg text-left transition-all duration-200
+                ${item.primary 
+                  ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                  : 'bg-gray-50 dark:bg-slate-700 hover:bg-gray-100 dark:hover:bg-slate-600 text-gray-900 dark:text-white'}
+              `}
+            >
+              <h3 className="font-semibold mb-1">
+                {item.title}
+              </h3>
+              <p className={`text-sm ${item.primary ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'}`}>
+                {item.description}
+              </p>
+            </button>
+          ))}
+        </div>
+      </div>
+    </QuizCard>
+  );
+};
+
+export default MenuScreen;
+```
+
+## src\components\quiz\PersonalityQuiz.jsx
+
+```jsx
+import React from 'react';
+import { useQuiz } from '../../context/QuizContext';
+import ProgressBar from '../shared/ProgressBar';
+
+const PersonalityQuiz = () => {
+  const { progress, setProgress, answers, setAnswers } = useQuiz();
+
+  return (
+    <div className="space-y-6">
+      <ProgressBar progress={progress} total={25} />
+      <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-sm">
+        <h2 className="text-xl font-semibold mb-4">
+          OCEAN Personality Test
+        </h2>
+        {/* Quiz content will be added here */}
+      </div>
+    </div>
+  );
+};
+
+export default PersonalityQuiz;
+```
+
+## src\components\quiz\QuizLeaderboard.jsx
+
+```jsx
+import React from 'react';
+
+const QuizLeaderboard = () => {
+  return (
+    <div className="space-y-6">
+      <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-sm">
+        <h2 className="text-xl font-semibold mb-4">
+          Leaderboard
+        </h2>
+        <div className="overflow-x-auto">
+          <table className="min-w-full">
+            <thead>
+              <tr className="border-b dark:border-gray-700">
+                <th className="px-4 py-2 text-left">Rank</th>
+                <th className="px-4 py-2 text-left">Username</th>
+                <th className="px-4 py-2 text-left">Score</th>
+                <th className="px-4 py-2 text-left">Best Subject</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+              {/* Leaderboard entries will be added here */}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default QuizLeaderboard;
+```
+
+## src\components\quiz\QuizResults.jsx
+
+```jsx
+import React from 'react';
+
+const QuizResults = () => {
+  return (
+    <div className="space-y-6">
+      <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-sm">
+        <h2 className="text-xl font-semibold mb-4">
+          Your Results
+        </h2>
+        {/* Results content will be added here */}
+      </div>
+    </div>
+  );
+};
+
+export default QuizResults;
+```
+
+## src\components\quiz\SubjectQuiz.jsx
+
+```jsx
+import React from 'react';
+import { useQuiz } from '../../context/QuizContext';
+import ProgressBar from '../shared/ProgressBar';
+
+const SubjectQuiz = () => {
+  const { progress, setProgress, answers, setAnswers } = useQuiz();
+
+  return (
+    <div className="space-y-6">
+      <ProgressBar progress={progress} total={50} />
+      <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-sm">
+        <h2 className="text-xl font-semibold mb-4">
+          STEAM Subject Quiz
+        </h2>
+        {/* Quiz content will be added here */}
+      </div>
+    </div>
+  );
+};
+
+export default SubjectQuiz;
+```
+
+## src\components\shared\Alert.jsx
+
+```jsx
+import React from 'react';
+
+const alertStyles = {
+  success: 'bg-green-50 text-green-800 dark:bg-green-900/50 dark:text-green-300',
+  error: 'bg-red-50 text-red-800 dark:bg-red-900/50 dark:text-red-300',
+  warning: 'bg-yellow-50 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300',
+  info: 'bg-blue-50 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300'
+};
+
+const Alert = ({ 
+  type = 'info', 
+  title, 
+  children,
+  onClose 
+}) => {
+  return (
+    <div className={`rounded-lg p-4 mb-4 ${alertStyles[type]}`}>
+      <div className="flex items-start">
+        <div className="flex-1">
+          {title && (
+            <h3 className="text-sm font-medium mb-1">
+              {title}
+            </h3>
+          )}
+          <div className="text-sm">
+            {children}
+          </div>
+        </div>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="ml-3 inline-flex flex-shrink-0 justify-center items-center h-5 w-5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+          >
+            <span className="sr-only">Close</span>
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Alert;
+```
+
+## src\components\shared\LoadingSpinner.jsx
+
+```jsx
+import React from 'react';
+
+const LoadingSpinner = () => {
+  return (
+    <div className="flex justify-center items-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+    </div>
+  );
+};
+
+export default LoadingSpinner;
+```
+
+## src\components\shared\ProgressBar.jsx
+
+```jsx
+import React from 'react';
+
+const ProgressBar = ({ progress, total }) => {
+  const percentage = (progress / total) * 100;
+  
+  return (
+    <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+      <div 
+        className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
+        style={{ width: `${percentage}%` }}
+      />
+    </div>
+  );
+};
+
+export default ProgressBar;
+```
+
+## src\components\shared\QuizCard.jsx
+
+```jsx
+import React from 'react';
+
+const QuizCard = ({ 
+  title, 
+  children, 
+  footer,
+  className = "" 
+}) => {
+  return (
+    <div className={`w-full max-w-2xl mx-auto ${className}`}>
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden">
+        {title && (
+          <div className="px-6 py-4 bg-gray-50 dark:bg-slate-700 border-b border-gray-200 dark:border-slate-600">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              {title}
+            </h2>
+          </div>
+        )}
+        
+        <div className="p-6">
+          {children}
+        </div>
+
+        {footer && (
+          <div className="px-6 py-4 bg-gray-50 dark:bg-slate-700 border-t border-gray-200 dark:border-slate-600">
+            {footer}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default QuizCard;
+```
+
+## src\components\shared\QuizNavigation.jsx
+
+```jsx
+import React from 'react';
+
+const QuizNavigation = ({ onNext, onPrev, canProgress, showPrev = true }) => {
+  return (
+    <div className="flex justify-between mt-6">
+      {showPrev && (
+        <button
+          onClick={onPrev}
+          className="btn btn-secondary"
+        >
+          Previous
+        </button>
+      )}
+      <button
+        onClick={onNext}
+        disabled={!canProgress}
+        className={`btn btn-primary disabled:opacity-50 ${!showPrev ? 'ml-auto' : ''}`}
+      >
+        Next
+      </button>
+    </div>
+  );
+};
+
+export default QuizNavigation;
+```
+
+## src\components\shared\RadioGroup.jsx
+
+```jsx
+import React from 'react';
+
+const RadioGroup = ({ 
+  options, 
+  value, 
+  onChange, 
+  name,
+  orientation = 'vertical'
+}) => {
+  const layoutClass = orientation === 'vertical' 
+    ? 'flex flex-col space-y-3'
+    : 'flex flex-row justify-between space-x-4';
+
+  return (
+    <div className={layoutClass}>
+      {options.map((option) => (
+        <label
+          key={option.value}
+          className={`
+            relative flex items-center p-4 cursor-pointer
+            bg-gray-50 dark:bg-slate-700 rounded-lg
+            border-2 transition-all duration-200
+            ${value === option.value 
+              ? 'border-blue-500 dark:border-blue-400' 
+              : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500'}
+          `}
+        >
+          <input
+            type="radio"
+            name={name}
+            value={option.value}
+            checked={value === option.value}
+            onChange={() => onChange(option.value)}
+            className="sr-only"
+          />
+          <div className="flex-1">
+            <div className="flex justify-between">
+              <div className="text-sm font-medium text-gray-900 dark:text-white">
+                {option.label}
+              </div>
+              {option.score !== undefined && (
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  {option.score}
+                </div>
+              )}
+            </div>
+            {option.description && (
+              <div className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                {option.description}
+              </div>
+            )}
+          </div>
+        </label>
+      ))}
+    </div>
+  );
+};
+
+export default RadioGroup;
+```
+
+## src\context\QuizContext.jsx
+
+```jsx
+
+```
+
+## src\data\feedbackDatabase.js
+
+```js
+export const feedbackDatabase = {
+    "Science and Openness": {
+      environment: "exploratory and innovative",
+      careers: [
+        "Research Scientist",
+        "Innovation Lead",
+        "Scientific Explorer",
+        "R&D Specialist"
+      ],
+      feedback: "Your affinity for science combined with an open-minded approach suggests you'd excel in exploratory and innovative environments. Your curiosity and creativity will drive you forward in fields that value research and development."
+    },
+    "Technology and Conscientiousness": {
+      environment: "structured and data-driven",
+      careers: [
+        "Systems Analyst",
+        "Database Administrator",
+        "Software Engineer",
+        "Quality Assurance Lead"
+      ],
+      feedback: "Your technological aptitude combined with a conscientious nature suggests a structured and data-driven environment would suit you well. Your precision and organized workflow will be highly valued."
+    },
+    "English and Extraversion": {
+      environment: "interactive and collaborative",
+      careers: [
+        "Content Strategist",
+        "Communications Director",
+        "Publishing Manager",
+        "Public Relations"
+      ],
+      feedback: "Your English expertise combined with an extroverted personality makes an interactive and collaborative environment ideal for you. Your communication skills and team dynamics could shine."
+    },
+    "Art and Agreeableness": {
+      environment: "supportive and community-focused",
+      careers: [
+        "Art Therapist",
+        "Community Arts Director",
+        "Design Team Lead",
+        "Creative Workshop Facilitator"
+      ],
+      feedback: "Your artistic interests, paired with an agreeable nature, align well with supportive and community-focused environments. Your empathy and collaboration skills could make a real difference."
+    },
+    "Math and Neuroticism": {
+      environment: "predictable and well-defined",
+      careers: [
+        "Data Analyst",
+        "Financial Planner",
+        "Risk Assessment Specialist",
+        "Statistical Researcher"
+      ],
+      feedback: "With a solid background in math and a detail-oriented nature, you may find comfort in predictable and well-defined environments. Your analytical skills could serve well in roles requiring precision."
+    }
+    // Additional combinations will be loaded from the JSON file
+  };
+  
+  export const getCareerFeedback = (steamCategory, oceanTrait) => {
+    const key = `${steamCategory} and ${oceanTrait}`;
+    return feedbackDatabase[key] || {
+      environment: "dynamic and adaptable",
+      careers: ["Various career paths available"],
+      feedback: "Your unique combination of skills and traits suggests you could succeed in various roles. Consider exploring positions that combine your technical abilities with your personality strengths."
+    };
+  };
+```
+
+## src\data\personalityQuestions.js
+
+```js
+export const personalityQuestions = [
+    {
+      trait: "Openness",
+      statement: "I eagerly explore new hobbies and interests, even if they are outside my comfort zone."
+    },
+    {
+      trait: "Conscientiousness",
+      statement: "I meticulously plan my daily schedule and stick to it."
+    },
+    {
+      trait: "Extraversion",
+      statement: "I love attending parties and social gatherings to meet new people."
+    },
+    {
+      trait: "Agreeableness",
+      statement: "I frequently go out of my way to help friends and family in times of need."
+    },
+    {
+      trait: "Neuroticism",
+      statement: "I often find myself worrying about possible negative outcomes in the future."
+    },
+    // Additional questions will be loaded from the JSON file
+  ];
+  
+  export const traitDescriptions = {
+    Openness: "Reflects your willingness to embrace new experiences and ideas.",
+    Conscientiousness: "Indicates your level of organization and attention to detail.",
+    Extraversion: "Shows how energized you are by social interactions.",
+    Agreeableness: "Represents your tendency to be cooperative and compassionate.",
+    Neuroticism: "Reflects your emotional sensitivity and tendency to experience stress."
+  };
+```
+
+## src\data\subjectQuestions.js
+
+```js
+export const subjects = {
+    Science: {
+      description: "Tests your understanding of scientific principles and natural phenomena.",
+      icon: "🔬"
+    },
+    Technology: {
+      description: "Evaluates your knowledge of computers, software, and digital systems.",
+      icon: "💻"
+    },
+    English: {
+      description: "Assesses your comprehension of literature and language.",
+      icon: "📚"
+    },
+    Art: {
+      description: "Tests your knowledge of visual arts, design, and creativity.",
+      icon: "🎨"
+    },
+    Math: {
+      description: "Evaluates your mathematical and logical reasoning skills.",
+      icon: "🔢"
+    }
+  };
+  
+  // Questions will be loaded from the JSON files for each subject
+  export const getSubjectQuestions = async (subject) => {
+    try {
+      const response = await fetch(`/src/data/trivia_${subject.toLowerCase()}.json`);
+      const data = await response.json();
+      return data.results;
+    } catch (error) {
+      console.error(`Error loading ${subject} questions:`, error);
+      return [];
+    }
+  };
+```
+
+## src\hooks\useLocalStorage.js
+
+```js
+import { useState, useEffect } from 'react';
+
+const useLocalStorage = (key, initialValue) => {
+  // State to store our value
+  // Pass initial state function to useState so logic is only executed once
+  const [storedValue, setStoredValue] = useState(() => {
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch (error) {
+      console.log(error);
+      return initialValue;
+    }
+  });
+
+  // Return a wrapped version of useState's setter function that persists the new value to localStorage
+  const setValue = value => {
+    try {
+      // Allow value to be a function so we have same API as useState
+      const valueToStore = value instanceof Function ? value(storedValue) : value;
+      setStoredValue(valueToStore);
+      window.localStorage.setItem(key, JSON.stringify(valueToStore));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return [storedValue, setValue];
+};
+
+export default useLocalStorage;
+```
+
+## src\hooks\useQuizState.js
+
+```js
+import { useState, useCallback } from 'react';
+
+const useQuizState = (initialState = {}) => {
+  const [quizState, setQuizState] = useState({
+    currentSection: 'menu',
+    personalityAnswers: [],
+    subjectAnswers: [],
+    currentQuestionIndex: 0,
+    ...initialState
+  });
+
+  const updateQuizState = useCallback((updates) => {
+    setQuizState(prev => ({
+      ...prev,
+      ...updates
+    }));
+  }, []);
+
+  const resetQuiz = useCallback(() => {
+    setQuizState({
+      currentSection: 'menu',
+      personalityAnswers: [],
+      subjectAnswers: [],
+      currentQuestionIndex: 0
+    });
+  }, []);
+
+  return {
+    quizState,
+    updateQuizState,
+    resetQuiz
+  };
+};
+
+export default useQuizState;
 ```
 
 ## src\main.jsx
@@ -257,6 +883,126 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   </React.StrictMode>,
 )
 
+```
+
+## src\utils\scoreCalculator.js
+
+```js
+export const calculatePersonalityScores = (answers) => {
+    const scores = {
+      Openness: 0,
+      Conscientiousness: 0,
+      Extraversion: 0,
+      Agreeableness: 0,
+      Neuroticism: 0
+    };
+  
+    // Group answers by trait and calculate scores
+    answers.forEach((answer, index) => {
+      const trait = getTraitForQuestion(index);
+      scores[trait] += answer;
+    });
+  
+    return scores;
+  };
+  
+  export const calculateSubjectScores = (answers) => {
+    const scores = {
+      Science: 0,
+      Technology: 0,
+      English: 0,
+      Art: 0,
+      Math: 0,
+      Total: 0
+    };
+  
+    // Calculate scores for each subject (10 questions each)
+    answers.forEach((isCorrect, index) => {
+      const subject = getSubjectForQuestion(index);
+      if (isCorrect) {
+        scores[subject]++;
+        scores.Total++;
+      }
+    });
+  
+    return scores;
+  };
+  
+  export const getTraitForQuestion = (questionIndex) => {
+    // Map question indices to OCEAN traits
+    const traitMapping = {
+      0: 'Openness',
+      1: 'Conscientiousness',
+      2: 'Extraversion',
+      3: 'Agreeableness',
+      4: 'Neuroticism'
+    };
+  
+    return traitMapping[questionIndex % 5];
+  };
+  
+  export const getSubjectForQuestion = (questionIndex) => {
+    // Map question indices to STEAM subjects
+    if (questionIndex < 10) return 'Science';
+    if (questionIndex < 20) return 'Technology';
+    if (questionIndex < 30) return 'English';
+    if (questionIndex < 40) return 'Art';
+    return 'Math';
+  };
+  
+  export const convertScoreToPercentage = (score, maxScore) => {
+    return ((score / maxScore) * 100).toFixed(1);
+  };
+```
+
+## src\utils\validators.js
+
+```js
+export const validateUsername = (username) => {
+    if (!username) {
+      return { isValid: false, error: 'Username is required' };
+    }
+  
+    if (username.length < 3) {
+      return { isValid: false, error: 'Username must be at least 3 characters long' };
+    }
+  
+    if (username.length > 9) {
+      return { isValid: false, error: 'Username must be less than 9 characters long' };
+    }
+  
+    if (!username.match(/^[a-zA-Z0-9]+$/)) {
+      return { isValid: false, error: 'Username must contain only letters and numbers' };
+    }
+  
+    return { isValid: true, error: null };
+  };
+  
+  export const validateQuizAnswer = (answer, type) => {
+    if (type === 'personality') {
+      const numAnswer = Number(answer);
+      if (isNaN(numAnswer) || numAnswer < 1 || numAnswer > 9) {
+        return { isValid: false, error: 'Answer must be between 1 and 9' };
+      }
+    } else if (type === 'subject') {
+      if (typeof answer !== 'number' || answer < 0 || answer > 3) {
+        return { isValid: false, error: 'Invalid answer selection' };
+      }
+    }
+  
+    return { isValid: true, error: null };
+  };
+  
+  export const validateQuizProgress = (currentSection, answers) => {
+    switch (currentSection) {
+      case 'personality':
+        return answers.length === 25;
+      case 'subject':
+        return answers.length === 50;
+      default:
+        return false;
+    }
+  };
 ```
 
 ## tailwind.config.js
@@ -285,50 +1031,571 @@ export default {
 }
 ```
 
-## tests\app.spec.js
+## tests\example.spec.js
 
 ```js
-// tests/app.spec.js
-const { takeScreenshot } = require('../utils/screenshot');
+// @ts-check
+import { test, expect } from '@playwright/test';
 
-describe('Responsive App', () => {
-  let browser;
-  let page;
+test('has title', async ({ page }) => {
+  await page.goto('/');
 
-  before(async () => {
-    browser = await chromium.launch();
-    page = await browser.newPage();
-    await page.goto('http://localhost:3000');
-  });
+  // Expect a title "to contain" a substring.
+  await expect(page.getByText('Vite + React + Tailwind')).toBeVisible();
+});
 
-  after(async () => {
-    await browser.close();
-  });
+test('dark mode toggle works', async ({ page }) => {
+  await page.goto('/');
+  
+  // Click the dark mode toggle button
+  await page.getByRole('button', { name: 'Toggle Dark Mode' }).click();
 
-  it('should take screenshots for different device widths', async () => {
-    await takeScreenshot(page, 375);
-    await takeScreenshot(page, 640);
-    await takeScreenshot(page, 768);
-    await takeScreenshot(page, 1024);
-    await takeScreenshot(page, 1280);
-    await takeScreenshot(page, 1536);
-  });
+  // Verify dark mode is enabled
+  const html = page.locator('html');
+  await expect(html).toHaveClass(/dark/);
+});
+
+test('counter functionality', async ({ page }) => {
+  await page.goto('/');
+
+  // Test increment
+  await page.getByRole('button', { name: '+' }).click();
+  await expect(page.locator('text=1')).toBeVisible();
+
+  // Test decrement
+  await page.getByRole('button', { name: '-' }).click();
+  await expect(page.locator('text=0')).toBeVisible();
+
+  // Test reset
+  await page.getByRole('button', { name: '+' }).click();
+  await page.getByRole('button', { name: '+' }).click();
+  await page.getByRole('button', { name: 'Reset' }).click();
+  await expect(page.locator('text=0')).toBeVisible();
+});
+```
+
+## tests\responsive.spec.js
+
+```js
+// @ts-check
+import { test } from '@playwright/test';
+import { takeScreenshots } from './utils/screenshot';
+
+test('capture homepage at all screen sizes', async ({ page }) => {
+  await page.goto('/');
+  await takeScreenshots(page, 'homepage');
 });
 ```
 
 ## tests\utils\screenshot.js
 
 ```js
-// tests/utils/screenshot.js
-const { chromium } = require('playwright');
+// @ts-check
+import { test } from '@playwright/test';
+import path from 'path';
+import fs from 'fs';
 
-async function takeScreenshot(page, deviceWidth) {
-  await page.setViewportSize({ width: deviceWidth, height: 800 });
-  await page.screenshot({ path: `screenshots/${deviceWidth}px.png` });
-  console.log(`Screenshot taken for ${deviceWidth}px width`);
+// Tailwind breakpoints
+export const screens = {
+  xs: 375,
+  sm: 640,
+  md: 768,
+  lg: 1024,
+  xl: 1280,
+  '2xl': 1536
+};
+
+/**
+ * Takes screenshots at different viewport widths
+ * @param {import('@playwright/test').Page} page
+ * @param {string} pageName - Name of the page being tested
+ */
+export async function takeScreenshots(page, pageName) {
+  // Ensure page-specific screenshots directory exists
+  const screenshotDir = path.join(process.cwd(), 'screenshots', pageName);
+  if (!fs.existsSync(screenshotDir)) {
+    fs.mkdirSync(screenshotDir, { recursive: true });
+  } else {
+    // Clean existing screenshots in this directory
+    const files = fs.readdirSync(screenshotDir);
+    files.forEach(file => {
+      fs.unlinkSync(path.join(screenshotDir, file));
+    });
+  }
+
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+
+  // Take screenshots at each breakpoint
+  for (const [size, width] of Object.entries(screens)) {
+    await page.setViewportSize({
+      width,
+      height: Math.floor(width * 0.8)
+    });
+
+    const filename = `${size}-${width}px-${timestamp}.png`;
+    await page.screenshot({
+      path: path.join(screenshotDir, filename),
+      fullPage: true
+    });
+
+    console.log(`📸 Captured ${pageName} at ${width}px (${size})`);
+  }
+}
+```
+
+## tests-examples\demo-todo-app.spec.js
+
+```js
+// @ts-check
+const { test, expect } = require('@playwright/test');
+
+test.beforeEach(async ({ page }) => {
+  await page.goto('https://demo.playwright.dev/todomvc');
+});
+
+const TODO_ITEMS = [
+  'buy some cheese',
+  'feed the cat',
+  'book a doctors appointment'
+];
+
+test.describe('New Todo', () => {
+  test('should allow me to add todo items', async ({ page }) => {
+    // create a new todo locator
+    const newTodo = page.getByPlaceholder('What needs to be done?');
+
+    // Create 1st todo.
+    await newTodo.fill(TODO_ITEMS[0]);
+    await newTodo.press('Enter');
+
+    // Make sure the list only has one todo item.
+    await expect(page.getByTestId('todo-title')).toHaveText([
+      TODO_ITEMS[0]
+    ]);
+
+    // Create 2nd todo.
+    await newTodo.fill(TODO_ITEMS[1]);
+    await newTodo.press('Enter');
+
+    // Make sure the list now has two todo items.
+    await expect(page.getByTestId('todo-title')).toHaveText([
+      TODO_ITEMS[0],
+      TODO_ITEMS[1]
+    ]);
+
+    await checkNumberOfTodosInLocalStorage(page, 2);
+  });
+
+  test('should clear text input field when an item is added', async ({ page }) => {
+    // create a new todo locator
+    const newTodo = page.getByPlaceholder('What needs to be done?');
+
+    // Create one todo item.
+    await newTodo.fill(TODO_ITEMS[0]);
+    await newTodo.press('Enter');
+
+    // Check that input is empty.
+    await expect(newTodo).toBeEmpty();
+    await checkNumberOfTodosInLocalStorage(page, 1);
+  });
+
+  test('should append new items to the bottom of the list', async ({ page }) => {
+    // Create 3 items.
+    await createDefaultTodos(page);
+
+    // create a todo count locator
+    const todoCount = page.getByTestId('todo-count')
+  
+    // Check test using different methods.
+    await expect(page.getByText('3 items left')).toBeVisible();
+    await expect(todoCount).toHaveText('3 items left');
+    await expect(todoCount).toContainText('3');
+    await expect(todoCount).toHaveText(/3/);
+
+    // Check all items in one call.
+    await expect(page.getByTestId('todo-title')).toHaveText(TODO_ITEMS);
+    await checkNumberOfTodosInLocalStorage(page, 3);
+  });
+});
+
+test.describe('Mark all as completed', () => {
+  test.beforeEach(async ({ page }) => {
+    await createDefaultTodos(page);
+    await checkNumberOfTodosInLocalStorage(page, 3);
+  });
+
+  test.afterEach(async ({ page }) => {
+    await checkNumberOfTodosInLocalStorage(page, 3);
+  });
+
+  test('should allow me to mark all items as completed', async ({ page }) => {
+    // Complete all todos.
+    await page.getByLabel('Mark all as complete').check();
+
+    // Ensure all todos have 'completed' class.
+    await expect(page.getByTestId('todo-item')).toHaveClass(['completed', 'completed', 'completed']);
+    await checkNumberOfCompletedTodosInLocalStorage(page, 3);
+  });
+
+  test('should allow me to clear the complete state of all items', async ({ page }) => {
+    const toggleAll = page.getByLabel('Mark all as complete');
+    // Check and then immediately uncheck.
+    await toggleAll.check();
+    await toggleAll.uncheck();
+
+    // Should be no completed classes.
+    await expect(page.getByTestId('todo-item')).toHaveClass(['', '', '']);
+  });
+
+  test('complete all checkbox should update state when items are completed / cleared', async ({ page }) => {
+    const toggleAll = page.getByLabel('Mark all as complete');
+    await toggleAll.check();
+    await expect(toggleAll).toBeChecked();
+    await checkNumberOfCompletedTodosInLocalStorage(page, 3);
+
+    // Uncheck first todo.
+    const firstTodo = page.getByTestId('todo-item').nth(0);
+    await firstTodo.getByRole('checkbox').uncheck();
+
+    // Reuse toggleAll locator and make sure its not checked.
+    await expect(toggleAll).not.toBeChecked();
+
+    await firstTodo.getByRole('checkbox').check();
+    await checkNumberOfCompletedTodosInLocalStorage(page, 3);
+
+    // Assert the toggle all is checked again.
+    await expect(toggleAll).toBeChecked();
+  });
+});
+
+test.describe('Item', () => {
+
+  test('should allow me to mark items as complete', async ({ page }) => {
+    // create a new todo locator
+    const newTodo = page.getByPlaceholder('What needs to be done?');
+
+    // Create two items.
+    for (const item of TODO_ITEMS.slice(0, 2)) {
+      await newTodo.fill(item);
+      await newTodo.press('Enter');
+    }
+
+    // Check first item.
+    const firstTodo = page.getByTestId('todo-item').nth(0);
+    await firstTodo.getByRole('checkbox').check();
+    await expect(firstTodo).toHaveClass('completed');
+
+    // Check second item.
+    const secondTodo = page.getByTestId('todo-item').nth(1);
+    await expect(secondTodo).not.toHaveClass('completed');
+    await secondTodo.getByRole('checkbox').check();
+
+    // Assert completed class.
+    await expect(firstTodo).toHaveClass('completed');
+    await expect(secondTodo).toHaveClass('completed');
+  });
+
+  test('should allow me to un-mark items as complete', async ({ page }) => {
+     // create a new todo locator
+     const newTodo = page.getByPlaceholder('What needs to be done?');
+
+    // Create two items.
+    for (const item of TODO_ITEMS.slice(0, 2)) {
+      await newTodo.fill(item);
+      await newTodo.press('Enter');
+    }
+
+    const firstTodo = page.getByTestId('todo-item').nth(0);
+    const secondTodo = page.getByTestId('todo-item').nth(1);
+    const firstTodoCheckbox = firstTodo.getByRole('checkbox');
+
+    await firstTodoCheckbox.check();
+    await expect(firstTodo).toHaveClass('completed');
+    await expect(secondTodo).not.toHaveClass('completed');
+    await checkNumberOfCompletedTodosInLocalStorage(page, 1);
+
+    await firstTodoCheckbox.uncheck();
+    await expect(firstTodo).not.toHaveClass('completed');
+    await expect(secondTodo).not.toHaveClass('completed');
+    await checkNumberOfCompletedTodosInLocalStorage(page, 0);
+  });
+
+  test('should allow me to edit an item', async ({ page }) => {
+    await createDefaultTodos(page);
+
+    const todoItems = page.getByTestId('todo-item');
+    const secondTodo = todoItems.nth(1);
+    await secondTodo.dblclick();
+    await expect(secondTodo.getByRole('textbox', { name: 'Edit' })).toHaveValue(TODO_ITEMS[1]);
+    await secondTodo.getByRole('textbox', { name: 'Edit' }).fill('buy some sausages');
+    await secondTodo.getByRole('textbox', { name: 'Edit' }).press('Enter');
+
+    // Explicitly assert the new text value.
+    await expect(todoItems).toHaveText([
+      TODO_ITEMS[0],
+      'buy some sausages',
+      TODO_ITEMS[2]
+    ]);
+    await checkTodosInLocalStorage(page, 'buy some sausages');
+  });
+});
+
+test.describe('Editing', () => {
+  test.beforeEach(async ({ page }) => {
+    await createDefaultTodos(page);
+    await checkNumberOfTodosInLocalStorage(page, 3);
+  });
+
+  test('should hide other controls when editing', async ({ page }) => {
+    const todoItem = page.getByTestId('todo-item').nth(1);
+    await todoItem.dblclick();
+    await expect(todoItem.getByRole('checkbox')).not.toBeVisible();
+    await expect(todoItem.locator('label', {
+      hasText: TODO_ITEMS[1],
+    })).not.toBeVisible();
+    await checkNumberOfTodosInLocalStorage(page, 3);
+  });
+
+  test('should save edits on blur', async ({ page }) => {
+    const todoItems = page.getByTestId('todo-item');
+    await todoItems.nth(1).dblclick();
+    await todoItems.nth(1).getByRole('textbox', { name: 'Edit' }).fill('buy some sausages');
+    await todoItems.nth(1).getByRole('textbox', { name: 'Edit' }).dispatchEvent('blur');
+
+    await expect(todoItems).toHaveText([
+      TODO_ITEMS[0],
+      'buy some sausages',
+      TODO_ITEMS[2],
+    ]);
+    await checkTodosInLocalStorage(page, 'buy some sausages');
+  });
+
+  test('should trim entered text', async ({ page }) => {
+    const todoItems = page.getByTestId('todo-item');
+    await todoItems.nth(1).dblclick();
+    await todoItems.nth(1).getByRole('textbox', { name: 'Edit' }).fill('    buy some sausages    ');
+    await todoItems.nth(1).getByRole('textbox', { name: 'Edit' }).press('Enter');
+
+    await expect(todoItems).toHaveText([
+      TODO_ITEMS[0],
+      'buy some sausages',
+      TODO_ITEMS[2],
+    ]);
+    await checkTodosInLocalStorage(page, 'buy some sausages');
+  });
+
+  test('should remove the item if an empty text string was entered', async ({ page }) => {
+    const todoItems = page.getByTestId('todo-item');
+    await todoItems.nth(1).dblclick();
+    await todoItems.nth(1).getByRole('textbox', { name: 'Edit' }).fill('');
+    await todoItems.nth(1).getByRole('textbox', { name: 'Edit' }).press('Enter');
+
+    await expect(todoItems).toHaveText([
+      TODO_ITEMS[0],
+      TODO_ITEMS[2],
+    ]);
+  });
+
+  test('should cancel edits on escape', async ({ page }) => {
+    const todoItems = page.getByTestId('todo-item');
+    await todoItems.nth(1).dblclick();
+    await todoItems.nth(1).getByRole('textbox', { name: 'Edit' }).fill('buy some sausages');
+    await todoItems.nth(1).getByRole('textbox', { name: 'Edit' }).press('Escape');
+    await expect(todoItems).toHaveText(TODO_ITEMS);
+  });
+});
+
+test.describe('Counter', () => {
+  test('should display the current number of todo items', async ({ page }) => {
+    // create a new todo locator
+    const newTodo = page.getByPlaceholder('What needs to be done?');
+
+    // create a todo count locator
+    const todoCount = page.getByTestId('todo-count')
+
+    await newTodo.fill(TODO_ITEMS[0]);
+    await newTodo.press('Enter');
+    await expect(todoCount).toContainText('1');
+
+    await newTodo.fill(TODO_ITEMS[1]);
+    await newTodo.press('Enter');
+    await expect(todoCount).toContainText('2');
+
+    await checkNumberOfTodosInLocalStorage(page, 2);
+  });
+});
+
+test.describe('Clear completed button', () => {
+  test.beforeEach(async ({ page }) => {
+    await createDefaultTodos(page);
+  });
+
+  test('should display the correct text', async ({ page }) => {
+    await page.locator('.todo-list li .toggle').first().check();
+    await expect(page.getByRole('button', { name: 'Clear completed' })).toBeVisible();
+  });
+
+  test('should remove completed items when clicked', async ({ page }) => {
+    const todoItems = page.getByTestId('todo-item');
+    await todoItems.nth(1).getByRole('checkbox').check();
+    await page.getByRole('button', { name: 'Clear completed' }).click();
+    await expect(todoItems).toHaveCount(2);
+    await expect(todoItems).toHaveText([TODO_ITEMS[0], TODO_ITEMS[2]]);
+  });
+
+  test('should be hidden when there are no items that are completed', async ({ page }) => {
+    await page.locator('.todo-list li .toggle').first().check();
+    await page.getByRole('button', { name: 'Clear completed' }).click();
+    await expect(page.getByRole('button', { name: 'Clear completed' })).toBeHidden();
+  });
+});
+
+test.describe('Persistence', () => {
+  test('should persist its data', async ({ page }) => {
+    // create a new todo locator
+    const newTodo = page.getByPlaceholder('What needs to be done?');
+
+    for (const item of TODO_ITEMS.slice(0, 2)) {
+      await newTodo.fill(item);
+      await newTodo.press('Enter');
+    }
+
+    const todoItems = page.getByTestId('todo-item');
+    const firstTodoCheck = todoItems.nth(0).getByRole('checkbox');
+    await firstTodoCheck.check();
+    await expect(todoItems).toHaveText([TODO_ITEMS[0], TODO_ITEMS[1]]);
+    await expect(firstTodoCheck).toBeChecked();
+    await expect(todoItems).toHaveClass(['completed', '']);
+
+    // Ensure there is 1 completed item.
+    await checkNumberOfCompletedTodosInLocalStorage(page, 1);
+
+    // Now reload.
+    await page.reload();
+    await expect(todoItems).toHaveText([TODO_ITEMS[0], TODO_ITEMS[1]]);
+    await expect(firstTodoCheck).toBeChecked();
+    await expect(todoItems).toHaveClass(['completed', '']);
+  });
+});
+
+test.describe('Routing', () => {
+  test.beforeEach(async ({ page }) => {
+    await createDefaultTodos(page);
+    // make sure the app had a chance to save updated todos in storage
+    // before navigating to a new view, otherwise the items can get lost :(
+    // in some frameworks like Durandal
+    await checkTodosInLocalStorage(page, TODO_ITEMS[0]);
+  });
+
+  test('should allow me to display active items', async ({ page }) => {
+    const todoItem = page.getByTestId('todo-item');
+    await page.getByTestId('todo-item').nth(1).getByRole('checkbox').check();
+    
+    await checkNumberOfCompletedTodosInLocalStorage(page, 1);
+    await page.getByRole('link', { name: 'Active' }).click();
+    await expect(todoItem).toHaveCount(2);
+    await expect(todoItem).toHaveText([TODO_ITEMS[0], TODO_ITEMS[2]]);
+  });
+
+  test('should respect the back button', async ({ page }) => {
+    const todoItem = page.getByTestId('todo-item');
+    await page.getByTestId('todo-item').nth(1).getByRole('checkbox').check();
+
+    await checkNumberOfCompletedTodosInLocalStorage(page, 1);
+
+    await test.step('Showing all items', async () => {
+      await page.getByRole('link', { name: 'All' }).click();
+      await expect(todoItem).toHaveCount(3);
+    });
+
+    await test.step('Showing active items', async () => {
+      await page.getByRole('link', { name: 'Active' }).click();
+    });
+
+    await test.step('Showing completed items', async () => {
+      await page.getByRole('link', { name: 'Completed' }).click();
+    });
+
+    await expect(todoItem).toHaveCount(1);
+    await page.goBack();
+    await expect(todoItem).toHaveCount(2);
+    await page.goBack();
+    await expect(todoItem).toHaveCount(3);
+  });
+
+  test('should allow me to display completed items', async ({ page }) => {
+    await page.getByTestId('todo-item').nth(1).getByRole('checkbox').check();
+    await checkNumberOfCompletedTodosInLocalStorage(page, 1);
+    await page.getByRole('link', { name: 'Completed' }).click();
+    await expect(page.getByTestId('todo-item')).toHaveCount(1);
+  });
+
+  test('should allow me to display all items', async ({ page }) => {
+    await page.getByTestId('todo-item').nth(1).getByRole('checkbox').check();
+    await checkNumberOfCompletedTodosInLocalStorage(page, 1);
+    await page.getByRole('link', { name: 'Active' }).click();
+    await page.getByRole('link', { name: 'Completed' }).click();
+    await page.getByRole('link', { name: 'All' }).click();
+    await expect(page.getByTestId('todo-item')).toHaveCount(3);
+  });
+
+  test('should highlight the currently applied filter', async ({ page }) => {
+    await expect(page.getByRole('link', { name: 'All' })).toHaveClass('selected');
+
+    //create locators for active and completed links
+    const activeLink = page.getByRole('link', { name: 'Active' });
+    const completedLink = page.getByRole('link', { name: 'Completed' });
+    await activeLink.click();
+
+    // Page change - active items.
+    await expect(activeLink).toHaveClass('selected');
+    await completedLink.click();
+
+    // Page change - completed items.
+    await expect(completedLink).toHaveClass('selected');
+  });
+});
+
+async function createDefaultTodos(page) {
+  // create a new todo locator
+  const newTodo = page.getByPlaceholder('What needs to be done?');
+
+  for (const item of TODO_ITEMS) {
+    await newTodo.fill(item);
+    await newTodo.press('Enter');
+  }
 }
 
-module.exports = { takeScreenshot };
+/**
+ * @param {import('@playwright/test').Page} page
+ * @param {number} expected
+ */
+ async function checkNumberOfTodosInLocalStorage(page, expected) {
+  return await page.waitForFunction(e => {
+    return JSON.parse(localStorage['react-todos']).length === e;
+  }, expected);
+}
+
+/**
+ * @param {import('@playwright/test').Page} page
+ * @param {number} expected
+ */
+ async function checkNumberOfCompletedTodosInLocalStorage(page, expected) {
+  return await page.waitForFunction(e => {
+    return JSON.parse(localStorage['react-todos']).filter(i => i.completed).length === e;
+  }, expected);
+}
+
+/**
+ * @param {import('@playwright/test').Page} page
+ * @param {string} title
+ */
+async function checkTodosInLocalStorage(page, title) {
+  return await page.waitForFunction(t => {
+    return JSON.parse(localStorage['react-todos']).map(i => i.title).includes(t);
+  }, title);
+}
+
 ```
 
 ## vite.config.js
