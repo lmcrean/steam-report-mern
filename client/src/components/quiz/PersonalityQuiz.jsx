@@ -1,21 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useQuiz } from '../../context/QuizContext';
+import Alert from '../shared/Alert';
 
 const PersonalityQuiz = () => {
-  const { personalityAnswers, setPersonalityAnswers, moveToNextSection } = useQuiz();
+  const { updateState, moveToNextSection } = useQuiz();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedValue, setSelectedValue] = useState(null);
   const [questions, setQuestions] = useState([]);
+  const [answers, setAnswers] = useState(new Array(25).fill(null));
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Import and load questions from personalityQuestions.js
     const loadQuestions = async () => {
       try {
         const { personalityQuestions } = await import('../../data/personalityQuestions');
         setQuestions(personalityQuestions);
       } catch (error) {
         console.error('Error loading personality questions:', error);
-        setQuestions([]); // Set empty array on error
+        setError('Failed to load questions. Please try again.');
       }
     };
     loadQuestions();
@@ -23,18 +25,23 @@ const PersonalityQuiz = () => {
 
   const handleNext = () => {
     if (selectedValue !== null) {
-      // Save the answer
-      const newAnswers = [...personalityAnswers];
-      newAnswers[currentQuestionIndex] = selectedValue;
-      setPersonalityAnswers(newAnswers);
+      const newAnswers = [...answers];
+      newAnswers[currentQuestionIndex] = {
+        value: selectedValue,
+        trait: questions[currentQuestionIndex].trait,
+        timestamp: new Date().toISOString()
+      };
+      setAnswers(newAnswers);
+      updateState({ personalityAnswers: newAnswers });
 
       if (currentQuestionIndex < 24) {
-        // Move to next question
         setCurrentQuestionIndex(currentQuestionIndex + 1);
         setSelectedValue(null);
       } else {
-        // Quiz completed
-        moveToNextSection();
+        const success = moveToNextSection();
+        if (!success) {
+          setError('Please answer all questions before proceeding.');
+        }
       }
     }
   };
@@ -42,9 +49,14 @@ const PersonalityQuiz = () => {
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
-      setSelectedValue(personalityAnswers[currentQuestionIndex - 1]);
+      const previousAnswer = answers[currentQuestionIndex - 1];
+      setSelectedValue(previousAnswer ? previousAnswer.value : null);
     }
   };
+
+  if (error) {
+    return <Alert type="error">{error}</Alert>;
+  }
 
   if (questions.length === 0) {
     return <div className="text-center">Loading questions...</div>;
@@ -70,6 +82,9 @@ const PersonalityQuiz = () => {
 
       <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
         <h2 className="text-xl font-semibold mb-4">OCEAN Personality Test</h2>
+        <div className="text-sm text-gray-600 mb-4">
+          Testing trait: {currentQuestion.trait}
+        </div>
         <p className="text-gray-700 mb-6">{currentQuestion.statement}</p>
 
         <div className="grid grid-cols-9 gap-2 mb-6" role="radiogroup">
