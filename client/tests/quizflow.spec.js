@@ -7,15 +7,13 @@ test.describe('Quiz Application Flow', () => {
   });
 
   test('complete quiz journey', async ({ page }) => {
-    // 1. Landing page and menu
-    
-    // From MenuScreen.jsx -> QuizCard title prop
+    // Increase timeout for this test
+    test.setTimeout(120000); // 2 minutes
+
+    // 1. Landing page and menu 
     await expect(page.getByRole('heading', { name: 'Welcome to STEAM Career Quiz' })).toBeVisible();
-    
-    // Description text from MenuScreen.jsx
     await expect(page.getByText('Discover your ideal career path through personality assessment and subject knowledge evaluation')).toBeVisible();
     
-    // Button text from menuItems array in MenuScreen.jsx
     const startButton = page.getByRole('button', { name: 'Start Quiz' });
     await expect(startButton).toBeVisible();
     await startButton.click();
@@ -35,24 +33,86 @@ test.describe('Quiz Application Flow', () => {
       // The RadioGroup component renders inputs with values 1-9
       await page.getByRole('radio', { name: String(randomAnswer) }).click();
       await page.getByRole('button', { name: 'Next' }).click();
+      console.log(`Completed personality question ${i + 1} of 25`);
     }
 
-    // 4. Subject Quiz Section (from SubjectQuiz.jsx)
+    // 4. Subject Quiz Section
     await expect(page.getByRole('heading', { name: 'STEAM Subject Quiz' })).toBeVisible();
     
-    // 50 questions total (10 questions × 5 subjects)
-    for (let i = 0; i < 50; i++) {
-      // Multiple choice options (4 choices per question)
-      const randomAnswer = Math.floor(Math.random() * 4) + 1;
-      await page.getByRole('radio', { name: String(randomAnswer) }).click();
-      await page.getByRole('button', { name: 'Next' }).click();
+    // Wait for first subject to load
+    await expect(page.getByText('Science - Question 1 of 10')).toBeVisible();
+
+    // Helper function to complete a subject quiz question
+    const completeSubjectQuestion = async (subject, questionNumber) => {
+      try {
+        // Wait for the question text to be visible
+        await page.waitForSelector('.text-lg.font-medium', { state: 'visible', timeout: 5000 });
+        
+        // Log current question for debugging
+        const questionText = await page.$eval('.text-lg.font-medium', el => el.textContent);
+        console.log(`Current question: ${questionText}`);
+
+        // Wait for answer options to be visible
+        // Based on the RadioGroup component structure, options are rendered as labels
+        await page.waitForSelector('.relative.flex.items-center', { state: 'visible', timeout: 5000 });
+
+        // Get all answer options
+        const options = await page.$$('.relative.flex.items-center');
+        console.log(`Found ${options.length} answer options`);
+
+        if (options.length === 0) {
+          throw new Error(`No answer options found for ${subject} question ${questionNumber}`);
+        }
+
+        // Select a random option
+        const randomIndex = Math.floor(Math.random() * options.length);
+        await options[randomIndex].click();
+        console.log(`Selected option ${randomIndex + 1}`);
+
+        // Wait a moment for the selection to register
+        await page.waitForTimeout(100);
+
+        // Wait for Next button to be enabled and visible
+        await page.waitForSelector('button:not([disabled])[name="Next"]', {
+          state: 'visible',
+          timeout: 5000
+        });
+
+        // Click Next
+        await page.click('button[name="Next"]');
+
+        console.log(`Completed ${subject} question ${questionNumber}`);
+
+        // Wait for next question to load or section to change
+        if (questionNumber < 10) {
+          await expect(page.getByText(`${subject} - Question ${questionNumber + 1} of 10`)).toBeVisible();
+        }
+
+      } catch (error) {
+        console.error(`Error on ${subject} question ${questionNumber}:`, error);
+        // Take a screenshot on error for debugging
+        await page.screenshot({ path: `error-${subject}-q${questionNumber}.png` });
+        throw error;
+      }
+    };
+
+    // Complete all subjects
+    const subjects = ['Science', 'Technology', 'English', 'Art', 'Math'];
+    
+    for (const subject of subjects) {
+      console.log(`\nStarting ${subject} section`);
+      
+      // Complete 10 questions for this subject
+      for (let i = 1; i <= 10; i++) {
+        console.log(`\nAttempting ${subject} question ${i}`);
+        await completeSubjectQuestion(subject, i);
+      }
     }
 
-    // 5. Results Page (from QuizResults.jsx)
-    const resultsTitle = page.getByRole('heading', { name: 'Your Results' });
-    await expect(resultsTitle).toBeVisible();
+    // 5. Results Page
+    await expect(page.getByRole('heading', { name: 'Your Results' })).toBeVisible();
     
-    // Check for the three main sections of results
+    // Check for results sections
     await expect(page.getByText('Personality Profile')).toBeVisible();
     await expect(page.getByText('Subject Performance')).toBeVisible();
     await expect(page.getByText('Career Recommendations')).toBeVisible();

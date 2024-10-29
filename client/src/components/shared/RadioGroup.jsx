@@ -12,7 +12,7 @@ const RadioGroup = ({
     : 'flex flex-row justify-between space-x-4';
 
   return (
-    <div className={layoutClass}>
+    <div className={layoutClass} role="radiogroup" aria-label="Answer options">
       {options.map((option) => (
         <label
           key={option.value}
@@ -32,6 +32,8 @@ const RadioGroup = ({
             checked={value === option.value}
             onChange={() => onChange(option.value)}
             className="sr-only"
+            role="radio"
+            aria-checked={value === option.value}
           />
           <div className="flex-1">
             <div className="flex justify-between">
