@@ -4,33 +4,37 @@ import ProgressBar from '../shared/ProgressBar';
 import RadioGroup from '../shared/RadioGroup';
 import QuizNavigation from '../shared/QuizNavigation';
 import LoadingSpinner from '../shared/LoadingSpinner';
+import Alert from '../shared/Alert';
 import { subjects, getRandomQuestions } from '../../data/subjectQuestions';
 
 const SubjectQuiz = () => {
-  const { progress, setProgress, subjectAnswers, setSubjectAnswers, moveToNextSection } = useQuiz();
+  const { updateState, moveToNextSection } = useQuiz();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [currentAnswer, setCurrentAnswer] = useState(null);
   const [questions, setQuestions] = useState([]);
+  const [answers, setAnswers] = useState(new Array(50).fill(null));
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // Total 50 questions (10 per subject)
   const totalQuestions = 50;
 
   useEffect(() => {
     try {
-      console.log('Loading quiz questions...');
       const allQuestions = [];
+      const questionMap = new Map();
       
-      // Get 10 random questions from each subject
+      // Get 10 random questions from each subject and track correct answers
       Object.keys(subjects).forEach(subject => {
         const subjectQuestions = getRandomQuestions(subject, 10);
-        console.log(`Loaded ${subjectQuestions.length} questions for ${subject}`);
+        subjectQuestions.forEach(question => {
+          questionMap.set(question.question, question.correct_answer);
+        });
         allQuestions.push(...subjectQuestions);
       });
 
-      console.log(`Total questions loaded: ${allQuestions.length}`);
       setQuestions(allQuestions);
+      // Store correct answer map in component state
+      setAnswerKey(questionMap);
       setIsLoading(false);
     } catch (error) {
       console.error('Error loading questions:', error);
@@ -38,6 +42,8 @@ const SubjectQuiz = () => {
       setIsLoading(false);
     }
   }, []);
+
+  const [answerKey, setAnswerKey] = useState(new Map());
 
   const getCurrentSubject = () => {
     if (currentQuestion < 10) return 'Science';
@@ -48,33 +54,57 @@ const SubjectQuiz = () => {
   };
 
   const handleAnswer = (value) => {
-    console.log('Selected answer:', value);
     setCurrentAnswer(value);
   };
 
   const handleNext = () => {
-    console.log('Next clicked, current answer:', currentAnswer);
     if (currentAnswer !== null) {
-      // Save answer
-      const newAnswers = [...subjectAnswers, currentAnswer];
-      setSubjectAnswers(newAnswers);
-      setProgress((currentQuestion + 1) / totalQuestions * 100);
+      const currentQuestionData = getCurrentQuestionData();
+      const isCorrect = checkAnswer(currentQuestionData, currentAnswer);
+      
+      // Save answer with metadata
+      const newAnswers = [...answers];
+      newAnswers[currentQuestion] = {
+        questionText: currentQuestionData.question,
+        selectedAnswer: currentAnswer,
+        correctAnswer: currentQuestionData.correct_answer,
+        isCorrect: isCorrect,
+        subject: getCurrentSubject(),
+        timestamp: new Date().toISOString()
+      };
+      
+      setAnswers(newAnswers);
+      updateState({ 
+        subjectAnswers: newAnswers,
+        progress: ((currentQuestion + 1) / totalQuestions * 100)
+      });
 
       if (currentQuestion < totalQuestions - 1) {
         setCurrentQuestion(currentQuestion + 1);
         setCurrentAnswer(null);
       } else {
-        moveToNextSection();
+        const success = moveToNextSection();
+        if (!success) {
+          setError('Please complete all questions before proceeding.');
+        }
       }
     }
   };
 
+  const checkAnswer = (question, selectedAnswer) => {
+    const options = getAnswerOptions();
+    const selectedOption = options.find(opt => opt.value === selectedAnswer);
+    return selectedOption?.label === question.correct_answer;
+  };
+
   const handlePrevious = () => {
     if (currentQuestion > 0) {
-      console.log('Moving to previous question:', currentQuestion - 1);
       setCurrentQuestion(currentQuestion - 1);
-      setCurrentAnswer(subjectAnswers[currentQuestion - 1]);
-      setProgress(((currentQuestion - 1) / totalQuestions) * 100);
+      const previousAnswer = answers[currentQuestion - 1];
+      setCurrentAnswer(previousAnswer ? previousAnswer.selectedAnswer : null);
+      updateState({
+        progress: ((currentQuestion - 1) / totalQuestions * 100)
+      });
     }
   };
 
@@ -87,18 +117,21 @@ const SubjectQuiz = () => {
     const question = getCurrentQuestionData();
     if (!question) return [];
 
-    // Combine correct and incorrect answers and map them to option format
     const allAnswers = [
       question.correct_answer,
       ...question.incorrect_answers
     ];
     
-    // Shuffle answers
+    // Deterministic shuffle based on question text to maintain consistency
     const shuffledAnswers = allAnswers
-      .sort(() => Math.random() - 0.5)
       .map((answer, index) => ({
+        answer,
+        sort: question.question.charCodeAt(index % question.question.length)
+      }))
+      .sort((a, b) => a.sort - b.sort)
+      .map((item, index) => ({
         value: index + 1,
-        label: answer
+        label: item.answer
       }));
 
     return shuffledAnswers;
@@ -113,11 +146,7 @@ const SubjectQuiz = () => {
   }
 
   if (error) {
-    return (
-      <div className="p-4 bg-red-50 text-red-800 rounded-lg">
-        {error}
-      </div>
-    );
+    return <Alert type="error">{error}</Alert>;
   }
 
   const currentSubject = getCurrentSubject();
@@ -125,16 +154,22 @@ const SubjectQuiz = () => {
   const question = getCurrentQuestionData();
 
   if (!question) {
-    return (
-      <div className="p-4 bg-red-50 text-red-800 rounded-lg">
-        Failed to load quiz questions. Please try again.
-      </div>
-    );
+    return <Alert type="error">Failed to load quiz questions. Please try again.</Alert>;
   }
+
+  const subjectProgress = ((questionNumber / 10) * 100).toFixed(0);
+  const overallProgress = ((currentQuestion + 1) / totalQuestions * 100).toFixed(0);
 
   return (
     <div className="space-y-6">
-      <ProgressBar progress={progress} total={100} />
+      <div className="space-y-2">
+        <ProgressBar progress={parseFloat(overallProgress)} total={100} />
+        <div className="flex justify-between text-sm text-gray-600">
+          <span>Overall Progress: {overallProgress}%</span>
+          <span>{currentSubject} Progress: {subjectProgress}%</span>
+        </div>
+      </div>
+
       <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-sm">
         <h2 className="text-xl font-semibold mb-4">
           STEAM Subject Quiz
@@ -148,6 +183,7 @@ const SubjectQuiz = () => {
               {subjects[currentSubject].icon}
             </span>
           </div>
+
           <div className="p-4 bg-gray-50 dark:bg-slate-700 rounded-lg">
             <p className="text-lg font-medium mb-2">
               {question.question}
@@ -156,12 +192,14 @@ const SubjectQuiz = () => {
               {subjects[currentSubject].description}
             </p>
           </div>
+
           <RadioGroup
             options={getAnswerOptions()}
             value={currentAnswer}
             onChange={handleAnswer}
             name="subject-answer"
           />
+
           <QuizNavigation
             onNext={handleNext}
             onPrev={handlePrevious}
