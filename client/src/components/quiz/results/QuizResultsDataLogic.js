@@ -12,7 +12,9 @@ export const formatScore = (score) => {
 };
 
 export const calculatePersonalityScoresFromAnswers = (answers) => {
-  console.log('Raw personality answers:', answers);
+  console.log('Raw personality answers (detailed):', 
+    JSON.stringify(answers, null, 2)
+  );
   
   const scores = {
     Openness: 0,
@@ -36,19 +38,36 @@ export const calculatePersonalityScoresFromAnswers = (answers) => {
     let value = 0;
     if (answer && typeof answer === 'object') {
       value = ensureNumber(answer.value);
+      console.log(`Processing personality answer ${index}:`, {
+        trait,
+        rawAnswer: answer,
+        extractedValue: value,
+        answerType: 'object'
+      });
     } else {
       value = ensureNumber(answer);
+      console.log(`Processing personality answer ${index}:`, {
+        trait,
+        rawAnswer: answer,
+        extractedValue: value,
+        answerType: typeof answer
+      });
     }
     
-    console.log(`Answer ${index}:`, { trait, rawAnswer: answer, processedValue: value });
     scores[trait] += value;
   });
 
-  console.log('Final personality scores:', scores);
+  console.log('Final personality scores:', 
+    JSON.stringify(scores, null, 2)
+  );
   return scores;
 };
 
 export const processSubjectAnswers = (subjectAnswers) => {
+  console.log('Processing subject answers input:', 
+    JSON.stringify(subjectAnswers, null, 2)
+  );
+
   if (!Array.isArray(subjectAnswers)) {
     console.error('Invalid subject answers:', subjectAnswers);
     return [];
@@ -62,53 +81,106 @@ export const processSubjectAnswers = (subjectAnswers) => {
     { name: 'Math', start: 40 }
   ];
 
-  return subjects.map(({ name, start }) => {
+  const processedSections = subjects.map(({ name, start }) => {
     const sectionAnswers = subjectAnswers.slice(start, start + 10);
-    const correct = sectionAnswers.filter(answer => {
-      if (typeof answer === 'object') return answer?.correct === true;
-      return answer === true;
-    }).length;
     
-    const score = (correct / 10) * 100;
+    console.log(`\nProcessing ${name} section:`, {
+      sectionStart: start,
+      answersFound: sectionAnswers.length
+    });
+
+    // Process individual answers
+    const processedAnswers = sectionAnswers.map((answer, idx) => {
+      const processed = {
+        questionNumber: idx + 1,
+        isCorrect: answer?.isCorrect || false,
+        userAnswer: answer?.selectedAnswer,
+        correctAnswer: answer?.correctAnswer
+      };
+
+      console.log(`${name} Q${idx + 1}:`, processed);
+      return processed;
+    });
+
+    // Calculate section score
+    const correctCount = processedAnswers.filter(a => a.isCorrect).length;
+    const score = (correctCount / 10) * 100;
     
-    console.log(`Processing ${name}:`, { correct, score });
+    console.log(`${name} section summary:`, {
+      correctAnswers: correctCount,
+      totalQuestions: 10,
+      score: `${score}%`
+    });
 
     return {
       subject: name,
-      score: ensureNumber(score)
+      score: ensureNumber(score),
+      correctAnswers: correctCount,
+      totalQuestions: 10,
+      answers: processedAnswers
     };
   });
+
+  console.log('\nOverall subject scores:', 
+    processedSections.map(section => ({
+      subject: section.subject,
+      score: section.score,
+      correct: section.correctAnswers
+    }))
+  );
+
+  return processedSections;
 };
 
 export const getHighestScore = (data) => {
-  if (!Array.isArray(data) || data.length === 0) return null;
-  return data.reduce((max, current) => {
+  if (!Array.isArray(data) || data.length === 0) {
+    console.log('No scores to compare in getHighestScore');
+    return null;
+  }
+
+  const highest = data.reduce((max, current) => {
     const maxScore = ensureNumber(max.score);
     const currentScore = ensureNumber(current.score);
     return maxScore > currentScore ? max : current;
   });
+
+  console.log('Highest score found:', highest);
+  return highest;
 };
 
 export const useQuizResultsData = (personalityAnswers, subjectAnswers) => {
   const personalityData = useMemo(() => {
-    if (!Array.isArray(personalityAnswers)) return [];
+    console.log('\nCalculating personality data...');
+    if (!Array.isArray(personalityAnswers)) {
+      console.error('Invalid personality answers format');
+      return [];
+    }
 
     const scores = calculatePersonalityScoresFromAnswers(personalityAnswers);
     
-    return Object.entries(scores).map(([trait, score]) => {
+    const processed = Object.entries(scores).map(([trait, score]) => {
       const processedScore = ensureNumber(score);
       const maxScore = 45;
       const percentage = (processedScore / maxScore) * 100;
       
-      return {
+      const result = {
         trait: trait.substring(0, 3),
         fullTrait: trait,
+        rawScore: processedScore,
+        maxPossible: maxScore,
         score: ensureNumber(percentage)
       };
+
+      console.log(`Processed ${trait}:`, result);
+      return result;
     });
+
+    console.log('Final personality data:', processed);
+    return processed;
   }, [personalityAnswers]);
 
   const subjectData = useMemo(() => {
+    console.log('\nCalculating subject data...');
     return processSubjectAnswers(subjectAnswers);
   }, [subjectAnswers]);
 
@@ -120,13 +192,26 @@ export const useQuizResultsData = (personalityAnswers, subjectAnswers) => {
     subject: highestSubject?.subject || null
   };
 
+  console.log('\nFinal results:', {
+    highestPersonality: highest.personalityTrait,
+    highestSubject: highest.subject
+  });
+
+  const feedback = highest.personalityTrait && highest.subject 
+    ? getCareerFeedback(highest.subject, highest.personalityTrait)
+    : null;
+
+  if (feedback) {
+    console.log('Career feedback generated:', feedback);
+  } else {
+    console.log('No career feedback available - missing required scores');
+  }
+
   return {
     personalityData,
     subjectData,
     highestPersonalityTrait: highest.personalityTrait,
     highestSubject: highest.subject,
-    careerFeedback: highest.personalityTrait && highest.subject 
-      ? getCareerFeedback(highest.subject, highest.personalityTrait)
-      : null
+    careerFeedback: feedback
   };
 };
