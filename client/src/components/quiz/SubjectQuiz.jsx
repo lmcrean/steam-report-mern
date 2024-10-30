@@ -62,6 +62,16 @@ const SubjectQuiz = () => {
       const currentQuestionData = getCurrentQuestionData();
       const isCorrect = checkAnswer(currentQuestionData, currentAnswer);
       
+      // Add detailed console logging
+      console.log('Question Answer Details:', {
+        subject: getCurrentSubject(),
+        questionNumber: (currentQuestion % 10) + 1,
+        question: currentQuestionData.question,
+        userAnswer: currentAnswer,
+        correctAnswer: currentQuestionData.correct_answer,
+        isCorrect: isCorrect
+      });
+      
       // Save answer with metadata
       const newAnswers = [...answers];
       newAnswers[currentQuestion] = {
@@ -78,7 +88,19 @@ const SubjectQuiz = () => {
         subjectAnswers: newAnswers,
         progress: ((currentQuestion + 1) / totalQuestions * 100)
       });
-
+  
+      // Add section completion log
+      if ((currentQuestion + 1) % 10 === 0) {
+        const currentSubject = getCurrentSubject();
+        const sectionAnswers = newAnswers.slice(currentQuestion - 9, currentQuestion + 1);
+        const correctCount = sectionAnswers.filter(a => a.isCorrect).length;
+        console.log(`${currentSubject} Section Complete:`, {
+          correctAnswers: correctCount,
+          totalQuestions: 10,
+          score: (correctCount / 10) * 100 + '%'
+        });
+      }
+  
       if (currentQuestion < totalQuestions - 1) {
         setCurrentQuestion(currentQuestion + 1);
         setCurrentAnswer(null);

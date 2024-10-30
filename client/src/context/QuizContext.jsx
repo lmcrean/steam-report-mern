@@ -83,10 +83,21 @@ export const QuizProvider = ({ children }) => {
   const validateQuizCompletion = () => {
     const { personalityAnswers, subjectAnswers, username } = state;
   
-    // Debugging logs
+    // Enhanced debugging logs
     console.log("Username:", username);
-    console.log("Personality Answers:", personalityAnswers.length, personalityAnswers);
-    console.log("Subject Answers:", subjectAnswers.length, subjectAnswers);
+    console.log("Personality Answers Details:", personalityAnswers.map((answer, index) => ({
+      questionNumber: index + 1,
+      answer: answer
+    })));
+    console.log("Subject Answers Details:", subjectAnswers.map((answer, index) => ({
+      questionNumber: index + 1,
+      section: index < 10 ? 'Science' : 
+               index < 20 ? 'Technology' :
+               index < 30 ? 'English' :
+               index < 40 ? 'Art' : 'Math',
+      answer: answer,
+      isCorrect: answer.correct
+    })));
   
     return (
       username && 
@@ -95,7 +106,7 @@ export const QuizProvider = ({ children }) => {
       !personalityAnswers.includes(null) &&
       !subjectAnswers.includes(null)
     );
-  };
+};
   
 
   const resetQuiz = () => {
