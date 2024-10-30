@@ -83,21 +83,63 @@ export const QuizProvider = ({ children }) => {
   const validateQuizCompletion = () => {
     const { personalityAnswers, subjectAnswers, username } = state;
   
-    // Enhanced debugging logs
-    console.log("Username:", username);
-    console.log("Personality Answers Details:", personalityAnswers.map((answer, index) => ({
-      questionNumber: index + 1,
-      answer: answer
-    })));
-    console.log("Subject Answers Details:", subjectAnswers.map((answer, index) => ({
-      questionNumber: index + 1,
-      section: index < 10 ? 'Science' : 
-               index < 20 ? 'Technology' :
-               index < 30 ? 'English' :
-               index < 40 ? 'Art' : 'Math',
-      answer: answer,
-      isCorrect: answer.correct
-    })));
+    // Enhanced debugging logs with detailed expansions
+    console.log("Quiz Completion State:", {
+      username,
+      personalityAnswersCount: personalityAnswers.length,
+      subjectAnswersCount: subjectAnswers.length,
+  
+      // Expanded section summaries
+      scienceSection: {
+        answers: subjectAnswers.slice(0, 10).map((answer, idx) => ({
+          question: idx + 1,
+          isCorrect: answer.isCorrect,
+          userAnswer: answer.selectedAnswer,
+          correctAnswer: answer.correctAnswer
+        })),
+        correct: subjectAnswers.slice(0, 10).filter(a => a.isCorrect).length
+      },
+      technologySection: {
+        answers: subjectAnswers.slice(10, 20).map((answer, idx) => ({
+          question: idx + 1,
+          isCorrect: answer.isCorrect,
+          userAnswer: answer.selectedAnswer,
+          correctAnswer: answer.correctAnswer
+        })),
+        correct: subjectAnswers.slice(10, 20).filter(a => a.isCorrect).length
+      },
+      englishSection: {
+        answers: subjectAnswers.slice(20, 30).map((answer, idx) => ({
+          question: idx + 1,
+          isCorrect: answer.isCorrect,
+          userAnswer: answer.selectedAnswer,
+          correctAnswer: answer.correctAnswer
+        })),
+        correct: subjectAnswers.slice(20, 30).filter(a => a.isCorrect).length
+      },
+      artSection: {
+        answers: subjectAnswers.slice(30, 40).map((answer, idx) => ({
+          question: idx + 1,
+          isCorrect: answer.isCorrect,
+          userAnswer: answer.selectedAnswer,
+          correctAnswer: answer.correctAnswer
+        })),
+        correct: subjectAnswers.slice(30, 40).filter(a => a.isCorrect).length
+      },
+      mathSection: {
+        answers: subjectAnswers.slice(40, 50).map((answer, idx) => ({
+          question: idx + 1,
+          isCorrect: answer.isCorrect,
+          userAnswer: answer.selectedAnswer,
+          correctAnswer: answer.correctAnswer
+        })),
+        correct: subjectAnswers.slice(40, 50).filter(a => a.isCorrect).length
+      },
+  
+      // Overall scores
+      totalCorrect: subjectAnswers.filter(a => a.isCorrect).length,
+      percentageScore: (subjectAnswers.filter(a => a.isCorrect).length / 50) * 100
+    });
   
     return (
       username && 
@@ -106,7 +148,7 @@ export const QuizProvider = ({ children }) => {
       !personalityAnswers.includes(null) &&
       !subjectAnswers.includes(null)
     );
-};
+  };
   
 
   const resetQuiz = () => {
