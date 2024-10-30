@@ -61,28 +61,36 @@ const SubjectQuiz = () => {
     if (currentAnswer !== null) {
       const currentQuestionData = getCurrentQuestionData();
       const isCorrect = checkAnswer(currentQuestionData, currentAnswer);
-      
-      // Add detailed console logging
-      console.log('Question Answer Details:', {
-        subject: getCurrentSubject(),
-        questionNumber: (currentQuestion % 10) + 1,
-        question: currentQuestionData.question,
-        userAnswer: currentAnswer,
-        correctAnswer: currentQuestionData.correct_answer,
-        isCorrect: isCorrect
-      });
+      const selectedOption = getAnswerOptions().find(opt => opt.value === currentAnswer);
       
       // Save answer with metadata
       const newAnswers = [...answers];
       newAnswers[currentQuestion] = {
         questionText: currentQuestionData.question,
-        selectedAnswer: currentAnswer,
+        selectedAnswer: selectedOption.label, // Store actual answer text
         correctAnswer: currentQuestionData.correct_answer,
         isCorrect: isCorrect,
         subject: getCurrentSubject(),
         timestamp: new Date().toISOString()
       };
       
+      // Log section completion
+      if ((currentQuestion + 1) % 10 === 0) {
+        const sectionAnswers = newAnswers.slice(currentQuestion - 9, currentQuestion + 1);
+        const correctCount = sectionAnswers.filter(a => a.isCorrect).length;
+        console.log(`${getCurrentSubject()} Section Complete:`, {
+          correctAnswers: correctCount,
+          totalQuestions: 10,
+          score: (correctCount / 10) * 100 + '%',
+          details: sectionAnswers.map((a, i) => ({
+            question: i + 1,
+            isCorrect: a.isCorrect,
+            userAnswer: a.selectedAnswer,
+            correctAnswer: a.correctAnswer
+          }))
+        });
+      }
+  
       setAnswers(newAnswers);
       updateState({ 
         subjectAnswers: newAnswers,
@@ -116,7 +124,16 @@ const SubjectQuiz = () => {
   const checkAnswer = (question, selectedAnswer) => {
     const options = getAnswerOptions();
     const selectedOption = options.find(opt => opt.value === selectedAnswer);
-    return selectedOption?.label === question.correct_answer;
+    const isCorrect = selectedOption?.label === question.correct_answer;
+    
+    console.log('Answer Validation:', {
+      question: question.question,
+      userAnswer: selectedOption?.label,
+      correctAnswer: question.correct_answer,
+      isCorrect: isCorrect
+    });
+  
+    return isCorrect;
   };
 
   const handlePrevious = () => {
