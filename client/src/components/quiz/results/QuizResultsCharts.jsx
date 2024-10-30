@@ -6,7 +6,7 @@ import { formatScore } from './QuizResultsDataLogic.js';
 const CHART_HEIGHT = 400;
 const CHART_MARGIN = { top: 20, right: 30, left: 20, bottom: 20 };
 
-export const ResultsChart = ({ data, type = 'bar' }) => {
+export const ResultsChart = ({ data, type = 'bar', xKey, yKey }) => {
   if (!Array.isArray(data) || data.length === 0) {
     console.log('No data available for chart');
     return null;
@@ -25,7 +25,7 @@ export const ResultsChart = ({ data, type = 'bar' }) => {
           >
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
             <XAxis 
-              dataKey="trait"
+              dataKey={xKey}
               tick={{ fontSize: 14 }}
               tickLine={false}
             />
@@ -35,12 +35,12 @@ export const ResultsChart = ({ data, type = 'bar' }) => {
               tick={{ fontSize: 12 }}
             />
             <Tooltip 
-              formatter={(value) => [`${value}%`, 'Score']}
+              formatter={(value) => [`${value}%`, yKey]}
               labelStyle={{ color: '#374151' }}
             />
             <Legend />
             <Bar 
-              dataKey="score"
+              dataKey={yKey}
               fill="#3B82F6"
               name="Score %"
               radius={[4, 4, 0, 0]}
@@ -96,11 +96,11 @@ export const PersonalityChart = ({ data }) => {
 
   return (
     <div className="space-y-6">
-      <ResultsChart data={chartData} type="bar" />
+      <ResultsChart data={chartData} type="bar" xKey="trait" yKey="score" />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {chartData.map(item => (
           <ScoreCard 
-            key={item.fullTrait}
+            key={item.trait}
             title={item.fullTrait}
             score={item.score}
           />
@@ -114,7 +114,8 @@ export const SubjectChart = ({ data }) => {
   // Ensure data is properly formatted
   const chartData = data.map(item => ({
     subject: item.subject,
-    score: Number(item.score)
+    score: Number(item.score),
+    fullTrait: item.fullTrait || ''
   }));
 
   // Debug log
@@ -122,12 +123,12 @@ export const SubjectChart = ({ data }) => {
 
   return (
     <div className="space-y-6">
-      <ResultsChart data={chartData} type="line" />
+      <ResultsChart data={chartData} type="bar" xKey="subject" yKey="score" />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {chartData.map(item => (
           <ScoreCard 
             key={item.subject}
-            title={item.subject}
+            title={item.fullTrait || item.subject}
             score={item.score}
           />
         ))}
