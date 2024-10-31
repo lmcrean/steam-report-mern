@@ -1,3 +1,4 @@
+// App.jsx
 import React from 'react';
 import MainLayout from './components/layout/MainLayout';
 import Header from './components/layout/Header';
@@ -6,11 +7,12 @@ import PersonalityQuiz from './components/quiz/PersonalityQuiz';
 import SubjectQuiz from './components/quiz/SubjectQuiz';
 import QuizResults from './components/quiz/QuizResults';
 import QuizLeaderboard from './components/quiz/QuizLeaderboard';
-import UsernameEntry from './components/quiz/UsernameEntry'; 
+import UsernameEntry from './components/quiz/UsernameEntry';
+import PreferenceSelection from './components/quiz/preference-selection/PreferenceSelection';
 import { QuizProvider, useQuiz } from './context/QuizContext';
 import './App.css';
 
-// New component to handle quiz flow
+// Quiz flow component with preference selection
 const QuizFlow = () => {
   const { section } = useQuiz();
 
@@ -24,6 +26,8 @@ const QuizFlow = () => {
         return <PersonalityQuiz />;
       case 'subject':
         return <SubjectQuiz />;
+      case 'preference-selection':
+        return <PreferenceSelection />;
       case 'results':
         return <QuizResults />;
       case 'leaderboard':

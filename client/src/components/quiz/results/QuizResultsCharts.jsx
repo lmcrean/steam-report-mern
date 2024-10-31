@@ -1,3 +1,4 @@
+// QuizResultsCharts.jsx
 import React from 'react';
 import { 
   BarChart, 
@@ -14,14 +15,13 @@ import {
 } from 'recharts';
 import { formatScore } from './QuizResultsDataLogic.js';
 
-// Constants for chart dimensions and styling
 const CHART_HEIGHT = 400;
 const CHART_MARGIN = { top: 20, right: 30, left: 20, bottom: 20 };
 
-// Color constants
 const COLORS = {
-  default: '#3B82F6', // Blue
-  highest: '#22C55E'  // Green
+  default: '#3B82F6',  // Blue
+  highest: '#22C55E',  // Green
+  preferred: '#8B5CF6', // Purple
 };
 
 export const ResultsChart = ({ data, type = 'bar', xKey, yKey }) => {
@@ -30,11 +30,10 @@ export const ResultsChart = ({ data, type = 'bar', xKey, yKey }) => {
     return null;
   }
 
-  // Find the highest score in the data
   const maxScore = Math.max(...data.map(item => Number(item.score)));
 
-  // Custom bar color function
   const getBarColor = (entry) => {
+    if (entry.isPreferred) return COLORS.preferred;
     return Number(entry.score) === maxScore ? COLORS.highest : COLORS.default;
   };
 
@@ -64,10 +63,18 @@ export const ResultsChart = ({ data, type = 'bar', xKey, yKey }) => {
                 const isHighest = Number(data.score) === maxScore;
                 return (
                   <div className="bg-white p-2 shadow-lg border rounded">
-                    <p className="font-medium">{data.fullTrait || data.trait || data.subject}</p>
-                    <p className={`font-semibold ${isHighest ? 'text-green-600' : 'text-blue-600'}`}>
+                    <p className="font-medium">
+                      {data.fullTrait || data.trait || data.subject}
+                      {data.isPreferred && ' (Preferred)'}
+                    </p>
+                    <p className={`font-semibold ${
+                      data.isPreferred 
+                        ? 'text-purple-600'
+                        : isHighest 
+                          ? 'text-green-600' 
+                          : 'text-blue-600'
+                    }`}>
                       Score: {formatScore(data.score)}%
-                      {isHighest && ' (Highest)'}
                     </p>
                   </div>
                 );
@@ -131,7 +138,8 @@ export const PersonalityChart = ({ data }) => {
   const chartData = data.map(item => ({
     trait: item.trait || item.fullTrait?.substring(0, 3) || '',
     fullTrait: item.fullTrait,
-    score: Number(item.score)
+    score: Number(item.score),
+    isPreferred: item.isPreferred
   }));
 
   const maxScore = Math.max(...chartData.map(item => item.score));
@@ -146,6 +154,7 @@ export const PersonalityChart = ({ data }) => {
             title={item.fullTrait}
             score={item.score}
             isHighest={item.score === maxScore}
+            isPreferred={item.isPreferred}
           />
         ))}
       </div>
@@ -157,7 +166,7 @@ export const SubjectChart = ({ data }) => {
   const chartData = data.map(item => ({
     subject: item.subject,
     score: Number(item.score),
-    fullTrait: item.fullTrait || ''
+    isPreferred: item.isPreferred
   }));
 
   const maxScore = Math.max(...chartData.map(item => item.score));
@@ -169,9 +178,10 @@ export const SubjectChart = ({ data }) => {
         {chartData.map(item => (
           <ScoreCard 
             key={item.subject}
-            title={item.fullTrait || item.subject}
+            title={item.subject}
             score={item.score}
             isHighest={item.score === maxScore}
+            isPreferred={item.isPreferred}
           />
         ))}
       </div>
@@ -179,24 +189,35 @@ export const SubjectChart = ({ data }) => {
   );
 };
 
-export const ScoreCard = ({ title, score, isHighest, extraClasses = '' }) => (
+export const ScoreCard = ({ title, score, isHighest, isPreferred, extraClasses = '' }) => (
   <div 
     className={`p-4 rounded-lg transition-colors ${
-      isHighest 
-        ? 'bg-green-50 dark:bg-green-900/20' 
-        : 'bg-gray-50 dark:bg-slate-800'
+      isPreferred
+        ? 'bg-purple-50 dark:bg-purple-900/20'
+        : isHighest 
+          ? 'bg-green-50 dark:bg-green-900/20' 
+          : 'bg-gray-50 dark:bg-slate-800'
     } ${extraClasses}`}
   >
     <h4 className="font-medium text-gray-700 dark:text-gray-200">
       {title}
-      {isHighest && (
+      {isPreferred && (
+        <span className="ml-2 text-sm text-purple-600 dark:text-purple-400">
+          (Preferred)
+        </span>
+      )}
+      {isHighest && !isPreferred && (
         <span className="ml-2 text-sm text-green-600 dark:text-green-400">
           (Highest)
         </span>
       )}
     </h4>
     <p className={`font-semibold text-xl ${
-      isHighest ? 'text-green-600 dark:text-green-400' : 'text-blue-600 dark:text-blue-400'
+      isPreferred 
+        ? 'text-purple-600 dark:text-purple-400'
+        : isHighest 
+          ? 'text-green-600 dark:text-green-400' 
+          : 'text-blue-600 dark:text-blue-400'
     }`}>
       {formatScore(score)}%
     </p>

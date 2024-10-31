@@ -14,6 +14,8 @@ const QuizResults = () => {
     username, 
     personalityAnswers, 
     subjectAnswers, 
+    preferredTrait,
+    preferredSubject,
     startTime,
     completionTime,
     moveToNextSection,
@@ -27,9 +29,13 @@ const QuizResults = () => {
     highestPersonalityTrait,
     highestSubject,
     careerFeedback
-  } = useQuizResultsData(personalityAnswers, subjectAnswers);
+  } = useQuizResultsData(
+    personalityAnswers, 
+    subjectAnswers,
+    preferredTrait,
+    preferredSubject
+  );
 
-  // Update context with results
   useEffect(() => {
     if (validateQuizCompletion() && personalityData.length && subjectData.length) {
       updateState({
@@ -42,17 +48,19 @@ const QuizResults = () => {
           ),
           highestPersonalityTrait,
           highestSubject,
+          preferredTrait,
+          preferredSubject,
           careerFeedback,
           timeTaken: completionTime ? new Date(completionTime) - new Date(startTime) : null
         }
       });
     }
-  }, [personalityData, subjectData, updateState, validateQuizCompletion]);
+  }, [personalityData, subjectData, preferredTrait, preferredSubject, updateState, validateQuizCompletion, completionTime, startTime]);
 
   if (!validateQuizCompletion()) {
     return (
       <div className="text-center p-8">
-        <p className="text-lg text-gray-600">Loading results...</p>
+        <p className="text-lg text-gray-600 dark:text-gray-300">Loading results...</p>
       </div>
     );
   }
@@ -61,9 +69,25 @@ const QuizResults = () => {
     <div className="space-y-8">
       {/* Header */}
       <ResultsSection title="Your Results">
-        <p className="text-gray-600">
-          Hi {username}, here's your personalized career analysis based on your quiz responses.
-        </p>
+        <div className="space-y-4">
+          <p className="text-gray-600 dark:text-gray-300">
+            Hi {username}, here's your personalized career analysis based on your quiz responses
+            {(preferredTrait || preferredSubject) && ' and preferences'}.
+          </p>
+          {(preferredTrait || preferredSubject) && (
+            <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
+              <p className="text-purple-700 dark:text-purple-300 font-medium">Your Selected Preferences:</p>
+              <ul className="mt-2 space-y-1 text-purple-600 dark:text-purple-200">
+                {preferredTrait && (
+                  <li>• Personality Trait: {preferredTrait}</li>
+                )}
+                {preferredSubject && (
+                  <li>• Subject Area: {preferredSubject}</li>
+                )}
+              </ul>
+            </div>
+          )}
+        </div>
       </ResultsSection>
 
       {/* Personality Profile */}
@@ -79,9 +103,13 @@ const QuizResults = () => {
       {/* Time Taken */}
       {startTime && completionTime && (
         <ResultsSection title="Quiz Statistics">
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <p className="text-gray-600">
+          <div className="bg-gray-50 dark:bg-slate-700 p-4 rounded-lg">
+            <p className="text-gray-600 dark:text-gray-300">
               Time taken: {Math.round((new Date(completionTime) - new Date(startTime)) / 60000)} minutes
+            </p>
+            <p className="mt-2 text-gray-600 dark:text-gray-300">
+              Sections completed: Personality Assessment, Subject Knowledge
+              {(preferredTrait || preferredSubject) && ', Preference Selection'}
             </p>
           </div>
         </ResultsSection>
@@ -93,6 +121,8 @@ const QuizResults = () => {
           careerFeedback={careerFeedback}
           highestPersonalityTrait={highestPersonalityTrait}
           highestSubject={highestSubject}
+          preferredTrait={preferredTrait}
+          preferredSubject={preferredSubject}
         />
       </ResultsSection>
 
@@ -100,7 +130,7 @@ const QuizResults = () => {
       <div className="flex justify-end">
         <button
           onClick={moveToNextSection}
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
         >
           View Leaderboard
         </button>

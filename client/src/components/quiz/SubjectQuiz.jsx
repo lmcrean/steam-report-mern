@@ -1,3 +1,4 @@
+// SubjectQuiz.jsx
 import React, { useState, useEffect } from 'react';
 import { useQuiz } from '../../context/QuizContext';
 import ProgressBar from '../shared/ProgressBar';
@@ -15,25 +16,32 @@ const SubjectQuiz = () => {
   const [answers, setAnswers] = useState(new Array(50).fill(null));
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [answerKey, setAnswerKey] = useState(new Map());
   
   const totalQuestions = 50;
 
   useEffect(() => {
+    console.log('Initializing Subject Quiz');
     try {
       const allQuestions = [];
       const questionMap = new Map();
       
-      // Get 10 random questions from each subject and track correct answers
       Object.keys(subjects).forEach(subject => {
         const subjectQuestions = getRandomQuestions(subject, 10);
+        console.log(`Loaded ${subjectQuestions.length} questions for ${subject}`);
+        
         subjectQuestions.forEach(question => {
           questionMap.set(question.question, question.correct_answer);
         });
         allQuestions.push(...subjectQuestions);
       });
 
+      console.log('Questions loaded:', {
+        totalQuestions: allQuestions.length,
+        subjects: Object.keys(subjects)
+      });
+
       setQuestions(allQuestions);
-      // Store correct answer map in component state
       setAnswerKey(questionMap);
       setIsLoading(false);
     } catch (error) {
@@ -42,8 +50,6 @@ const SubjectQuiz = () => {
       setIsLoading(false);
     }
   }, []);
-
-  const [answerKey, setAnswerKey] = useState(new Map());
 
   const getCurrentSubject = () => {
     if (currentQuestion < 10) return 'Science';
@@ -54,6 +60,7 @@ const SubjectQuiz = () => {
   };
 
   const handleAnswer = (value) => {
+    console.log('Answer selected:', value);
     setCurrentAnswer(value);
   };
 
@@ -63,59 +70,47 @@ const SubjectQuiz = () => {
       const isCorrect = checkAnswer(currentQuestionData, currentAnswer);
       const selectedOption = getAnswerOptions().find(opt => opt.value === currentAnswer);
       
+      console.log('Processing answer:', {
+        questionNumber: currentQuestion + 1,
+        subject: getCurrentSubject(),
+        isCorrect,
+        isLastQuestion: currentQuestion === totalQuestions - 1
+      });
+
       // Save answer with metadata
       const newAnswers = [...answers];
       newAnswers[currentQuestion] = {
         questionText: currentQuestionData.question,
-        selectedAnswer: selectedOption.label, // Store actual answer text
+        selectedAnswer: selectedOption.label,
         correctAnswer: currentQuestionData.correct_answer,
         isCorrect: isCorrect,
         subject: getCurrentSubject(),
         timestamp: new Date().toISOString()
       };
-      
-      // Log section completion
-      if ((currentQuestion + 1) % 10 === 0) {
-        const sectionAnswers = newAnswers.slice(currentQuestion - 9, currentQuestion + 1);
-        const correctCount = sectionAnswers.filter(a => a.isCorrect).length;
-        console.log(`${getCurrentSubject()} Section Complete:`, {
-          correctAnswers: correctCount,
-          totalQuestions: 10,
-          score: (correctCount / 10) * 100 + '%',
-          details: sectionAnswers.map((a, i) => ({
-            question: i + 1,
-            isCorrect: a.isCorrect,
-            userAnswer: a.selectedAnswer,
-            correctAnswer: a.correctAnswer
-          }))
-        });
-      }
-  
+
       setAnswers(newAnswers);
-      updateState({ 
-        subjectAnswers: newAnswers,
-        progress: ((currentQuestion + 1) / totalQuestions * 100)
-      });
-  
-      // Add section completion log
-      if ((currentQuestion + 1) % 10 === 0) {
-        const currentSubject = getCurrentSubject();
-        const sectionAnswers = newAnswers.slice(currentQuestion - 9, currentQuestion + 1);
-        const correctCount = sectionAnswers.filter(a => a.isCorrect).length;
-        console.log(`${currentSubject} Section Complete:`, {
-          correctAnswers: correctCount,
-          totalQuestions: 10,
-          score: (correctCount / 10) * 100 + '%'
-        });
-      }
-  
+      
       if (currentQuestion < totalQuestions - 1) {
+        console.log('Moving to next question');
+        updateState({ 
+          subjectAnswers: newAnswers,
+          progress: ((currentQuestion + 1) / totalQuestions * 100)
+        });
         setCurrentQuestion(currentQuestion + 1);
         setCurrentAnswer(null);
       } else {
+        console.log('Quiz completed, preparing for section transition');
+        updateState({ 
+          subjectAnswers: newAnswers,
+          progress: 100
+        });
+        
+        console.log('Initiating section transition');
         const success = moveToNextSection();
+        
+        console.log('Section transition result:', { success });
         if (!success) {
-          setError('Please complete all questions before proceeding.');
+          setError('Failed to proceed to next section. Please try again.');
         }
       }
     }
@@ -126,11 +121,11 @@ const SubjectQuiz = () => {
     const selectedOption = options.find(opt => opt.value === selectedAnswer);
     const isCorrect = selectedOption?.label === question.correct_answer;
     
-    console.log('Answer Validation:', {
-      question: question.question,
+    console.log('Answer validation:', {
+      questionText: question.question,
       userAnswer: selectedOption?.label,
       correctAnswer: question.correct_answer,
-      isCorrect: isCorrect
+      isCorrect
     });
   
     return isCorrect;
@@ -138,6 +133,7 @@ const SubjectQuiz = () => {
 
   const handlePrevious = () => {
     if (currentQuestion > 0) {
+      console.log('Moving to previous question');
       setCurrentQuestion(currentQuestion - 1);
       const previousAnswer = answers[currentQuestion - 1];
       setCurrentAnswer(previousAnswer ? previousAnswer.selectedAnswer : null);
@@ -161,7 +157,7 @@ const SubjectQuiz = () => {
       ...question.incorrect_answers
     ];
     
-    // Deterministic shuffle based on question text to maintain consistency
+    // Deterministic shuffle based on question text
     const shuffledAnswers = allAnswers
       .map((answer, index) => ({
         answer,
