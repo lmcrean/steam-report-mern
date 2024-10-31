@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuiz } from '../../context/QuizContext';
 import Alert from '../shared/Alert';
+import QuizNavigation from '../shared/QuizNavigation';
 
 const PersonalityQuiz = () => {
   const { updateState, moveToNextSection } = useQuiz();
@@ -96,15 +97,7 @@ const PersonalityQuiz = () => {
                 name="rating"
                 value={value}
                 checked={selectedValue === value}
-                onChange={() => {
-                  setSelectedValue(value);
-                  // Auto advance after selection
-                  setTimeout(() => {
-                    if (currentQuestionIndex < 24) {
-                      handleNext();
-                    }
-                  }, 300);
-                }}
+                onChange={() => setSelectedValue(value)}
                 className="absolute h-full w-full opacity-0 cursor-pointer"
                 aria-label={value.toString()}
               />
@@ -129,30 +122,12 @@ const PersonalityQuiz = () => {
         </div>
       </div>
 
-      <div className="flex justify-between">
-        {currentQuestionIndex > 0 && (
-          <button
-            onClick={handlePrevious}
-            className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
-          >
-            Previous
-          </button>
-        )}
-        <button
-          onClick={handleNext}
-          disabled={selectedValue === null}
-          role="button"
-          aria-label="Next"
-          name="Next"
-          className={`px-6 py-2 rounded-lg transition-colors ml-auto ${
-            selectedValue === null
-              ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-              : 'bg-blue-600 text-white hover:bg-blue-700'
-          }`}
-        >
-          {currentQuestionIndex === 24 ? 'Finish' : 'Next'}
-        </button>
-      </div>
+      <QuizNavigation 
+        onNext={handleNext}
+        onPrev={handlePrevious}
+        canProgress={selectedValue !== null}
+        showPrev={currentQuestionIndex > 0}
+      />
     </div>
   );
 };
