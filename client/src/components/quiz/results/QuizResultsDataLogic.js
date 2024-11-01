@@ -12,10 +12,7 @@ export const formatScore = (score) => {
 };
 
 export const calculatePersonalityScoresFromAnswers = (answers, preferredTrait = null) => {
-  console.log('Raw personality answers (detailed):', 
-    JSON.stringify({ answers, preferredTrait }, null, 2)
-  );
-  
+    
   const scores = {
     Openness: 0,
     Conscientiousness: 0,
@@ -38,21 +35,9 @@ export const calculatePersonalityScoresFromAnswers = (answers, preferredTrait = 
     let value = 0;
     if (answer && typeof answer === 'object') {
       value = ensureNumber(answer.value);
-      console.log(`Processing personality answer ${index}:`, {
-        trait,
-        rawAnswer: answer,
-        extractedValue: value,
-        answerType: 'object'
-      });
-    } else {
+          } else {
       value = ensureNumber(answer);
-      console.log(`Processing personality answer ${index}:`, {
-        trait,
-        rawAnswer: answer,
-        extractedValue: value,
-        answerType: typeof answer
-      });
-    }
+          }
     
     scores[trait] += value;
   });
@@ -61,23 +46,13 @@ export const calculatePersonalityScoresFromAnswers = (answers, preferredTrait = 
   if (preferredTrait && scores[preferredTrait]) {
     const originalScore = scores[preferredTrait];
     scores[preferredTrait] = originalScore * 1.1; // 10% bonus
-    console.log(`Applied preference bonus to ${preferredTrait}:`, {
-      original: originalScore,
-      afterBonus: scores[preferredTrait]
-    });
-  }
+      }
 
-  console.log('Final personality scores:', 
-    JSON.stringify({ scores, preferredTrait }, null, 2)
-  );
-  return scores;
+    return scores;
 };
 
 export const processSubjectAnswers = (subjectAnswers, preferredSubject = null) => {
-  console.log('Processing subject answers:', 
-    JSON.stringify({ answers: subjectAnswers, preferredSubject }, null, 2)
-  );
-
+  
   if (!Array.isArray(subjectAnswers)) {
     console.error('Invalid subject answers:', subjectAnswers);
     return [];
@@ -94,12 +69,7 @@ export const processSubjectAnswers = (subjectAnswers, preferredSubject = null) =
   const processedSections = subjects.map(({ name, start }) => {
     const sectionAnswers = subjectAnswers.slice(start, start + 10);
     
-    console.log(`\nProcessing ${name} section:`, {
-      sectionStart: start,
-      answersFound: sectionAnswers.length,
-      isPreferred: name === preferredSubject
-    });
-
+    
     const processedAnswers = sectionAnswers.map((answer, idx) => {
       const processed = {
         questionNumber: idx + 1,
@@ -108,8 +78,7 @@ export const processSubjectAnswers = (subjectAnswers, preferredSubject = null) =
         correctAnswer: answer?.correctAnswer
       };
 
-      console.log(`${name} Q${idx + 1}:`, processed);
-      return processed;
+            return processed;
     });
 
     const correctCount = processedAnswers.filter(a => a.isCorrect).length;
@@ -119,11 +88,7 @@ export const processSubjectAnswers = (subjectAnswers, preferredSubject = null) =
     if (name === preferredSubject) {
       const originalScore = score;
       score *= 1.1; // 10% bonus
-      console.log(`Applied preference bonus to ${name}:`, {
-        original: originalScore,
-        afterBonus: score
-      });
-    }
+          }
 
     const result = {
       subject: name,
@@ -134,31 +99,17 @@ export const processSubjectAnswers = (subjectAnswers, preferredSubject = null) =
       isPreferred: name === preferredSubject
     };
 
-    console.log(`${name} section summary:`, {
-      score: result.score,
-      correct: result.correctAnswers,
-      isPreferred: result.isPreferred
-    });
-
+    
     return result;
   });
 
-  console.log('\nOverall subject scores:', 
-    processedSections.map(section => ({
-      subject: section.subject,
-      score: section.score,
-      correct: section.correctAnswers,
-      isPreferred: section.isPreferred
-    }))
-  );
-
+  
   return processedSections;
 };
 
 export const getHighestScore = (data) => {
   if (!Array.isArray(data) || data.length === 0) {
-    console.log('No scores to compare in getHighestScore');
-    return null;
+        return null;
   }
 
   const highest = data.reduce((max, current) => {
@@ -167,8 +118,7 @@ export const getHighestScore = (data) => {
     return maxScore > currentScore ? max : current;
   });
 
-  console.log('Highest score found:', highest);
-  return highest;
+    return highest;
 };
 
 export const useQuizResultsData = (
@@ -178,8 +128,7 @@ export const useQuizResultsData = (
   preferredSubject = null
 ) => {
   const personalityData = useMemo(() => {
-    console.log('\nCalculating personality data...');
-    if (!Array.isArray(personalityAnswers)) {
+        if (!Array.isArray(personalityAnswers)) {
       console.error('Invalid personality answers format');
       return [];
     }
@@ -200,17 +149,14 @@ export const useQuizResultsData = (
         isPreferred: trait === preferredTrait
       };
 
-      console.log(`Processed ${trait}:`, result);
-      return result;
+            return result;
     });
 
-    console.log('Final personality data:', processed);
-    return processed;
+        return processed;
   }, [personalityAnswers, preferredTrait]);
 
   const subjectData = useMemo(() => {
-    console.log('\nCalculating subject data...');
-    return processSubjectAnswers(subjectAnswers, preferredSubject);
+        return processSubjectAnswers(subjectAnswers, preferredSubject);
   }, [subjectAnswers, preferredSubject]);
 
   const highestPersonality = getHighestScore(personalityData);
@@ -221,22 +167,14 @@ export const useQuizResultsData = (
     subject: highestSubject?.subject || null
   };
 
-  console.log('\nFinal results:', {
-    highestPersonality: highest.personalityTrait,
-    highestSubject: highest.subject,
-    preferredTrait,
-    preferredSubject
-  });
-
+  
   const feedback = highest.personalityTrait && highest.subject 
     ? getCareerFeedback(highest.subject, highest.personalityTrait)
     : null;
 
   if (feedback) {
-    console.log('Career feedback generated:', feedback);
-  } else {
-    console.log('No career feedback available - missing required scores');
-  }
+      } else {
+      }
 
   return {
     personalityData,
