@@ -12,6 +12,12 @@ export const formatScore = (score) => {
 };
 
 const calculatePersonalityScoresFromAnswers = (answers, preferredTrait = null) => {
+  // Input validation with detailed logging
+  if (!answers || !Array.isArray(answers)) {
+    console.error('Invalid answers input:', JSON.stringify(answers, null, 2));
+    return null;
+  }
+
   const scores = {
     Openness: 0,
     Conscientiousness: 0,
@@ -20,14 +26,36 @@ const calculatePersonalityScoresFromAnswers = (answers, preferredTrait = null) =
     Neuroticism: 0
   };
   
-  const traits = Object.keys(scores); // Add this
+  const traits = Object.keys(scores);
   
-  // First accumulate raw scores
-  answers.forEach((answer, index) => {
+  // Track detailed answer processing
+  const processedAnswers = answers.map((answer, index) => {
     const traitIndex = index % 5;
     const trait = traits[traitIndex];
-    const value = answer?.value ?? answer ?? 0;
-    scores[trait] += ensureNumber(value);
+    let value = 0;
+
+    if (typeof answer === 'number') {
+      value = answer;
+    } else if (answer?.value) {
+      value = answer.value;
+    } else {
+      console.warn(`Invalid answer at index ${index}:`, JSON.stringify(answer, null, 2));
+    }
+
+    return {
+      index,
+      trait,
+      rawValue: answer,
+      processedValue: value
+    };
+  });
+
+  // Log detailed processing results
+  console.log('Answer Processing Details:', JSON.stringify(processedAnswers, null, 2));
+
+  // Calculate raw scores
+  processedAnswers.forEach(({ trait, processedValue }) => {
+    scores[trait] += processedValue;
   });
 
   // Convert to percentages
@@ -37,19 +65,31 @@ const calculatePersonalityScoresFromAnswers = (answers, preferredTrait = null) =
     return acc;
   }, {});
 
-  // Apply bonus to percentage if preferred
+  // Apply preference bonus if specified
   if (preferredTrait && percentages[preferredTrait]) {
-    percentages[preferredTrait] *= 1.1;
+    const originalScore = percentages[preferredTrait];
+    percentages[preferredTrait] *= 1.1; // 10% bonus
+    console.log(`Applied preference bonus to ${preferredTrait}:`, {
+      originalScore,
+      bonusScore: percentages[preferredTrait]
+    });
   }
+
+  console.log('Score Calculation Summary:', {
+    rawScores: scores,
+    percentages: percentages,
+    preferredTrait,
+    totalAnswers: answers.length,
+    validAnswers: processedAnswers.filter(a => a.processedValue > 0).length
+  });
 
   return percentages;
 };
 
-
 export const processSubjectAnswers = (subjectAnswers, preferredSubject = null) => {
-  
+  // Input validation with detailed logging
   if (!Array.isArray(subjectAnswers)) {
-    console.error('Invalid subject answers:', subjectAnswers);
+    console.error('Invalid subject answers:', JSON.stringify(subjectAnswers, null, 2));
     return [];
   }
 
@@ -64,26 +104,31 @@ export const processSubjectAnswers = (subjectAnswers, preferredSubject = null) =
   const processedSections = subjects.map(({ name, start }) => {
     const sectionAnswers = subjectAnswers.slice(start, start + 10);
     
-    
+    // Track detailed answer processing
     const processedAnswers = sectionAnswers.map((answer, idx) => {
       const processed = {
         questionNumber: idx + 1,
         isCorrect: answer?.isCorrect || false,
         userAnswer: answer?.selectedAnswer,
-        correctAnswer: answer?.correctAnswer
+        correctAnswer: answer?.correctAnswer,
+        processed: !!answer
       };
 
-            return processed;
+      return processed;
     });
 
     const correctCount = processedAnswers.filter(a => a.isCorrect).length;
     let score = (correctCount / 10) * 100;
     
-    // Apply preference bonus
+    // Apply preference bonus with logging
     if (name === preferredSubject) {
       const originalScore = score;
       score *= 1.1; // 10% bonus
-          }
+      console.log(`Applied subject preference bonus to ${name}:`, {
+        originalScore,
+        bonusScore: score
+      });
+    }
 
     const result = {
       subject: name,
@@ -91,20 +136,29 @@ export const processSubjectAnswers = (subjectAnswers, preferredSubject = null) =
       correctAnswers: correctCount,
       totalQuestions: 10,
       answers: processedAnswers,
-      isPreferred: name === preferredSubject
+      isPreferred: name === preferredSubject,
+      validAnswers: processedAnswers.filter(a => a.processed).length
     };
 
-    
     return result;
   });
 
-  
+  // Log section summary
+  console.log('Subject Processing Summary:', processedSections.map(section => ({
+    subject: section.subject,
+    score: section.score,
+    correctAnswers: section.correctAnswers,
+    validAnswers: section.validAnswers,
+    isPreferred: section.isPreferred
+  })));
+
   return processedSections;
 };
 
 export const getHighestScore = (data) => {
   if (!Array.isArray(data) || data.length === 0) {
-        return null;
+    console.warn('Invalid data for highest score calculation:', data);
+    return null;
   }
 
   const highest = data.reduce((max, current) => {
@@ -113,7 +167,16 @@ export const getHighestScore = (data) => {
     return maxScore > currentScore ? max : current;
   });
 
-    return highest;
+  console.log('Highest Score Calculation:', {
+    highest,
+    totalEntries: data.length,
+    allScores: data.map(item => ({
+      name: item.fullTrait || item.subject,
+      score: item.score
+    }))
+  });
+
+  return highest;
 };
 
 export const useQuizResultsData = (
@@ -129,6 +192,7 @@ export const useQuizResultsData = (
     }
 
     const scores = calculatePersonalityScoresFromAnswers(personalityAnswers, preferredTrait);
+    if (!scores) return [];
     
     return Object.entries(scores).map(([trait, percentage]) => ({
       trait: trait.substring(0, 3),
@@ -139,7 +203,7 @@ export const useQuizResultsData = (
   }, [personalityAnswers, preferredTrait]);
 
   const subjectData = useMemo(() => {
-        return processSubjectAnswers(subjectAnswers, preferredSubject);
+    return processSubjectAnswers(subjectAnswers, preferredSubject);
   }, [subjectAnswers, preferredSubject]);
 
   const highestPersonality = getHighestScore(personalityData);
@@ -150,14 +214,17 @@ export const useQuizResultsData = (
     subject: highestSubject?.subject || null
   };
 
-  
   const feedback = highest.personalityTrait && highest.subject 
     ? getCareerFeedback(highest.subject, highest.personalityTrait)
     : null;
 
-  if (feedback) {
-      } else {
-      }
+  console.log('Final Results Summary:', {
+    highestPersonalityTrait: highest.personalityTrait,
+    highestSubject: highest.subject,
+    hasFeedback: !!feedback,
+    personalityScores: personalityData.length,
+    subjectScores: subjectData.length
+  });
 
   return {
     personalityData,
