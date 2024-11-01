@@ -3,13 +3,16 @@ import React, { useState } from 'react';
 import QuizCard from '../../shared/QuizCard';
 import RadioGroup from '../../shared/RadioGroup';
 import Alert from '../../shared/Alert';
-import { getTraitDescription } from './SubjectPreference';
+import { getTraitDescription } from './preferenceDescriptions';
 
 const TraitPreference = ({ traits, onSelect }) => {
   const [selectedTrait, setSelectedTrait] = useState(null);
   const [error, setError] = useState(null);
 
+  console.log('TraitPreference - Available traits:', traits);
+
   const handleSubmit = () => {
+    console.log('TraitPreference - Submitting selection:', selectedTrait);
     if (!selectedTrait) {
       setError('Please select a trait before continuing');
       return;
@@ -17,7 +20,6 @@ const TraitPreference = ({ traits, onSelect }) => {
     onSelect(selectedTrait);
   };
 
-  // Only create options for the highest scoring traits
   const options = traits.map(trait => ({
     value: trait,
     label: trait,
@@ -36,6 +38,7 @@ const TraitPreference = ({ traits, onSelect }) => {
           options={options}
           value={selectedTrait}
           onChange={(value) => {
+            console.log('TraitPreference - Selection changed:', value);
             setSelectedTrait(value);
             setError(null);
           }}

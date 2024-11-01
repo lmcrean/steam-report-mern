@@ -1,3 +1,4 @@
+// src/components/shared/RadioGroup.jsx
 import React from 'react';
 
 const RadioGroup = ({ 
@@ -31,11 +32,11 @@ const RadioGroup = ({
             value={option.value}
             checked={value === option.value}
             onChange={() => onChange(option.value)}
-            className="sr-only"
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
             role="radio"
             aria-checked={value === option.value}
           />
-          <div className="flex-1">
+          <div className="flex-1 pointer-events-none">
             <div className="flex justify-between">
               <div className="text-sm font-medium text-gray-900 dark:text-white">
                 {option.label}
