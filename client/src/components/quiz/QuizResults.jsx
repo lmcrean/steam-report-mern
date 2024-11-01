@@ -1,4 +1,3 @@
-// QuizResults.jsx
 import React, { useEffect } from 'react';
 import { useQuiz } from '../../context/QuizContext';
 import { useQuizResultsData } from './results/QuizResultsDataLogic';
@@ -20,7 +19,8 @@ const QuizResults = () => {
     completionTime,
     moveToNextSection,
     updateState,
-    validateQuizCompletion
+    validateQuizCompletion,
+    results
   } = useQuiz();
 
   const {
@@ -36,8 +36,12 @@ const QuizResults = () => {
     preferredSubject
   );
 
+  // Calculate and store results only once when data is ready
   useEffect(() => {
-    if (validateQuizCompletion() && personalityData.length && subjectData.length) {
+    if (validateQuizCompletion() && 
+        personalityData.length && 
+        subjectData.length && 
+        !results) {
       updateState({
         results: {
           personalityScores: Object.fromEntries(
@@ -55,28 +59,52 @@ const QuizResults = () => {
         }
       });
     }
-  }, [personalityData, subjectData, preferredTrait, preferredSubject, updateState, validateQuizCompletion, completionTime, startTime]);
+  }, [
+    personalityData, 
+    subjectData, 
+    preferredTrait, 
+    preferredSubject, 
+    updateState,
+    validateQuizCompletion,
+    completionTime,
+    startTime,
+    results,
+    highestPersonalityTrait,
+    highestSubject,
+    careerFeedback
+  ]);
 
   if (!validateQuizCompletion()) {
     return (
       <div className="text-center p-8">
-        <p className="text-lg text-gray-600 dark:text-gray-300">Loading results...</p>
+        <p className="text-lg text-gray-600 dark:text-gray-300">
+          Loading results...
+        </p>
       </div>
     );
   }
 
+  // Calculate time taken in minutes
+  const timeTakenMinutes = startTime && completionTime 
+    ? Math.round((new Date(completionTime) - new Date(startTime)) / 60000) 
+    : null;
+
   return (
     <div className="space-y-8">
-      {/* Header */}
+      {/* Header Section */}
       <ResultsSection title="Your Results">
         <div className="space-y-4">
           <p className="text-gray-600 dark:text-gray-300">
             Hi {username}, here's your personalized career analysis based on your quiz responses
             {(preferredTrait || preferredSubject) && ' and preferences'}.
           </p>
+          
+          {/* Preferences Display */}
           {(preferredTrait || preferredSubject) && (
             <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
-              <p className="text-purple-700 dark:text-purple-300 font-medium">Your Selected Preferences:</p>
+              <p className="text-purple-700 dark:text-purple-300 font-medium">
+                Your Selected Preferences:
+              </p>
               <ul className="mt-2 space-y-1 text-purple-600 dark:text-purple-200">
                 {preferredTrait && (
                   <li>• Personality Trait: {preferredTrait}</li>
@@ -100,12 +128,12 @@ const QuizResults = () => {
         <SubjectChart data={subjectData} />
       </ResultsSection>
 
-      {/* Time Taken */}
-      {startTime && completionTime && (
+      {/* Quiz Statistics */}
+      {timeTakenMinutes && (
         <ResultsSection title="Quiz Statistics">
           <div className="bg-gray-50 dark:bg-slate-700 p-4 rounded-lg">
             <p className="text-gray-600 dark:text-gray-300">
-              Time taken: {Math.round((new Date(completionTime) - new Date(startTime)) / 60000)} minutes
+              Time taken: {timeTakenMinutes} minutes
             </p>
             <p className="mt-2 text-gray-600 dark:text-gray-300">
               Sections completed: Personality Assessment, Subject Knowledge
