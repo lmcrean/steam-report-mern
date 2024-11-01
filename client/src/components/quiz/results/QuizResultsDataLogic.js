@@ -11,8 +11,7 @@ export const formatScore = (score) => {
   return ensureNumber(score).toFixed(1);
 };
 
-export const calculatePersonalityScoresFromAnswers = (answers, preferredTrait = null) => {
-    
+const calculatePersonalityScoresFromAnswers = (answers, preferredTrait = null) => {
   const scores = {
     Openness: 0,
     Conscientiousness: 0,
@@ -21,35 +20,31 @@ export const calculatePersonalityScoresFromAnswers = (answers, preferredTrait = 
     Neuroticism: 0
   };
   
-  if (!Array.isArray(answers)) {
-    console.error('Invalid answers format:', answers);
-    return scores;
-  }
-
-  const traits = Object.keys(scores);
+  const traits = Object.keys(scores); // Add this
   
+  // First accumulate raw scores
   answers.forEach((answer, index) => {
     const traitIndex = index % 5;
     const trait = traits[traitIndex];
-    
-    let value = 0;
-    if (answer && typeof answer === 'object') {
-      value = ensureNumber(answer.value);
-          } else {
-      value = ensureNumber(answer);
-          }
-    
-    scores[trait] += value;
+    const value = answer?.value ?? answer ?? 0;
+    scores[trait] += ensureNumber(value);
   });
 
-  // Apply preference bonus if specified
-  if (preferredTrait && scores[preferredTrait]) {
-    const originalScore = scores[preferredTrait];
-    scores[preferredTrait] = originalScore * 1.1; // 10% bonus
-      }
+  // Convert to percentages
+  const percentages = Object.entries(scores).reduce((acc, [trait, score]) => {
+    const percentage = (score / 45) * 100;
+    acc[trait] = percentage;
+    return acc;
+  }, {});
 
-    return scores;
+  // Apply bonus to percentage if preferred
+  if (preferredTrait && percentages[preferredTrait]) {
+    percentages[preferredTrait] *= 1.1;
+  }
+
+  return percentages;
 };
+
 
 export const processSubjectAnswers = (subjectAnswers, preferredSubject = null) => {
   
@@ -122,37 +117,25 @@ export const getHighestScore = (data) => {
 };
 
 export const useQuizResultsData = (
-  personalityAnswers, 
-  subjectAnswers, 
+  personalityAnswers,
+  subjectAnswers,
   preferredTrait = null,
   preferredSubject = null
 ) => {
   const personalityData = useMemo(() => {
-        if (!Array.isArray(personalityAnswers)) {
+    if (!Array.isArray(personalityAnswers)) {
       console.error('Invalid personality answers format');
       return [];
     }
 
     const scores = calculatePersonalityScoresFromAnswers(personalityAnswers, preferredTrait);
     
-    const processed = Object.entries(scores).map(([trait, score]) => {
-      const processedScore = ensureNumber(score);
-      const maxScore = 45;
-      const percentage = (processedScore / maxScore) * 100;
-      
-      const result = {
-        trait: trait.substring(0, 3),
-        fullTrait: trait,
-        rawScore: processedScore,
-        maxPossible: maxScore,
-        score: ensureNumber(percentage),
-        isPreferred: trait === preferredTrait
-      };
-
-            return result;
-    });
-
-        return processed;
+    return Object.entries(scores).map(([trait, percentage]) => ({
+      trait: trait.substring(0, 3),
+      fullTrait: trait,
+      score: ensureNumber(percentage),
+      isPreferred: trait === preferredTrait
+    }));
   }, [personalityAnswers, preferredTrait]);
 
   const subjectData = useMemo(() => {
