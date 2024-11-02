@@ -111,6 +111,22 @@ async function runQuizTest(page) {
   // 7. Verify results
   await expect(page.getByRole('heading', { name: 'Your Results' })).toBeVisible();
   await expect(page.getByText('Personality Profile')).toBeVisible();
+
+
+  // Verify Correct Personality scores
+  expect(await page.getByText('100%').count()).toBeGreaterThan(0); // Extraversion
+  expect(await page.getByText('78%').count()).toBeGreaterThan(0);  // Openness
+  expect(await page.getByText('67%').count()).toBeGreaterThan(0);  // Conscientiousness
+  expect(await page.getByText('56%').count()).toBeGreaterThan(0);  // Agreeableness
+  expect(await page.getByText('44%').count()).toBeGreaterThan(0);  // Neuroticism
+
+  // Verify Correct Subject scores
+  expect(await page.getByText('100%').count()).toBeGreaterThan(0); // Math
+  expect(await page.getByText('60%').count()).toBeGreaterThan(0);  // Science
+  expect(await page.getByText('50%').count()).toBeGreaterThan(0);  // Technology
+  expect(await page.getByText('40%').count()).toBeGreaterThan(0);  // English
+  expect(await page.getByText('30%').count()).toBeGreaterThan(0);  // Art
+
   await expect(page.getByText('Math', { exact: true })).toBeVisible();
   await expect(page.getByText('Extraversion', { exact: true })).toBeVisible();
 }
