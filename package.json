@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "docsify": "^4.13.1"
+    "docsify": "^4.13.1",
+    "repo-to-one-file": "^1.0.2"
   }
 }

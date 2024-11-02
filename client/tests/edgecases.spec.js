@@ -18,8 +18,8 @@ test.describe('Equal Scores Edge Case', () => {
     // Create three-way tie between Openness, Extraversion, and Agreeableness at ~88.9%
     // while keeping Conscientiousness and Neuroticism lower at ~55.6%
     const personalityResponses = Array(25).fill(null).map((_, i) => {
-      const traitIndex = i % 5;
-      const value = [0, 2, 3].includes(traitIndex) ? 8 : 5;
+      const traitIndex = i % 5; // 5 questions per trait
+      const value = [0, 2, 3].includes(traitIndex) ? 8 : 5; // 8/9 = ~88.9%, 5/9 = ~55.6%
       return { value, questionIndex: i };
     });
 

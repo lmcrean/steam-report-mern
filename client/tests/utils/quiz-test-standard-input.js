@@ -3,22 +3,20 @@ import { test, expect } from '@playwright/test';
 
 // Predefined answers to ensure Extraversion is highest OCEAN trait
 const personalityAnswers = {
-  // Give Extraversion highest scores (mostly 9s)
-  Extraversion: [9, 9, 8, 9, 9],
-  // Give other traits lower but varying scores
-  Openness: [6, 7, 6, 7, 6],
-  Conscientiousness: [5, 6, 5, 6, 5],
-  Agreeableness: [4, 5, 4, 5, 4],
-  Neuroticism: [3, 4, 3, 4, 3]
+  Openness: [7, 7, 7, 7, 7],           // 35/45 = ~78%
+  Conscientiousness: [6, 6, 6, 6, 6],  // 30/45 = ~67%
+  Extraversion: [9, 9, 9, 9, 9],       // 45/45 = 100%
+  Agreeableness: [5, 5, 5, 5, 5],      // 25/45 = ~56%
+  Neuroticism: [4, 4, 4, 4, 4]         // 20/45 = ~44%
 };
 
-// Predefined answers to ensure Math is highest STEAM subject
+// Subject scores should make Math clearly highest
 const subjectAnswers = {
-  Science: [true, true, false, true, false, true, false, true, false, true], // 6/10
-  Technology: [true, false, true, true, false, true, false, true, false, true], // 6/10
-  English: [true, false, true, false, true, false, true, false, true, false], // 5/10
-  Art: [true, false, true, false, true, false, true, false, true, false], // 5/10
-  Math: [true, true, true, true, false, true, true, true, true, true] // 9/10
+  Science: [true, true, true, true, true, true, false, false, false, false], // 6/10 = 60%
+  Technology: [true, true, true, true, true, false, false, false, false, false], // 5/10 = 50%
+  English: [true, true, true, true, false, false, false, false, false, false],   // 4/10 = 40%
+  Art: [true, true, true, false, false, false, false, false, false, false],    // 3/10 = 30%
+  Math: [true, true, true, true, true, true, true, true, true, true],    // 10/10 = 100%
 };
 
 // Helper function to complete personality quiz with predetermined answers
@@ -97,8 +95,20 @@ async function runQuizTest(page) {
   
   // 5. Complete subject quiz
   await completeSubjectQuiz(page);
-  
-  // 6. Verify results
+
+  // 6. Verify that we go directly to results without preference selection
+  const strongestTraitsHeading = page.getByRole('heading', { name: 'Your Strongest Traits' });
+  const strongestSubjectsHeading = page.getByRole('heading', { name: 'Your Strongest Subjects' });
+
+  await expect(strongestTraitsHeading).not.toBeVisible().catch(() => {
+    throw new Error('Unexpected "Your Strongest Traits" heading found');
+  });
+
+  await expect(strongestSubjectsHeading).not.toBeVisible().catch(() => {
+    throw new Error('Unexpected "Your Strongest Subjects" heading found');
+  });
+
+  // 7. Verify results
   await expect(page.getByRole('heading', { name: 'Your Results' })).toBeVisible();
   await expect(page.getByText('Personality Profile')).toBeVisible();
   await expect(page.getByText('Math', { exact: true })).toBeVisible();

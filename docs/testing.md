@@ -1,233 +1,211 @@
-# Automated and Manual Testing outcomes
+# Automated Test
 
 This Readme chapter introduces the **outcomes** of the Automated and Manual Testing. For instructions of how to carry out the tests refer to the **Usage & Deployment** readme chapter - for readibility it is not covered here.
 
-The testing process generally favoured **TDD (Test Driven Development)** methodologies, where tests were written before the implementation of features. This approach helps ensure that the codebase remains stable and that new features do not break existing functionality. For that reason the Automatic Testing is introduced first. Manual Testing was then conducted after the completion of the app to ensure that all features work as expected from a user's perspective.
-
-# Automated Testing in Frontend with Jest, Cypress and Playwright
-
-The app includes automatic tests for core components and functionality using testing frameworks like Jest.
-
-
+The testing process favoured **TDD (Test Driven Development)** methodologies, where tests were written before the implementation of features. This approach helps ensure that the codebase remains stable and that new features do not break existing functionality. For that reason the Automatic Testing is introduced first. Manual Testing was then conducted after the completion of the app to ensure that all features work as expected from a user's perspective.
 
 ## Playwright Testing
+The app includes automatic tests for core components and functionality using testing frameworks like Jest.
 
-Playwright was used as the most important tool for end-to-end testing. It allows for testing the app's functionality from a user's perspective, simulating real interactions with the UI.
+### quizflowstandard.test.js
 
-The tests are divided into 2 sets of tests: `frontend/playwright/screenshot-tests` and `frontend/playwright/validation-tests`. 
+```mermaid
+flowchart TB
+    %% Row 1: Test Setup & Navigation
+    subgraph Setup ["Test Setup & Navigation"]
+        direction LR
+        Start([Start Test]) --> 
+        LoadPage["page.goto('/')"] -->
+        VerifyWelcome["Verify 'Welcome to STEAM Career Quiz'"] -->
+        ClickStart["Click 'Start Quiz'"] -->
+        Username["Enter 'TestUser'<br>Click Continue"]
+    end
 
-- `frontend/playwright/screenshot-tests` captures the UI at different states in mobile , tablet, laptop and desktop views.
-- `frontend/playwright/validation-tests` validates the functionality of the app by simulating user interactions and checking for error and success messages that will guide and/or inform the user.
+    %% Row 2: Data Generation & Personality Quiz
+    subgraph PersonalitySection ["Personality Quiz Implementation"]
+        direction LR
+        subgraph PData ["Personality Data Setup"]
+            direction TB
+            OCEANData["Test Data Structure:
+            Openness: [7,7,7,7,7] = 78%
+            Conscientiousness: [6,6,6,6,6] = 67%
+            Extraversion: [9,9,9,9,9] = 100%
+            Agreeableness: [5,5,5,5,5] = 56%
+            Neuroticism: [4,4,4,4,4] = 44%"]
+        end
 
-### Playwright Screenshot Tests
+        subgraph PExecution ["Quiz Execution"]
+            direction TB
+            VerifyOCEAN["Verify 'OCEAN Personality Test' visible"] -->
+            ForTrait["For each OCEAN trait:"] -->
+            ForAnswer["For each answer in trait:
+            1. Wait for question visible
+            2. Select predetermined answer
+            3. Wait for & click Next"]
+        end
+    end
 
-The screenshot tests are used to ensure that the app's UI looks as expected across different screen sizes. The tests capture screenshots of the app in different states and compare them to reference images to detect any visual regressions.
+    %% Row 3: Subject Quiz Implementation
+    subgraph SubjectSection ["Subject Quiz Implementation"]
+        direction LR
+        subgraph SData ["Subject Data Setup"]
+            direction TB
+            STEAMData["Test Data Structure:
+            Science: [T,T,T,T,T,T,F,F,F,F] = 60%
+            Technology: [T,T,T,T,T,F,F,F,F,F] = 50%
+            English: [T,T,T,T,F,F,F,F,F,F] = 40%
+            Art: [T,T,T,F,F,F,F,F,F,F] = 30%
+            Math: [T,T,T,T,T,T,T,T,T,T] = 100%"]
+        end
 
-They can be summarised as follows:
+        subgraph SExecution ["Quiz Execution"]
+            direction TB
+            ForSubject["For each subject:"] -->
+            ForQuestion["For each question (1-10):
+            1. Wait for question visible
+            2. Wait for options (5s timeout)
+            3. Select by answerIndex
+            4. Wait for & click Next"]
+        end
+    end
 
-| User Journey location | Mobile | Tablet | Laptop | Desktop |
-| --- | --- | --- | --- | --- |
-| Landing Page | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/get-requests/landing-page/mobile-home-page-after-login.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/get-requests/landing-page/tablet-home-page-after-login.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/get-requests/landing-page/laptop-home-page-after-login.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/get-requests/landing-page/desktop-home-page-after-login.png"> |
-| Landing Page (scrolled) | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/get-requests/landing-page/mobile-scrolled-to-4th-post.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/get-requests/landing-page/tablet-scrolled-to-4th-post.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/get-requests/landing-page/laptop-scrolled-to-4th-post.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/get-requests/landing-page/desktop-scrolled-to-4th-post.png"> |
-| Messages Page | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/get-requests/messages/mobile-messages-page.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/get-requests/messages/tablet-messages-page.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/get-requests/messages/laptop-messages-page.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/get-requests/messages/desktop-messages-page.png"> |
-| Message Detail | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/get-requests/messages/mobile-message-detail.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/get-requests/messages/tablet-message-detail.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/get-requests/messages/laptop-message-detail.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/get-requests/messages/desktop-message-detail.png"> |
-| Create Post Page | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/get-requests/posts/mobile-create-post-page.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/get-requests/posts/tablet-create-post-page.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/get-requests/posts/laptop-create-post-page.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/get-requests/posts/desktop-create-post-page.png"> |
-| Profile Page | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/get-requests/profiles/mobile-profile-141-page.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/get-requests/profiles/tablet-profile-141-page.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/get-requests/profiles/laptop-profile-141-page.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/get-requests/profiles/desktop-profile-141-page.png"> |
+    %% Row 4: Results Verification
+    subgraph Verify ["Results Verification"]
+        direction LR
+        VerifyResults["Verify 'Your Results' Header"] -->
+        VerifyProfile["Verify 'Personality Profile' Present"] -->
+        VerifyMath["Verify Math Score Present"] -->
+        VerifyExtra["Verify Extraversion Score Present"] -->
+        Complete([Test Complete])
+    end
 
-### Playwright Validation Tests
+    %% Connect the rows
+    Setup --> PersonalitySection
+    PExecution --> SubjectSection
+    SExecution --> Verify
 
-The validation tests are used to ensure that the app's functionality works as expected. They simulate user interactions and check for error and success messages that guide and inform the user.
+    classDef setup fill:#e3f2fd,stroke:#1565c0,color:#000
+    classDef data fill:#e8f5e9,stroke:#2e7d32,color:#000
+    classDef exec fill:#fff3e0,stroke:#ef6c00,color:#000
+    classDef verify fill:#f3e5f5,stroke:#6a1b9a,color:#000
 
-
-### Success Message alerts
-
-Due to time constraints, success messages only confirm Sign in and Sign up. Additional creenshots also confirm the Messages disappear after a set time (omitted below).
-
-| Success Alerts | Test 1 | Test 2 | 
-| --- | --- | --- | 
-| Screenshots | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/success-alerts/mobile-01-signup-success.png"> |  <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/success-alerts/mobile-03-signin-success.png"> | 
-| Alert Description | Signup success | Signin success | 
-
-***
-Below are all validation alerts, meaning the user has done something that is not allowed by the app. The app will inform the user of the error and guide them to correct it.
-
-### Create comment alerts
-
-|  Create Comments | Test 1 | Test 2 | Test 3 |
-| --- | --- | --- | --- |
-| Screenshots | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/create-comment/full-empty-submission.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/create-comment/full-long-comment.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/create-comment/full-spaces-only.png"> |
-| Alert Description | Empty submission | Long comment | Spaces only |
-
-### Create Post alerts
-
-All posts require a valid image, title and caption.
-
-| Create Post | Test 1 | Test 2 | Test 3 | Test 4 | Test 5 | Test 6 | Test 7 | Test 8 | Test 9 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Screenshots | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/create-post/full-content-only-spaces.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/create-post/full-content-too-long.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/create-post/mobile-empty-submission.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/create-post/mobile-image-no-title.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/create-post/mobile-image-uploaded.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/create-post/mobile-no-image.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/create-post/mobile-non-image-file-error.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/create-post/mobile-title-only-spaces.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/create-post/mobile-title-too-long.png"> |
-| Alert Description | Content only spaces | Content too long | Empty submission | Image no title | (Image uploaded successfully, no alert) | User is posting without an image | Non-image file error | Title only spaces | Title too long |
-
-### Send Message and /or Image alerts
-
-| Message Send | Test 1 | Test 2 | Test 3 | Test 4 | Test 5 | Test 6 | Test 7 |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Screenshots | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/message-send/mobile-1-empty-submission.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/message-send/mobile-2-message-too-long.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/message-send/mobile-3-spaces-only.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/message-send/mobile-4-image-too-large.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/message-send/mobile-5-invalid-image-type.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/message-send/mobile-6-valid-image-no-message.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/message-send/mobile-7-valid-message-no-image.png"> |
-| Alert Description | Empty submission | Message too long | Spaces only | Image too large | Invalid image type | Valid image, no message | Valid message, no image |
-
-### Password Update alerts
-
-| Password Update | Test 1 | Test 2 | Test 3 | Test 4 | Test 5 | Test 6 | Test 7 | Test 8 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Screenshots | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/password-update/mobile-01-logged-in-profile-view.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/password-update/mobile-02-change-password-page.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/password-update/mobile-03-passwords-dont-match.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/password-update/mobile-04-password-too-short.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/password-update/mobile-05-password-too-common.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/password-update/mobile-06-password-entirely-numeric.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/password-update/mobile-07-password-similar-to-username.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/password-update/mobile-08-unauthorized-access.png"> |
-| Alert Description | Logged in profile view | Change password page | Passwords don't match | Password too short | Password too common | Password entirely numeric | Password similar to username | Unauthorized access |
-
-### Profile Edit alerts
-
-| Profile Edit | Test 1 | Test 2 | Test 3 | Test 4 | Test 5 | Test 6 | Test 7 | Test 8 | Test 9 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Screenshots | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/profile-edit/mobile-01-initial-profile-edit-page.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/profile-edit/mobile-02-bio-too-long.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/profile-edit/mobile-03-bio-empty.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/profile-edit/mobile-04-bio-only-spaces.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/profile-edit/mobile-05-bio-more-than-three-spaces.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/profile-edit/mobile-06-valid-image-upload.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/profile-edit/mobile-07-large-image-upload.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/profile-edit/mobile-08-invalid-file-upload.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/profile-edit/mobile-09-unauthorized-access.png"> |
-| Alert Description | (Initial profile edit page) | Bio too long | Bio empty | Bio only spaces | Bio more than three spaces | (valid image upload confirms as working, no alert) | Large image upload | Invalid file upload | Unauthorized access |
-
-### Sign In alerts
-
-| Sign In | Test 1 | Test 2 | Test 3 |
-| --- | --- | --- | --- | 
-| Screenshots | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/signin/mobile-empty-form-alert.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/signin/mobile-invalid-password-alert.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/signin/mobile-invalid-username-alert.png"> | 
-| Alert Description | Empty form alert | Invalid password alert | Invalid username alert | 
-
-### Sign Up alerts
-
-| Sign Up | Test 1 | Test 2 | Test 3 | Test 4 | Test 5 | Test 6 | Test 7 | Test 8 | Test 9 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Screenshots | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/signup/mobile-common-password-alert.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/signup/mobile-empty-form-alert.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/signup/mobile-existing-username-alert.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/signup/mobile-numeric-password-alert.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/signup/mobile-password-too-short-alert.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/signup/mobile-passwords-dont-match-alert.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/signup/mobile-username-too-long-alert.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/signup/mobile-username-too-short-alert.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/signup/mobile-username-with-spaces-alert.png"> |
-| Alert Description | Common password alert | Empty form alert | Existing username alert | Numeric password alert | Password too short alert | Passwords don't match alert | Username too long alert | Username too short alert | Username with spaces alert |
-
-
-
-### Username Update alerts
-
-| Username Update | Test 1 | Test 2 | Test 3 | Test 4 | Test 5 | 
-| --- | --- | --- | --- | --- | --- | 
-| Screenshots |  <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/username-update/mobile-03-username-too-short.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/username-update/mobile-04-username-too-long.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/username-update/mobile-05-username-with-spaces.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/username-update/mobile-06-existing-external-username.png"> | <img src="https://raw.githubusercontent.com/lmcrean/odyssey-api/main/frontend/playwright/screenshots/alerts/username-update/mobile-07-existing-own-username.png"> |
-| Alert Description |  Username too short | Username too long | Username with spaces | Existing external username | Existing own username |
-
-## Jest Testing
-
-Jest testing was explored in the frontend to test the core components and functionality of the app. The tests are located in the `frontend/src/pages` directory, with each page having its own test folder `__tests__`.
-
-Here's a summary of the test files and what they cover:
-
-
-```bash
- PASS  src/pages/messaging/__tests__/MessageDetailSendFormAPI.test.js
- PASS  src/pages/auth/__tests__/SignUpForm.test.js (5.295 s)
- PASS  src/pages/messaging/__tests__/MessageWithImage.test.js (5.58 s)
- PASS  src/pages/messaging/__tests__/Message.test.js (5.51 s)
- PASS  src/pages/messaging/__tests__/MessageDetailSendForm.test.js (5.992 s)
- PASS  src/App.test.js (6.04 s)
-
-Test Suites: 6 passed, 6 total
-Tests:       10 passed, 10 total
-Snapshots:   0 total
-Time:        7.916 s
-Ran all test suites.
+    class Start,LoadPage,VerifyWelcome,ClickStart,Username setup
+    class OCEANData,STEAMData data
+    class VerifyOCEAN,ForTrait,ForAnswer,ForSubject,ForQuestion exec
+    class VerifyResults,VerifyProfile,VerifyMath,VerifyExtra,Complete verify
 ```
 
 
-| Test File | Alert Description | Key Methodologies |
-|-----------|-------------|-------------------|
-| Message.test.js | - Tests fetching and displaying the sender's username<br>- Checks error handling when fetching username fails<br>- Verifies the opening and closing of the delete modal<br>- Ensures proper rendering of message content and metadata | - Mocking API responses (axios)<br>- Rendering components with React Testing Library<br>- Simulating user interactions (fireEvent)<br>- Asynchronous testing (act, waitFor)<br>- Snapshot testing for UI consistency |
-| MessageDetailSendForm.test.js | - Tests the submission of a message with an image<br>- Verifies form data handling and API call formation | - Mocking API calls (axiosReq)<br>- Form submission testing<br>- File input handling<br>- Asynchronous testing (waitFor)<br>- Checking API call parameters |
-| MessageDetailSendFormAPI.test.js | - Mocks and tests the API call for sending a message with an image<br>- Verifies the structure and content of the API response | - Mocking Axios for API calls<br>- Testing API endpoint and payload<br>- Verifying response structure<br>- Handling FormData in tests |
-| MessageWithImage.test.js | - Tests the rendering of a message component with an attached image<br>- Verifies the correct display of message content and image | - Rendering components with React Testing Library<br>- Mocking Context API (useCurrentUser)<br>- Asynchronous component testing (act)<br>- Testing image rendering and attributes |
-| SignUpForm.test.js | - Tests the rendering of the sign-up form<br>- Checks form validation and error display<br>- Verifies form submission and redirection on success | - Rendering components with React Testing Library<br>- Mocking API calls (axios)<br>- Simulating form input and submission<br>- Testing error handling and display<br>- Checking navigation/redirection (useHistory mock) |
-
-The most common methodologies used in testing were mocking API calls with `axios` and `jest.mock`, rendering components with `React Testing Library`, simulating user interactions with `fireEvent`, and handling asynchronous testing with `act` and `waitFor`. Asynchronous testing means that the test waits for a certain condition to be met before proceeding, ensuring that the app behaves as expected in real-world scenarios.
-
-# Manual Testing 
-
-Pass criteria includes no warning messages, no errors.
-
-## Testing the Navbar
-
-| Feature | Auth status: <br> Signed in/Signed out/ Both |Expected Outcome | Testing Performed | Result | Pass/Fail |
-| --- | --- | --- | --- | --- | --- |
-| Sign up | Signed out | User is redirected to the sign up page | Clicked on the sign up button | User was redirected to the sign up page | Pass |
-| Sign in | Signed out | User is redirected to the sign in page | Clicked on the sign in button | User was redirected to the sign in page | Pass |
-| Home Feed | Signed in | User is redirected to the home feed | Clicked on the home feed button | User was redirected to the home feed | Pass |
-| Add Post | Signed in | User is redirected to the add post page | Clicked on the add post button | User was redirected to the add post page | Pass |
-| Messages | Signed in | User is redirected to the messages page | Clicked on the messages button | User was redirected to the messages page | Pass |
-| Profile | Signed in | User is redirected to the profile page | Clicked on the profile button | User was redirected to the profile page | Pass |
-| Sign Out | Signed in | User is signed out and redirected to the sign in page | Clicked on the sign out button | User was signed out and redirected to the sign in page | Pass |
-| Responsive Design | Both | Navbar is responsive, will switch between a sidebar and bottom in different views, there must be no breaks particularly around the 768px where the hook activates. | Tested on different screen sizes | Navbar was responsive | Pass |
-
-## Testing the Home Feed
-
-| Feature | Auth status: <br> Signed in/Signed out/ Both |Expected Outcome | Testing Performed | Result | Pass/Fail |
-| --- | --- | --- | --- | --- | --- |
-| Posts | Both | User is able to view posts | Viewed the posts | User was able to view the posts | Pass |
-| Like Post | Signed in | User is able to like a post, updates Like Count | Liked a post, updates like count | User was able to like a post | Pass |
-| Unlike Post | Signed in | User is able to unlike a post, updates Like Count | Unliked a post, updates like count | User was able to unlike a post | Pass |
-| For you tab | Signed in | Displays recent posts | Clicked on the for you tab | Recent posts were displayed | Pass |
-| Following tab | Signed in | Displays posts from users the user is following | Clicked on the following tab | Posts from users the user is following were displayed | Pass |
-| Liked tab | Signed in | Displays posts the user has liked | Clicked on the liked tab | Posts the user has liked were displayed | Pass |
+### edgecases.test.js
 
 
-## Testing the Post functionality
+```mermaid
+flowchart TB
+    %% Row 1: Test Setup & Initial Navigation
+    subgraph Setup ["Test Setup & Navigation"]
+        direction LR
+        Start([Start Test]) --> LoadPage["page.goto('/')"]
+        LoadPage --> ClickStart["Click 'Start Quiz'"]
+        ClickStart --> Username["Enter 'EdgeTest'<br>Click Continue"]
+    end
 
-| Feature | Auth status: <br> Signed in/Signed out/ Both |Expected Outcome | Testing Performed | Result | Pass/Fail |
-| --- | --- | --- | --- | --- | --- |
-| Add Post | Signed in | User is able to add a post | Added a post | User was able to add a post, was visible on home feed | Pass |
-| Edit Post | Signed in | User is able to edit a post | Edited a post | User was able to edit a post | Pass |
-| Delete Post | Signed in | User is able to delete a post | Deleted a post | User was able to delete a post | Pass |
+    %% Row 2: Test Data Generation and Quiz Execution
+    subgraph DataAndExecution ["Data Generation & Quiz Execution"]
+        direction LR
+        subgraph PersonalitySetup ["Personality Setup"]
+            direction LR
+            PData["Generate 25 responses:
+            traitIndex % 5:
+            [0,2,3] → value = 8
+            others → value = 5"]
+            -->
+            PExpected["Expected Scores:
+            Openness = 88.9%
+            Extraversion = 88.9%
+            Agreeableness = 88.9%
+            Conscientiousness = 55.6%
+            Neuroticism = 55.6%"]
+            -->
+            PQuiz["Execute Quiz:
+            1. Find radio button
+            2. Verify visibility
+            3. Click value
+            4. Click Next"]
+        end
 
-## Testing the Profile Page
+        subgraph SubjectSetup ["Subject Setup"]
+            direction LR
+            SData["Target Scores:
+            Science: 7/10 = 70%
+            Technology: 7/10 = 70%
+            Math: 7/10 = 70%
+            English: 5/10 = 50%
+            Art: 5/10 = 50%"]
+            -->
+            SQuiz["Execute Quiz:
+            For each subject:
+            1. Track correct answers
+            2. Select first option if
+               needed correct < target
+            3. Select second option
+               otherwise"]
+        end
+    end
 
-| Feature | Auth status: <br> Signed in/Signed out/ Both |Expected Outcome | Testing Performed | Result | Pass/Fail |
-| --- | --- | --- | --- | --- | --- |
-| View Profile | Both | User is able to view their profile | Viewed the profile | User was able to view their profile | Pass |
-| Edit username | Signed in | User is able to edit their profile username | Edited the profile username | User was able to edit their username | Pass |
-| Edit bio | Signed in | User is able to edit their profile bio | Edited the profile bio | User was able to edit their bio | Pass |
-| Edit profile picture | Signed in | User is able to edit their profile picture | Edited the profile picture | User was able to edit their profile picture | Pass |
-| follow user link | Signed in | User is able to follow another user | Followed another user | User was able to follow another user | Pass |
-| message user link | Signed in | User is able to message another user | Messaged another user | User was able to message another user | Pass |
+    %% Row 3: Tie Resolution for Both Quizzes
+    subgraph TieResolution ["Tie Resolution Phase"]
+        direction LR
+        subgraph PersonalityTie ["Personality Tie Resolution"]
+            direction TB
+            PVerifyTie["Verify:
+            1. 'Multiple traits' message shown
+            2. Top 3 traits visible (O,E,A)
+            3. Bottom 2 hidden (C,N)"]
+            -->
+            PSelectTrait["Select Extraversion
+            Click Confirm"]
+        end
 
-## Testing the Messages Page
+        subgraph SubjectTie ["Subject Tie Resolution"]
+            direction TB
+            SVerifyTie["Verify:
+            1. 'Multiple subjects' message shown
+            2. Top 3 subjects visible (S,T,M)
+            3. Bottom 2 hidden (E,A)"]
+            -->
+            SSelectSubject["Select Technology
+            Click Confirm"]
+        end
+    end
 
-| Feature | Auth status: <br> Signed in/Signed out/ Both |Expected Outcome | Testing Performed | Result | Pass/Fail |
-| --- | --- | --- | --- | --- | --- |
-| View Messages | Signed in | User is able to view their messages | Viewed the messages | User was able to view their messages | Pass |
-| Send Message with Picture | Signed in | User is able to send a message with picture | sent message with attached file | User was able to send picture, it appears in chat interface | Pass | 
-| Send Message | Signed in | User is able to send a message | Sent a message | User was able to send a message | Pass |
-| Delete Message | Signed in | User is able to delete a message | Deleted a message | User was able to delete a message | Pass |
+    %% Row 4: Final Verification
+    subgraph Verify ["Final Results Verification"]
+        direction LR
+        WaitLoad["Wait for networkidle"] -->
+        VerifyPrefs["Verify Selected Preferences:
+        • Personality: Extraversion
+        • Subject: Technology"] -->
+        VerifyScores["Verify Final Scores:
+        • Extraversion: 97.8% (with bonus)
+        • Other high scores: 88.9%
+        • Low scores: 55.6%"] -->
+        Complete([Test Complete])
+    end
 
-## Testing the Sign Up Page
+    %% Connect the rows
+    Setup --> DataAndExecution
+    PersonalitySetup --> SubjectSetup
+    SubjectSetup --> TieResolution
+    PersonalityTie --> SubjectTie
+    TieResolution --> Verify
 
-| Feature | Auth status: <br> Signed in/Signed out/ Both |Expected Outcome | Testing Performed | Result | Pass/Fail |
-| --- | --- | --- | --- | --- | --- |
-| Sign Up | Signed out | User is able to sign up | Signed up | User was able to sign up | Pass |
-| Sign Up Validation | Signed out | User is unable to sign up with invalid credentials | Signed up with invalid credentials | User was unable to sign up | Pass |
+    classDef setup fill:#e3f2fd,stroke:#1565c0,color:#000
+    classDef data fill:#e8f5e9,stroke:#2e7d32,color:#000
+    classDef exec fill:#fff3e0,stroke:#ef6c00,color:#000
+    classDef verify fill:#f3e5f5,stroke:#6a1b9a,color:#000
 
-## Testing the Sign In Page
-
-| Feature | Auth status: <br> Signed in/Signed out/ Both |Expected Outcome | Testing Performed | Result | Pass/Fail |
-| --- | --- | --- | --- | --- | --- |
-| Sign In | Signed out | User is able to sign in | Signed in | User was able to sign in | Pass |
-| Sign In Validation | Signed out | User is unable to sign in with invalid credentials | Signed in with invalid credentials | User was unable to sign in | Pass |
-
-## Popular profiles component
-
-| Feature | Auth status: <br> Signed in/Signed out/ Both | Expected Outcome | Testing Performed | Result | Pass/Fail |
-| --- | --- | --- | --- | --- | --- |
-| Popular profiles | Both | User is able to view popular profiles | Viewed popular profiles | User was able to view popular profiles | Pass |
-| Follow user | Signed in | User is able to follow a popular profile | Followed a popular profile | User was able to follow a popular profile | Pass |
-| Message user | Signed in | User is able to message a popular profile | Messaged a popular profile | User was able to message a popular profile | Pass |
-
-## Landing Page
-
-| Feature | Auth status: <br> Signed in/Signed out/ Both | Expected Outcome | Testing Performed | Result | Pass/Fail |
-| --- | --- | --- | --- | --- | --- |
-| Landing Page | Both | User is able to view the landing page | Viewed the landing page | User was able to view the landing page | Pass |
-| Sign Up | Signed out | User is able to sign up from the landing page | Signed up from the landing page | User was able to sign up from the landing page | Pass |
-| Sign In | Signed out | User is able to sign in from the landing page | Signed in from the landing page | User was able to sign in from the landing page | Pass |
-
+    class Start,LoadPage,ClickStart,Username setup
+    class PData,PExpected,SData data
+    class PQuiz,SQuiz exec
+    class PersonalityTie,SubjectTie,WaitLoad,VerifyPrefs,VerifyScores,Complete verify
+```

@@ -1,6 +1,6 @@
 // @ts-check
 import { test } from '@playwright/test';
-import { runQuizTest } from './quiz-test-standard-utils';
+import { runQuizTest } from './utils/quiz-test-standard-input';
 
 test.describe('Quiz Application Flow', () => {
   test('complete quiz journey', async ({ page }) => {

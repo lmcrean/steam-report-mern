@@ -1,24 +1,8 @@
 // QuizContext.jsx
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 const QuizContext = createContext(null);
-
-const STORAGE_KEY = 'quiz_state';
-
-const initialState = {
-  section: 'menu',
-  username: '',
-  progress: 0,
-  personalityAnswers: [],
-  subjectAnswers: [],
-  results: null,
-  startTime: null,
-  completionTime: null,
-  preferredTrait: null,
-  preferredSubject: null,
-  personalityBonus: null,
-  subjectBonus: null
-};
+const SCORE_TOLERANCE = 0.001;
 
 export const useQuiz = () => {
   const context = useContext(QuizContext);
@@ -29,23 +13,20 @@ export const useQuiz = () => {
 };
 
 export const QuizProvider = ({ children }) => {
-  const [state, setState] = useState(() => {
-    try {
-      const savedState = localStorage.getItem(STORAGE_KEY);
-      return savedState ? JSON.parse(savedState) : initialState;
-    } catch (error) {
-      console.error('Error loading quiz state:', error);
-      return initialState;
-    }
+  const [state, setState] = useState({
+    section: 'menu',
+    username: '',
+    progress: 0,
+    personalityAnswers: [],
+    subjectAnswers: [],
+    results: null,
+    startTime: null,
+    completionTime: null,
+    preferredTrait: null,
+    preferredSubject: null,
+    personalityBonus: null,
+    subjectBonus: null
   });
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch (error) {
-      console.error('Error saving quiz state:', error);
-    }
-  }, [state]);
 
   const updateState = (updates) => {
     setState(prev => ({ ...prev, ...updates }));
@@ -64,35 +45,78 @@ export const QuizProvider = ({ children }) => {
     'leaderboard'
   ];
 
-  const calculateTopScores = (answers, type) => {
-    if (!Array.isArray(answers) || !answers.length) {
-      console.error('Invalid answers array in calculateTopScores');
-      return [];
-    }
-    
-    let scores = {};
-    if (type === 'personality') {
-      ['Openness', 'Conscientiousness', 'Extraversion', 'Agreeableness', 'Neuroticism']
-        .forEach((trait, index) => {
-          const traitAnswers = answers.filter((_, i) => i % 5 === index);
-          const score = traitAnswers.reduce((sum, ans) => sum + (ans?.value || 0), 0);
-          scores[trait] = (score / 45) * 100;
-        });
-    } else {
-      ['Science', 'Technology', 'English', 'Art', 'Math'].forEach((subject, index) => {
-        const subjectAnswers = answers.slice(index * 10, (index + 1) * 10);
-        const correct = subjectAnswers.filter(a => a?.isCorrect).length;
-        scores[subject] = (correct / 10) * 100;
-      });
-    }
+  // Modified calculateTopScores function
+const calculateTopScores = (answers, type) => {
+  if (!Array.isArray(answers) || !answers.length) {
+    console.error('Invalid answers array in calculateTopScores');
+    return [];
+  }
 
-    const maxScore = Math.max(...Object.values(scores));
-    const TOLERANCE = 0.1;
+  const scores = {};
+
+  if (type === 'personality') {
+    const traits = ['Openness', 'Conscientiousness', 'Extraversion', 'Agreeableness', 'Neuroticism'];
     
-    return Object.entries(scores)
-      .filter(([_, score]) => Math.abs(score - maxScore) <= TOLERANCE)
-      .map(([name]) => name);
-  };
+    traits.forEach((trait, index) => {
+      const startIndex = index * 5;
+      const traitAnswers = answers.slice(startIndex, startIndex + 5);
+      
+      const totalPoints = traitAnswers.reduce((sum, ans) => {
+        const value = ans?.value || 0;
+        return sum + value;
+      }, 0);
+      
+      scores[trait] = Number((totalPoints / 45 * 100).toFixed(3));
+      
+      console.log(`${trait} score calculation:`, {
+        answers: traitAnswers.map(a => a?.value),
+        totalPoints,
+        maxPossible: 45,
+        percentage: scores[trait]
+      });
+    });
+  } else {
+    const subjects = ['Science', 'Technology', 'English', 'Art', 'Math'];
+    
+    subjects.forEach((subject, index) => {
+      const startIdx = index * 10;
+      const endIdx = startIdx + 10;
+      const subjectAnswers = answers.slice(startIdx, endIdx);
+      
+      const correctAnswers = subjectAnswers.filter(a => a?.isCorrect);
+      const correctCount = correctAnswers.length;
+      scores[subject] = Number((correctCount / 10 * 100).toFixed(3));
+
+      console.log(`${subject} score calculation:`, {
+        startIdx,
+        endIdx,
+        totalAnswers: subjectAnswers.length,
+        correctAnswers: correctAnswers.map(a => ({
+          question: a.questionText,
+          answer: a.selectedAnswer
+        })),
+        correctCount,
+        percentage: scores[subject]
+      });
+    });
+  }
+
+  const maxScore = Math.max(...Object.values(scores));
+  const scoresAtMax = Object.entries(scores)
+    .filter(([_, score]) => Math.abs(score - maxScore) <= SCORE_TOLERANCE)
+    .map(([name, score]) => ({ name, score }));
+
+  console.log('Top score analysis:', {
+    type,
+    allScores: scores,
+    maxScore,
+    tolerance: SCORE_TOLERANCE,
+    scoresAtMax,
+    numberOfTopScores: scoresAtMax.length
+  });
+
+  return scoresAtMax.map(s => s.name);
+};
 
   const moveToNextSection = () => {
     const currentIndex = sections.indexOf(state.section);
@@ -100,19 +124,36 @@ export const QuizProvider = ({ children }) => {
     if (currentIndex < sections.length - 1) {
       const nextSection = sections[currentIndex + 1];
 
+      // Special handling for preference selection
       if (nextSection === 'preference-selection') {
-        const hasPersonalityTie = calculateTopScores(state.personalityAnswers, 'personality').length > 1;
-        const hasSubjectTie = calculateTopScores(state.subjectAnswers, 'subject').length > 1;
+        const personalityTopScores = calculateTopScores(state.personalityAnswers, 'personality');
+        const subjectTopScores = calculateTopScores(state.subjectAnswers, 'subject');
+        
+        const hasPersonalityTie = personalityTopScores.length > 1;
+        const hasSubjectTie = subjectTopScores.length > 1;
+
+        console.log('Checking for ties:', {
+          personalityTopScores,
+          subjectTopScores,
+          hasPersonalityTie,
+          hasSubjectTie
+        });
 
         if (hasPersonalityTie || hasSubjectTie) {
+          // Go to preference selection if there are actual ties
+          console.log('Tie detected, moving to preference selection');
           updateState({ section: nextSection });
         } else {
+          // Skip to results if no ties
+          console.log('No tie detected, moving to results');
           updateState({
             section: 'results',
             completionTime: new Date().toISOString()
           });
         }
       } else {
+        // Normal section transition
+        console.log('Moving to next section (normal transition):', nextSection);
         updateState({
           section: nextSection,
           ...(nextSection === 'personality' ? { startTime: new Date().toISOString() } : {}),
@@ -136,8 +177,20 @@ export const QuizProvider = ({ children }) => {
   };
 
   const resetQuiz = () => {
-    setState(initialState);
-    localStorage.removeItem(STORAGE_KEY);
+    setState({
+      section: 'menu',
+      username: '',
+      progress: 0,
+      personalityAnswers: [],
+      subjectAnswers: [],
+      results: null,
+      startTime: null,
+      completionTime: null,
+      preferredTrait: null,
+      preferredSubject: null,
+      personalityBonus: null,
+      subjectBonus: null
+    });
   };
 
   return (
@@ -156,5 +209,4 @@ export const QuizProvider = ({ children }) => {
   );
 };
 
-export { QuizContext };
 export default QuizProvider;
