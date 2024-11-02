@@ -46,77 +46,72 @@ export const QuizProvider = ({ children }) => {
   ];
 
   // Modified calculateTopScores function
-const calculateTopScores = (answers, type) => {
-  if (!Array.isArray(answers) || !answers.length) {
-    console.error('Invalid answers array in calculateTopScores');
-    return [];
-  }
-
-  const scores = {};
-
-  if (type === 'personality') {
-    const traits = ['Openness', 'Conscientiousness', 'Extraversion', 'Agreeableness', 'Neuroticism'];
-    
-    traits.forEach((trait, index) => {
-      const startIndex = index * 5;
-      const traitAnswers = answers.slice(startIndex, startIndex + 5);
+  const calculateTopScores = (answers, type) => {
+    if (!Array.isArray(answers) || !answers.length) {
+      console.error('Invalid answers array in calculateTopScores');
+      return [];
+    }
+  
+    const scores = {};
+  
+    if (type === 'personality') {
+      // Keep personality scoring exactly the same
+      const traits = ['Openness', 'Conscientiousness', 'Extraversion', 'Agreeableness', 'Neuroticism'];
       
-      const totalPoints = traitAnswers.reduce((sum, ans) => {
-        const value = ans?.value || 0;
-        return sum + value;
-      }, 0);
-      
-      scores[trait] = Number((totalPoints / 45 * 100).toFixed(3));
-      
-      console.log(`${trait} score calculation:`, {
-        answers: traitAnswers.map(a => a?.value),
-        totalPoints,
-        maxPossible: 45,
-        percentage: scores[trait]
+      traits.forEach((trait, index) => {
+        const startIndex = index * 5;
+        const traitAnswers = answers.slice(startIndex, startIndex + 5);
+        
+        const totalPoints = traitAnswers.reduce((sum, ans) => {
+          const value = ans?.value || 0;
+          return sum + value;
+        }, 0);
+        
+        scores[trait] = Number((totalPoints / 45 * 100).toFixed(3));
       });
-    });
-  } else {
-    const subjects = ['Science', 'Technology', 'English', 'Art', 'Math'];
-    
-    subjects.forEach((subject, index) => {
-      const startIdx = index * 10;
-      const endIdx = startIdx + 10;
-      const subjectAnswers = answers.slice(startIdx, endIdx);
+    } else {
+      const subjects = ['Science', 'Technology', 'English', 'Art', 'Math'];
       
-      const correctAnswers = subjectAnswers.filter(a => a?.isCorrect);
-      const correctCount = correctAnswers.length;
-      scores[subject] = Number((correctCount / 10 * 100).toFixed(3));
-
-      console.log(`${subject} score calculation:`, {
-        startIdx,
-        endIdx,
-        totalAnswers: subjectAnswers.length,
-        correctAnswers: correctAnswers.map(a => ({
-          question: a.questionText,
-          answer: a.selectedAnswer
-        })),
-        correctCount,
-        percentage: scores[subject]
+      subjects.forEach((subject, index) => {
+        const startIdx = index * 10;
+        const endIdx = startIdx + 10;
+        const subjectAnswers = answers.slice(startIdx, endIdx);
+        
+        console.log(`Raw ${subject} answers:`, subjectAnswers); // Add this log
+        
+        const correctCount = subjectAnswers.filter(a => a?.isCorrect).length;
+        scores[subject] = Number((correctCount / 10 * 100).toFixed(3));
+  
+        console.log(`${subject} detailed calculation:`, {
+          startIdx,
+          endIdx,
+          answers: subjectAnswers.map(a => ({
+            correct: a?.isCorrect,
+            question: a?.questionText && a.questionText.substring(0, 30) + '...'
+          })),
+          correctCount,
+          score: scores[subject]
+        });
       });
-    });
-  }
-
-  const maxScore = Math.max(...Object.values(scores));
-  const scoresAtMax = Object.entries(scores)
-    .filter(([_, score]) => Math.abs(score - maxScore) <= SCORE_TOLERANCE)
-    .map(([name, score]) => ({ name, score }));
-
-  console.log('Top score analysis:', {
-    type,
-    allScores: scores,
-    maxScore,
-    tolerance: SCORE_TOLERANCE,
-    scoresAtMax,
-    numberOfTopScores: scoresAtMax.length
-  });
-
-  return scoresAtMax.map(s => s.name);
-};
+    }
+  
+    // Add more logging around max score detection
+    const maxScore = Math.max(...Object.values(scores));
+    const topScores = Object.entries(scores)
+      .filter(([name, score]) => {
+        const diff = Math.abs(score - maxScore);
+        console.log(`Score comparison for ${name}:`, {
+          score,
+          maxScore,
+          difference: diff,
+          withinTolerance: diff <= SCORE_TOLERANCE
+        });
+        return diff <= SCORE_TOLERANCE;
+      })
+      .map(([name]) => name);
+  
+    return topScores;
+  };
 
   const moveToNextSection = () => {
     const currentIndex = sections.indexOf(state.section);
