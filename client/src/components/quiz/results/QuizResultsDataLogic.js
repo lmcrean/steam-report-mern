@@ -50,9 +50,6 @@ const calculatePersonalityScoresFromAnswers = (answers, preferredTrait = null) =
     };
   });
 
-  // Log detailed processing results
-  console.log('Answer Processing Details:', JSON.stringify(processedAnswers, null, 2));
-
   // Calculate raw scores
   processedAnswers.forEach(({ trait, processedValue }) => {
     scores[trait] += processedValue;
@@ -74,14 +71,6 @@ const calculatePersonalityScoresFromAnswers = (answers, preferredTrait = null) =
       bonusScore: percentages[preferredTrait]
     });
   }
-
-  console.log('Score Calculation Summary:', {
-    rawScores: scores,
-    percentages: percentages,
-    preferredTrait,
-    totalAnswers: answers.length,
-    validAnswers: processedAnswers.filter(a => a.processedValue > 0).length
-  });
 
   return percentages;
 };
@@ -143,15 +132,6 @@ export const processSubjectAnswers = (subjectAnswers, preferredSubject = null) =
     return result;
   });
 
-  // Log section summary
-  console.log('Subject Processing Summary:', processedSections.map(section => ({
-    subject: section.subject,
-    score: section.score,
-    correctAnswers: section.correctAnswers,
-    validAnswers: section.validAnswers,
-    isPreferred: section.isPreferred
-  })));
-
   return processedSections;
 };
 
@@ -165,15 +145,6 @@ export const getHighestScore = (data) => {
     const maxScore = ensureNumber(max.score);
     const currentScore = ensureNumber(current.score);
     return maxScore > currentScore ? max : current;
-  });
-
-  console.log('Highest Score Calculation:', {
-    highest,
-    totalEntries: data.length,
-    allScores: data.map(item => ({
-      name: item.fullTrait || item.subject,
-      score: item.score
-    }))
   });
 
   return highest;
@@ -218,13 +189,10 @@ export const useQuizResultsData = (
     ? getCareerFeedback(highest.subject, highest.personalityTrait)
     : null;
 
-  console.log('Final Results Summary:', {
-    highestPersonalityTrait: highest.personalityTrait,
-    highestSubject: highest.subject,
-    hasFeedback: !!feedback,
-    personalityScores: personalityData.length,
-    subjectScores: subjectData.length
-  });
+  // console.log('Final Results Summary:', {
+  //   highestPersonalityTrait: highest.personalityTrait,
+  //   highestSubject: highest.subject,
+  // });
 
   return {
     personalityData,

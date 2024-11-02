@@ -17,6 +17,13 @@ const SubjectQuiz = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [answerKey, setAnswerKey] = useState(new Map());
+  const [subjectScores, setSubjectScores] = useState({
+    Science: 0,
+    Technology: 0,
+    English: 0,
+    Art: 0,
+    Math: 0,
+  });
   
   const totalQuestions = 50;
 
@@ -60,13 +67,6 @@ const SubjectQuiz = () => {
       const currentQuestionData = getCurrentQuestionData();
       const isCorrect = checkAnswer(currentQuestionData, currentAnswer);
       const selectedOption = getAnswerOptions().find(opt => opt.value === currentAnswer);
-      
-      console.log('Processing answer:', {
-        questionNumber: currentQuestion + 1,
-        subject: getCurrentSubject(),
-        isCorrect,
-        isLastQuestion: currentQuestion === totalQuestions - 1
-      });
 
       // Save answer with metadata
       const newAnswers = [...answers];
@@ -76,10 +76,19 @@ const SubjectQuiz = () => {
         correctAnswer: currentQuestionData.correct_answer,
         isCorrect: isCorrect,
         subject: getCurrentSubject(),
-        timestamp: new Date().toISOString()
       };
 
       setAnswers(newAnswers);
+
+      // Update subject scores
+      const newSubjectScores = { ...subjectScores };
+      newSubjectScores[getCurrentSubject()] += isCorrect ? 1 : 0;
+      setSubjectScores(newSubjectScores);
+
+      if ((currentQuestion + 1) % 10 === 0) {
+        const subject = getCurrentSubject();
+        const score = (newSubjectScores[subject] / 10) * 100;
+      }
       
       if (currentQuestion < totalQuestions - 1) {
         updateState({ 
@@ -94,11 +103,21 @@ const SubjectQuiz = () => {
           subjectAnswers: newAnswers,
           progress: 100
         });
+
+        const subjectTotals = Object.keys(subjectScores).reduce((acc, subject) => {
+          acc[subject] = subjectScores[subject];
+          return acc;
+        }, {});
         
-        console.log('Initiating section transition');
+        const subjectPercentages = Object.keys(subjectTotals).reduce((acc, subject) => {
+          acc[subject] = ((subjectTotals[subject] * 100) / 10).toFixed(2);
+          return acc;
+        }, {});
+        
+        console.log('Final Subject totals / 10:', subjectTotals);
+        console.log('Final Subject totals as % (planned):', subjectPercentages);
+        
         const success = moveToNextSection();
-        
-        console.log('Section transition result:', { success });
         if (!success) {
           setError('Failed to proceed to next section. Please try again.');
         }

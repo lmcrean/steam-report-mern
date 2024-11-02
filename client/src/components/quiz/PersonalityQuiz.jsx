@@ -31,11 +31,10 @@ const PersonalityQuiz = () => {
         value: selectedValue,
         trait: questions[currentQuestionIndex].trait,
         questionIndex: currentQuestionIndex,
-        timestamp: new Date().toISOString()
       };
       
       newAnswers[currentQuestionIndex] = answer;
-      console.log('New answer recorded:', answer);
+      // console.log('Person. answer:', selectedValue, questions[currentQuestionIndex].trait);
       
       setAnswers(newAnswers);
       updateState({ personalityAnswers: newAnswers });
@@ -51,10 +50,16 @@ const PersonalityQuiz = () => {
           }
           return acc;
         }, {});
-        console.log('Final trait totals:', traitTotals);
+        
+        const traitPercentages = Object.keys(traitTotals).reduce((acc, trait) => {
+          acc[trait] = ((traitTotals[trait] * 100) / 45).toFixed(2);
+          return acc;
+        }, {});
+        
+        console.log('Final trait totals / 45:', traitTotals);
+        console.log('Final trait totals as % (planned):', traitPercentages);
         
         const success = moveToNextSection();
-        console.log('moveToNextSection result:', success);
         
         if (!success) {
           setError('Please answer all questions before proceeding.');

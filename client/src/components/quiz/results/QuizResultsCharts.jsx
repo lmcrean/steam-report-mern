@@ -1,5 +1,6 @@
 // QuizResultsCharts.jsx
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+
 import { 
   BarChart, 
   Bar, 
@@ -144,6 +145,18 @@ export const PersonalityChart = ({ data }) => {
 
   const maxScore = Math.max(...chartData.map(item => item.score));
 
+  const prevChartDataRef = useRef();
+
+  useEffect(() => {
+    const prevChartData = prevChartDataRef.current;
+    const concatenatedResults = chartData.map(item => `${item.fullTrait} - ${formatScore(item.score)}%`).join(', ');
+
+    if (JSON.stringify(prevChartData) !== JSON.stringify(chartData)) {
+      console.log('Rendered results:', concatenatedResults);
+      prevChartDataRef.current = chartData;
+    }
+  }, [chartData]);
+
   return (
     <div className="space-y-6">
       <ResultsChart data={chartData} type="bar" xKey="trait" yKey="score" />
@@ -166,10 +179,21 @@ export const SubjectChart = ({ data }) => {
   const chartData = data.map(item => ({
     subject: item.subject,
     score: Number(item.score),
-    isPreferred: item.isPreferred
   }));
 
   const maxScore = Math.max(...chartData.map(item => item.score));
+
+  const prevChartDataRef = useRef();
+
+  useEffect(() => {
+    const prevChartData = prevChartDataRef.current;
+    const concatenatedResults = chartData.map(item => `${item.subject} - ${formatScore(item.score)}%`).join(', ');
+
+    if (JSON.stringify(prevChartData) !== JSON.stringify(chartData)) {
+      console.log('Rendered results:', concatenatedResults);
+      prevChartDataRef.current = chartData;
+    }
+  }, [chartData]);
 
   return (
     <div className="space-y-6">

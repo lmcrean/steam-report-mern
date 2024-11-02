@@ -71,25 +71,6 @@ export const QuizProvider = ({ children }) => {
       });
     } else {
       const subjects = ['Science', 'Technology', 'English', 'Art', 'Math'];
-      
-      subjects.forEach((subject, index) => {
-        const startIdx = index * 10;
-        const endIdx = startIdx + 10;
-        const subjectAnswers = answers.slice(startIdx, endIdx);        
-        const correctCount = subjectAnswers.filter(a => a?.isCorrect).length;
-        scores[subject] = Number((correctCount / 10 * 100).toFixed(3));
-  
-        console.log(`${subject} detailed calculation:`, {
-          startIdx,
-          endIdx,
-          answers: subjectAnswers.map(a => ({
-            correct: a?.isCorrect,
-            question: a?.questionText && a.questionText.substring(0, 30) + '...'
-          })),
-          correctCount,
-          score: scores[subject]
-        });
-      });
     }
   
     // Add more logging around max score detection
@@ -97,13 +78,7 @@ export const QuizProvider = ({ children }) => {
     const topScores = Object.entries(scores)
       .filter(([name, score]) => {
         const diff = Math.abs(score - maxScore);
-        console.log(`Score comparison for ${name}:`, {
-          score,
-          maxScore,
-          difference: diff,
-          withinTolerance: diff <= SCORE_TOLERANCE
-        });
-        return diff <= SCORE_TOLERANCE;
+        return diff <= SCORE_TOLERANCE; // note: this is a strict equality check, logic needs clarifying
       })
       .map(([name]) => name);
   
@@ -124,13 +99,6 @@ export const QuizProvider = ({ children }) => {
         const hasPersonalityTie = personalityTopScores.length > 1;
         const hasSubjectTie = subjectTopScores.length > 1;
 
-        console.log('Checking for ties:', {
-          personalityTopScores,
-          subjectTopScores,
-          hasPersonalityTie,
-          hasSubjectTie
-        });
-
         if (hasPersonalityTie || hasSubjectTie) {
           // Go to preference selection if there are actual ties
           console.log('Tie detected, moving to preference selection');
@@ -145,7 +113,6 @@ export const QuizProvider = ({ children }) => {
         }
       } else {
         // Normal section transition
-        console.log('Moving to next section (normal transition):', nextSection);
         updateState({
           section: nextSection,
           ...(nextSection === 'personality' ? { startTime: new Date().toISOString() } : {}),
