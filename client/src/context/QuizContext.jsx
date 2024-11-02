@@ -67,7 +67,7 @@ export const QuizProvider = ({ children }) => {
           return sum + value;
         }, 0);
         
-        scores[trait] = Number((totalPoints / 45 * 100).toFixed(3));
+        scores[trait] = Number((totalPoints / 45 * 100).toFixed(1));
       });
     } else {
       const subjects = ['Science', 'Technology', 'English', 'Art', 'Math'];

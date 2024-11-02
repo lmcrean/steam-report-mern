@@ -110,7 +110,7 @@ const SubjectQuiz = () => {
         }, {});
         
         const subjectPercentages = Object.keys(subjectTotals).reduce((acc, subject) => {
-          acc[subject] = ((subjectTotals[subject] * 100) / 10).toFixed(2);
+          acc[subject] = ((subjectTotals[subject] * 100) / 10).toFixed(0);
           return acc;
         }, {});
         

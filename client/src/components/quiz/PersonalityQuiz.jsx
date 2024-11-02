@@ -52,7 +52,7 @@ const PersonalityQuiz = () => {
         }, {});
         
         const traitPercentages = Object.keys(traitTotals).reduce((acc, trait) => {
-          acc[trait] = ((traitTotals[trait] * 100) / 45).toFixed(2);
+          acc[trait] = ((traitTotals[trait] * 100) / 45).toFixed(0);
           return acc;
         }, {});
         

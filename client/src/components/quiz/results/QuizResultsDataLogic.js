@@ -8,7 +8,7 @@ export const ensureNumber = (value) => {
 };
 
 export const formatScore = (score) => {
-  return ensureNumber(score).toFixed(1);
+  return ensureNumber(score).toFixed(0);
 };
 
 const calculatePersonalityScoresFromAnswers = (answers, preferredTrait = null) => {
