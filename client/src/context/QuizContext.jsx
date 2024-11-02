@@ -75,10 +75,7 @@ export const QuizProvider = ({ children }) => {
       subjects.forEach((subject, index) => {
         const startIdx = index * 10;
         const endIdx = startIdx + 10;
-        const subjectAnswers = answers.slice(startIdx, endIdx);
-        
-        console.log(`Raw ${subject} answers:`, subjectAnswers); // Add this log
-        
+        const subjectAnswers = answers.slice(startIdx, endIdx);        
         const correctCount = subjectAnswers.filter(a => a?.isCorrect).length;
         scores[subject] = Number((correctCount / 10 * 100).toFixed(3));
   
@@ -96,7 +93,7 @@ export const QuizProvider = ({ children }) => {
     }
   
     // Add more logging around max score detection
-    const maxScore = Math.max(...Object.values(scores));
+    const maxScore = 100 // maxScore is 100 for both personality and subject
     const topScores = Object.entries(scores)
       .filter(([name, score]) => {
         const diff = Math.abs(score - maxScore);

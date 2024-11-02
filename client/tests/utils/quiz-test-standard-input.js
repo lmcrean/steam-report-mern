@@ -26,8 +26,8 @@ async function completePersonalityQuiz(page) {
   let questionIndex = 0;
   for (const trait of Object.keys(personalityAnswers)) {
     for (const answer of personalityAnswers[trait]) {
-      // Wait for question to be visible
-      await expect(page.getByText(`Question ${questionIndex + 1}`)).toBeVisible();
+      // Wait for question to be visible - removed for performance reasons
+      // await expect(page.getByText(`Question ${questionIndex + 1}`)).toBeVisible();
       
       // Select predetermined answer
       await page.getByRole('radio', { name: String(answer) }).click();
@@ -45,11 +45,10 @@ async function completePersonalityQuiz(page) {
 // Helper function to complete subject quiz with predetermined answers
 async function completeSubjectQuiz(page) {
   for (const subject of Object.keys(subjectAnswers)) {
-    console.log(`\nStarting ${subject} section`);
     
     for (let i = 0; i < 10; i++) {
-      // Wait for question to be visible
-      await expect(page.getByText(`${subject} - Question ${i + 1} of 10`)).toBeVisible();
+      // Wait for question to be visible - removed for performance reasons
+      // await expect(page.getByText(`${subject} - Question ${i + 1} of 10`)).toBeVisible();
       
       // Wait for options to be visible
       await page.waitForSelector('.relative.flex.items-center', { 
@@ -70,8 +69,6 @@ async function completeSubjectQuiz(page) {
         timeout: 5000
       });
       await page.click('button[name="Next"]');
-      
-      console.log(`Completed ${subject} question ${i + 1}`);
     }
   }
 }

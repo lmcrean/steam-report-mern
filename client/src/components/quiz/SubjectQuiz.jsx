@@ -21,24 +21,16 @@ const SubjectQuiz = () => {
   const totalQuestions = 50;
 
   useEffect(() => {
-    console.log('Initializing Subject Quiz');
     try {
       const allQuestions = [];
       const questionMap = new Map();
       
       Object.keys(subjects).forEach(subject => {
-        const subjectQuestions = getRandomQuestions(subject, 10);
-        console.log(`Loaded ${subjectQuestions.length} questions for ${subject}`);
-        
+        const subjectQuestions = getRandomQuestions(subject, 10);        
         subjectQuestions.forEach(question => {
           questionMap.set(question.question, question.correct_answer);
         });
         allQuestions.push(...subjectQuestions);
-      });
-
-      console.log('Questions loaded:', {
-        totalQuestions: allQuestions.length,
-        subjects: Object.keys(subjects)
       });
 
       setQuestions(allQuestions);
@@ -60,7 +52,6 @@ const SubjectQuiz = () => {
   };
 
   const handleAnswer = (value) => {
-    console.log('Answer selected:', value);
     setCurrentAnswer(value);
   };
 
@@ -91,7 +82,6 @@ const SubjectQuiz = () => {
       setAnswers(newAnswers);
       
       if (currentQuestion < totalQuestions - 1) {
-        console.log('Moving to next question');
         updateState({ 
           subjectAnswers: newAnswers,
           progress: ((currentQuestion + 1) / totalQuestions * 100)
@@ -120,20 +110,12 @@ const SubjectQuiz = () => {
     const options = getAnswerOptions();
     const selectedOption = options.find(opt => opt.value === selectedAnswer);
     const isCorrect = selectedOption?.label === question.correct_answer;
-    
-    console.log('Answer validation:', {
-      questionText: question.question,
-      userAnswer: selectedOption?.label,
-      correctAnswer: question.correct_answer,
-      isCorrect
-    });
   
     return isCorrect;
   };
 
   const handlePrevious = () => {
     if (currentQuestion > 0) {
-      console.log('Moving to previous question');
       setCurrentQuestion(currentQuestion - 1);
       const previousAnswer = answers[currentQuestion - 1];
       setCurrentAnswer(previousAnswer ? previousAnswer.selectedAnswer : null);

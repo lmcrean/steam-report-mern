@@ -15,7 +15,6 @@ const PersonalityQuiz = () => {
     const loadQuestions = async () => {
       try {
         const { personalityQuestions } = await import('../../data/personalityQuestions');
-        console.log('Loaded personality questions:', personalityQuestions);
         setQuestions(personalityQuestions);
       } catch (error) {
         console.error('Error loading personality questions:', error);
@@ -27,9 +26,6 @@ const PersonalityQuiz = () => {
 
   const handleNext = () => {
     if (selectedValue !== null) {
-      console.log('handleNext called with selectedValue:', selectedValue);
-      console.log('Current question:', questions[currentQuestionIndex]);
-      
       const newAnswers = [...answers];
       const answer = {
         value: selectedValue,
@@ -40,17 +36,14 @@ const PersonalityQuiz = () => {
       
       newAnswers[currentQuestionIndex] = answer;
       console.log('New answer recorded:', answer);
-      console.log('Full answers array:', newAnswers);
       
       setAnswers(newAnswers);
       updateState({ personalityAnswers: newAnswers });
 
       if (currentQuestionIndex < 24) {
-        console.log('Moving to next question:', currentQuestionIndex + 1);
         setCurrentQuestionIndex(currentQuestionIndex + 1);
         setSelectedValue(null);
       } else {
-        console.log('Quiz completed, final answers:', newAnswers);
         // Log trait totals before moving to next section
         const traitTotals = newAnswers.reduce((acc, ans) => {
           if (ans && ans.trait) {
