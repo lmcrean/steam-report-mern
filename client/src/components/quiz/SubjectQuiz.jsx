@@ -23,24 +23,27 @@ const SubjectQuiz = () => {
     Art: 0,
     Math: 0,
   });
+  const [quizCompleted, setQuizCompleted] = useState(false);
   
   const totalQuestions = 50;
 
   useEffect(() => {
     try {
       const allQuestions = [];
-      const questionMap = new Map();
       
       Object.keys(subjects).forEach(subject => {
         const subjectQuestions = getRandomQuestions(subject, 10);        
-        subjectQuestions.forEach(question => {
-          questionMap.set(question.question, question.correct_answer);
-        });
         allQuestions.push(...subjectQuestions);
       });
 
       setQuestions(allQuestions);
-      setSubjectScores(questionMap);
+      setSubjectScores({
+        Science: 0,
+        Technology: 0,
+        English: 0,
+        Art: 0,
+        Math: 0
+      });
       setIsLoading(false);
     } catch (error) {
       console.error('Error loading questions:', error);
@@ -48,6 +51,14 @@ const SubjectQuiz = () => {
       setIsLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    if (quizCompleted) {
+      console.log('No tie detected, moving to results');
+      moveToNextSection();
+      setQuizCompleted(false); // Reset for next time
+    }
+  }, [quizCompleted, moveToNextSection]);
 
   const getCurrentSubject = () => {
     if (currentQuestion < 10) return 'Science';
@@ -64,29 +75,48 @@ const SubjectQuiz = () => {
   const handleNext = () => {
     if (currentAnswer !== null) {
       const currentQuestionData = getCurrentQuestionData();
-      const isCorrect = checkAnswer(currentQuestionData, currentAnswer);
+      const answerResult = checkAnswer(currentQuestionData, currentAnswer);
       const subject = getCurrentSubject();
 
-      // Update subject scores with numeric values
       setSubjectScores(prev => {
         const newScores = { ...prev };
-        newScores[subject] = Number(prev[subject] || 0) + (isCorrect ? 1 : 0);
+        const currentScore = Number(prev[subject] || 0);
+        const newScore = currentScore + (answerResult ? 1 : 0);
+        newScores[subject] = newScore;
+
+        // Section summary logging
+        if ((currentQuestion + 1) % 10 === 0) {
+          const sectionAnswers = answers
+            .slice(currentQuestion - 9, currentQuestion + 1)
+            .map(result => result ? 'true' : 'false');
+          
+          console.log('-------------------------');
+          console.log(`\n${subject} Section Summary:`);
+          console.log(`Answers: [${sectionAnswers.join(', ')}]`);
+          console.log(`Score: ${newScore}/10 = ${(newScore * 10)}%`);
+          console.log('-------------------------\n');
+        }
+
+        // If this is the last question
+        if (currentQuestion === totalQuestions - 1) {
+          console.log('===================');
+          console.log('\nFinal Quiz Summary:');
+          Object.entries(newScores).forEach(([subj, score]) => {
+            console.log(`${subj}: ${score}/10 = ${score * 10}%`);
+          });
+          console.log('===================\n');
+          
+          // Set flag for useEffect to handle transition
+          setQuizCompleted(true);
+        }
+
         return newScores;
       });
 
       // Update answers array
       const updatedAnswers = [...answers];
-      updatedAnswers[currentQuestion] = isCorrect;
+      updatedAnswers[currentQuestion] = answerResult;
       setAnswers(updatedAnswers);
-
-      if ((currentQuestion + 1) % 10 === 0) {
-        const sectionScore = Math.round((subjectScores[subject] / 10) * 100);
-        console.log('Section Complete:', {
-          subject,
-          score: sectionScore,
-          correctAnswers: subjectScores[subject]
-        });
-      }
 
       if (currentQuestion < totalQuestions - 1) {
         updateState({ 
@@ -95,30 +125,6 @@ const SubjectQuiz = () => {
         });
         setCurrentQuestion(currentQuestion + 1);
         setCurrentAnswer(null);
-      } else {
-        console.log('Quiz completed, preparing for section transition');
-        updateState({ 
-          subjectAnswers: updatedAnswers,
-          progress: 100
-        });
-
-        const subjectTotals = Object.keys(subjectScores).reduce((acc, subject) => {
-          acc[subject] = subjectScores[subject];
-          return acc;
-        }, {});
-        
-        const subjectPercentages = Object.keys(subjectTotals).reduce((acc, subject) => {
-          acc[subject] = ((subjectTotals[subject] * 100) / 10).toFixed(0);
-          return acc;
-        }, {});
-        
-        console.log('Final Subject totals / 10:', subjectTotals);
-        console.log('Final Subject totals as % (planned):', subjectPercentages);
-        
-        const success = moveToNextSection();
-        if (!success) {
-          setError('Failed to proceed to next section. Please try again.');
-        }
       }
     }
   };
@@ -128,15 +134,9 @@ const SubjectQuiz = () => {
     const selectedOption = options.find(opt => opt.value === selectedAnswer);
     const isCorrect = selectedOption?.label === question.correct_answer;
   
-    console.log(`Q${currentQuestion % 10 + 1}: ${isCorrect ? 'correct' : 'incorrect'} - ${selectedOption?.label}`);
+    // console.log(`Q${currentQuestion % 10 + 1} checkAnswer:  ${selectedOption?.label} - ${isCorrect ? 'True' : 'False'}`);
 
-    return {
-      question: question.question,
-      correctAnswer: question.correct_answer,
-      selectedLabel: selectedOption?.label,
-      selectedValue: selectedAnswer,
-      isCorrect
-    };
+    return isCorrect
   };
 
   const handlePrevious = () => {

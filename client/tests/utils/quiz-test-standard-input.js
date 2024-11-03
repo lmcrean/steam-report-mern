@@ -48,15 +48,12 @@ async function completePersonalityQuiz(page) {
 // Helper function to complete subject quiz with predetermined answers
 async function completeSubjectQuiz(page) {
   for (const subject of Object.keys(subjectAnswers)) {    
-    console.log(`\n${subject} Section - Expected Answers:`);
-    
     // Get all questions for this subject
     const questions = subjects[subject].questions;
-    console.log(`${subject} Questions loaded:`, questions.length);
     
     for (let i = 0; i < 10; i++) {
       // Log the intention for this question
-      console.log(`Q${i + 1}: intention - ${subjectAnswers[subject][i] ? 'True' : 'False'}`);
+      // console.log(`Q${i + 1}: intention - ${subjectAnswers[subject][i] ? 'True' : 'False'}`);
       
       // Wait for question to be visible and get its text
       const questionElement = await page.getByText(`${subject} - Question ${i + 1} of 10`);
@@ -65,7 +62,7 @@ async function completeSubjectQuiz(page) {
       
       // Find matching question in our database
       const currentQuestion = questions.find(q => q.question === questionText);
-      console.log('Found question:', currentQuestion);
+      // console.log('Found question:', currentQuestion);
       
       // Get all answer options and find the correct one
       const options = await page.$$('.relative.flex.items-center');
