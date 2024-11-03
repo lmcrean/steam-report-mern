@@ -16,7 +16,6 @@ const SubjectQuiz = () => {
   const [answers, setAnswers] = useState(new Array(50).fill(null));
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [answerKey, setAnswerKey] = useState(new Map());
   const [subjectScores, setSubjectScores] = useState({
     Science: 0,
     Technology: 0,
@@ -41,7 +40,7 @@ const SubjectQuiz = () => {
       });
 
       setQuestions(allQuestions);
-      setAnswerKey(questionMap);
+      setSubjectScores(questionMap);
       setIsLoading(false);
     } catch (error) {
       console.error('Error loading questions:', error);
@@ -49,6 +48,20 @@ const SubjectQuiz = () => {
       setIsLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    if (currentQuestion < 10) {
+      console.log(`\nScience Section Starting`);
+    } else if (currentQuestion < 20) {
+      console.log(`\nTechnology Section Starting`);
+    } else if (currentQuestion < 30) {
+      console.log(`\nEnglish Section Starting`);
+    } else if (currentQuestion < 40) {
+      console.log(`\nArt Section Starting`);
+    } else {
+      console.log(`\nMath Section Starting`);
+    }
+  }, [currentQuestion]);
 
   const getCurrentSubject = () => {
     if (currentQuestion < 10) return 'Science';
@@ -66,33 +79,32 @@ const SubjectQuiz = () => {
     if (currentAnswer !== null) {
       const currentQuestionData = getCurrentQuestionData();
       const isCorrect = checkAnswer(currentQuestionData, currentAnswer);
-      const selectedOption = getAnswerOptions().find(opt => opt.value === currentAnswer);
+      const subject = getCurrentSubject();
 
-      // Save answer with metadata
-      const newAnswers = [...answers];
-      newAnswers[currentQuestion] = {
-        questionText: currentQuestionData.question,
-        selectedAnswer: selectedOption.label,
-        correctAnswer: currentQuestionData.correct_answer,
-        isCorrect: isCorrect,
-        subject: getCurrentSubject(),
-      };
+      // Update subject scores with numeric values
+      setSubjectScores(prev => {
+        const newScores = { ...prev };
+        newScores[subject] = Number(prev[subject] || 0) + (isCorrect ? 1 : 0);
+        return newScores;
+      });
 
-      setAnswers(newAnswers);
-
-      // Update subject scores
-      const newSubjectScores = { ...subjectScores };
-      newSubjectScores[getCurrentSubject()] += isCorrect ? 1 : 0;
-      setSubjectScores(newSubjectScores);
+      // Update answers array
+      const updatedAnswers = [...answers];
+      updatedAnswers[currentQuestion] = isCorrect;
+      setAnswers(updatedAnswers);
 
       if ((currentQuestion + 1) % 10 === 0) {
-        const subject = getCurrentSubject();
-        const score = (newSubjectScores[subject] / 10) * 100;
+        const sectionScore = Math.round((subjectScores[subject] / 10) * 100);
+        console.log('Section Complete:', {
+          subject,
+          score: sectionScore,
+          correctAnswers: subjectScores[subject]
+        });
       }
-      
+
       if (currentQuestion < totalQuestions - 1) {
         updateState({ 
-          subjectAnswers: newAnswers,
+          subjectAnswers: updatedAnswers,
           progress: ((currentQuestion + 1) / totalQuestions * 100)
         });
         setCurrentQuestion(currentQuestion + 1);
@@ -100,7 +112,7 @@ const SubjectQuiz = () => {
       } else {
         console.log('Quiz completed, preparing for section transition');
         updateState({ 
-          subjectAnswers: newAnswers,
+          subjectAnswers: updatedAnswers,
           progress: 100
         });
 
@@ -130,7 +142,15 @@ const SubjectQuiz = () => {
     const selectedOption = options.find(opt => opt.value === selectedAnswer);
     const isCorrect = selectedOption?.label === question.correct_answer;
   
-    return isCorrect;
+    console.log(`Q${currentQuestion % 10 + 1}: ${isCorrect ? 'correct' : 'incorrect'} - ${selectedOption?.label}`);
+
+    return {
+      question: question.question,
+      correctAnswer: question.correct_answer,
+      selectedLabel: selectedOption?.label,
+      selectedValue: selectedAnswer,
+      isCorrect
+    };
   };
 
   const handlePrevious = () => {

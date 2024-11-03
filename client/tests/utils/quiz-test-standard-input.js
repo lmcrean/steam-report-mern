@@ -47,7 +47,12 @@ async function completePersonalityQuiz(page) {
 // Helper function to complete subject quiz with predetermined answers
 async function completeSubjectQuiz(page) {
   for (const subject of Object.keys(subjectAnswers)) {    
+    console.log(`\n${subject} Section - Expected Answers:`);
+    
     for (let i = 0; i < 10; i++) {
+      // Log the intention for this question
+      console.log(`Q${i + 1}: intention - ${subjectAnswers[subject][i] ? 'True' : 'False'}`);
+      
       // Wait for question to be visible
       await expect(page.getByText(`${subject} - Question ${i + 1} of 10`)).toBeVisible();
       

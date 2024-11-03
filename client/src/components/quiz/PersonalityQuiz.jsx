@@ -56,8 +56,8 @@ const PersonalityQuiz = () => {
           return acc;
         }, {});
         
-        console.log('Final trait totals / 45:', traitTotals);
-        console.log('Final trait totals as % (planned):', traitPercentages);
+        // console.log('Final trait totals / 45:', traitTotals);
+        // console.log('Final trait totals as % (planned):', traitPercentages);
         
         const success = moveToNextSection();
         
