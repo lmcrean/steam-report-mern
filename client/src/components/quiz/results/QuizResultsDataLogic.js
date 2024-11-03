@@ -11,13 +11,7 @@ export const formatScore = (score) => {
   return ensureNumber(score).toFixed(0);
 };
 
-const calculatePersonalityScoresFromAnswers = (answers, preferredTrait = null) => {
-  // Input validation with detailed logging
-  if (!answers || !Array.isArray(answers)) {
-    console.error('Invalid answers input:', JSON.stringify(answers, null, 2));
-    return null;
-  }
-
+export const calculatePersonalityScores = (answers) => {
   const scores = {
     Openness: 0,
     Conscientiousness: 0,
@@ -25,54 +19,17 @@ const calculatePersonalityScoresFromAnswers = (answers, preferredTrait = null) =
     Agreeableness: 0,
     Neuroticism: 0
   };
-  
-  const traits = Object.keys(scores);
-  
-  // Track detailed answer processing
-  const processedAnswers = answers.map((answer, index) => {
-    const traitIndex = index % 5;
-    const trait = traits[traitIndex];
-    let value = 0;
 
-    if (typeof answer === 'number') {
-      value = answer;
-    } else if (answer?.value) {
-      value = answer.value;
-    } else {
-      console.warn(`Invalid answer at index ${index}:`, JSON.stringify(answer, null, 2));
-    }
-
-    return {
-      index,
-      trait,
-      rawValue: answer,
-      processedValue: value
-    };
+  // Group answers by trait (5 questions per trait)
+  Object.keys(scores).forEach((trait, traitIndex) => {
+    const traitAnswers = answers.slice(traitIndex * 5, (traitIndex + 1) * 5);
+    const traitTotal = traitAnswers.reduce((sum, answer) => {
+      return sum + (answer?.value || 0);
+    }, 0);
+    scores[trait] = (traitTotal / 45) * 100; // Convert to percentage
   });
 
-  // Calculate raw scores
-  processedAnswers.forEach(({ trait, processedValue }) => {
-    scores[trait] += processedValue;
-  });
-
-  // Convert to percentages
-  const percentages = Object.entries(scores).reduce((acc, [trait, score]) => {
-    const percentage = (score / 45) * 100;
-    acc[trait] = percentage;
-    return acc;
-  }, {});
-
-  // Apply preference bonus if specified
-  if (preferredTrait && percentages[preferredTrait]) {
-    const originalScore = percentages[preferredTrait];
-    percentages[preferredTrait] *= 1.1; // 10% bonus
-    console.log(`Applied preference bonus to ${preferredTrait}:`, {
-      originalScore,
-      bonusScore: percentages[preferredTrait]
-    });
-  }
-
-  return percentages;
+  return scores;
 };
 
 export const processSubjectAnswers = (subjectAnswers, preferredSubject = null) => {
@@ -162,7 +119,7 @@ export const useQuizResultsData = (
       return [];
     }
 
-    const scores = calculatePersonalityScoresFromAnswers(personalityAnswers, preferredTrait);
+    const scores = calculatePersonalityScores(personalityAnswers);
     if (!scores) return [];
     
     return Object.entries(scores).map(([trait, percentage]) => ({
