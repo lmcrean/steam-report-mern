@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { subjects } from '../../src/data/subjectQuestions.js';
 
 // Predefined answers to ensure Extraversion is highest OCEAN trait
 const personalityAnswers = {
@@ -49,31 +50,40 @@ async function completeSubjectQuiz(page) {
   for (const subject of Object.keys(subjectAnswers)) {    
     console.log(`\n${subject} Section - Expected Answers:`);
     
+    // Get all questions for this subject
+    const questions = subjects[subject].questions;
+    console.log(`${subject} Questions loaded:`, questions.length);
+    
     for (let i = 0; i < 10; i++) {
       // Log the intention for this question
       console.log(`Q${i + 1}: intention - ${subjectAnswers[subject][i] ? 'True' : 'False'}`);
       
-      // Wait for question to be visible
-      await expect(page.getByText(`${subject} - Question ${i + 1} of 10`)).toBeVisible();
+      // Wait for question to be visible and get its text
+      const questionElement = await page.getByText(`${subject} - Question ${i + 1} of 10`);
+      await expect(questionElement).toBeVisible();
+      const questionText = await page.locator('.text-lg.font-medium').textContent();
       
-      // Wait for options to be visible
-      await page.waitForSelector('.relative.flex.items-center', { 
-        state: 'visible',
-        timeout: 5000 
-      });
+      // Find matching question in our database
+      const currentQuestion = questions.find(q => q.question === questionText);
+      console.log('Found question:', currentQuestion);
       
-      // Get all answer options
+      // Get all answer options and find the correct one
       const options = await page.$$('.relative.flex.items-center');
+      const optionTexts = await Promise.all(
+        options.map(async (option) => await option.textContent())
+      );
       
-      // Select first option if answer should be true, second if false
-      const answerIndex = subjectAnswers[subject][i] ? 0 : 1;
+      // Find index of correct answer
+      const correctAnswerIndex = optionTexts.findIndex(
+        text => text === currentQuestion.correct_answer
+      );
+      
+      // Select based on our intention (true = correct, false = incorrect)
+      const shouldSelectCorrect = subjectAnswers[subject][i];
+      const answerIndex = shouldSelectCorrect ? correctAnswerIndex : 
+        (correctAnswerIndex === 0 ? 1 : 0);
+      
       await options[answerIndex].click();
-      
-      // Wait for Next button to be enabled and click it
-      await page.waitForSelector('button:not([disabled])[name="Next"]', {
-        state: 'visible',
-        timeout: 5000
-      });
       await page.click('button[name="Next"]');
     }
   }

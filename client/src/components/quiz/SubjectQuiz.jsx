@@ -49,20 +49,6 @@ const SubjectQuiz = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (currentQuestion < 10) {
-      console.log(`\nScience Section Starting`);
-    } else if (currentQuestion < 20) {
-      console.log(`\nTechnology Section Starting`);
-    } else if (currentQuestion < 30) {
-      console.log(`\nEnglish Section Starting`);
-    } else if (currentQuestion < 40) {
-      console.log(`\nArt Section Starting`);
-    } else {
-      console.log(`\nMath Section Starting`);
-    }
-  }, [currentQuestion]);
-
   const getCurrentSubject = () => {
     if (currentQuestion < 10) return 'Science';
     if (currentQuestion < 20) return 'Technology';
