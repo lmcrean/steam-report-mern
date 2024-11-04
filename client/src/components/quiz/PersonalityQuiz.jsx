@@ -37,7 +37,6 @@ const PersonalityQuiz = () => {
       // console.log('Person. answer:', selectedValue, questions[currentQuestionIndex].trait);
       
       setAnswers(newAnswers);
-      updateState({ personalityAnswers: newAnswers });
 
       if (currentQuestionIndex < 24) {
         setCurrentQuestionIndex(currentQuestionIndex + 1);
@@ -58,6 +57,8 @@ const PersonalityQuiz = () => {
         
         // console.log('Final trait totals / 45:', traitTotals);
         // console.log('Final trait totals as % (planned):', traitPercentages);
+        
+        updateState({ personalityScores: traitPercentages });
         
         const success = moveToNextSection();
         

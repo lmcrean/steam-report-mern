@@ -86,8 +86,8 @@ const QuizResults = () => {
       rawSubjectAnswers: subjectAnswers // Log the actual answers array
     };
     
-    console.log('Detailed validation check:', validationDetails);
-    console.log('Subject answers array:', subjectAnswers);
+    // console.log('Detailed validation check:', validationDetails);
+    // console.log('Subject answers array:', subjectAnswers);
     
     return (
       <div className="text-center p-8">

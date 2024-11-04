@@ -35,7 +35,7 @@ export const calculatePersonalityScores = (answers) => {
 export const processSubjectAnswers = (subjectAnswers, preferredSubject = null) => {
   // Input validation with detailed logging
   if (!Array.isArray(subjectAnswers)) {
-    console.error('Invalid subject answers:', JSON.stringify(subjectAnswers, null, 2));
+    // console.error('Invalid subject answers:', JSON.stringify(subjectAnswers, null, 2));
     return [];
   }
 
@@ -94,7 +94,7 @@ export const processSubjectAnswers = (subjectAnswers, preferredSubject = null) =
 
 export const getHighestScore = (data) => {
   if (!Array.isArray(data) || data.length === 0) {
-    console.warn('Invalid data for highest score calculation:', data);
+    // console.warn('Invalid data for highest score calculation:', data);
     return null;
   }
 
@@ -115,7 +115,7 @@ export const useQuizResultsData = (
 ) => {
   const personalityData = useMemo(() => {
     if (!Array.isArray(personalityAnswers)) {
-      console.error('Invalid personality answers format');
+      // console.error('Invalid personality answers format');
       return [];
     }
 

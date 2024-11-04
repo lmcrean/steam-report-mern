@@ -65,16 +65,29 @@ const SubjectQuiz = () => {
         }
       };
 
+      console.log('Subject quiz completion data:', {
+        rawScores: subjectScores,
+        updatePayload: { subjectScores },
+        validation: {
+          hasScores: !!subjectScores,
+          scoreKeys: Object.keys(subjectScores),
+          mathScore: subjectScores.Math
+        }
+      });
+  
+      // Explicitly log the exact object we're sending to updateState
+      const updatePayload = { subjectScores };
+      console.log('Sending to updateState:', JSON.stringify(updatePayload, null, 2));
+
       console.log('Completing subject quiz:', {
         subjectScoresSummary: Object.entries(subjectScores)
           .map(([subject, score]) => `${subject}: ${score}/10`)
           .join(', ')
       });
       
-      updateState(finalSubjectResults, () => {
-        stateUpdated.current = true;
-        moveToNextSection();
-      });
+      updateState(finalSubjectResults);
+      stateUpdated.current = true;
+      moveToNextSection();
     }
   };
 
@@ -165,9 +178,6 @@ const SubjectQuiz = () => {
       setCurrentQuestion(currentQuestion - 1);
       const previousAnswer = answers[currentQuestion - 1];
       setCurrentAnswer(previousAnswer ? previousAnswer.selectedAnswer : null);
-      updateState({
-        progress: ((currentQuestion - 1) / totalQuestions * 100)
-      });
     }
   };
 
