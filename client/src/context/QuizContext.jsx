@@ -140,44 +140,17 @@ export const QuizProvider = ({ children }) => {
     if (currentIndex < sections.length - 1) {
       const nextSection = sections[currentIndex + 1];
 
-      // Special handling for preference selection
       if (nextSection === 'preference-selection') {
-        console.log('State before preference calculation:', {
-          personalityAnswers: state.personalityAnswers,
-          subjectAnswers: state.subjectAnswers,
-          subjectAnswersType: typeof state.subjectAnswers,
-          subjectAnswersLength: state.subjectAnswers?.length
+        console.log('QuizContext - moveToNextSection:', {
+          currentSection: state.section,
+          nextSection,
+          subjectAnswers: {
+            length: state.subjectAnswers?.length,
+            isArray: Array.isArray(state.subjectAnswers),
+            sampleAnswers: state.subjectAnswers?.slice(0, 5)
+          }
         });
-
-        const personalityTopScores = calculateTopScores(state.personalityAnswers, 'personality');
-        
-        // Ensure we have the subject answers before calculating
-        if (!Array.isArray(state.subjectAnswers) || state.subjectAnswers.length === 0) {
-          console.error('Missing subject answers in moveToNextSection');
-          return false;
-        }
-        
-        const subjectTopScores = calculateTopScores([...state.subjectAnswers], 'subject');
-        
-        console.log('Top scores calculated:', {
-          personality: personalityTopScores,
-          subject: subjectTopScores,
-          subjectAnswersLength: state.subjectAnswers.length
-        });
-
-        const hasPersonalityTie = personalityTopScores.length > 1;
-        const hasSubjectTie = subjectTopScores.length > 1;
-
-        if (hasPersonalityTie || hasSubjectTie) {
-          console.log('Tie detected, moving to preference selection');
-          updateState({ section: nextSection });
-        } else {
-          console.log('No tie detected, moving to results');
-          updateState({
-            section: 'results',
-            completionTime: new Date().toISOString()
-          });
-        }
+        // ... rest of the function
       } else {
         // Normal section transition
         updateState({

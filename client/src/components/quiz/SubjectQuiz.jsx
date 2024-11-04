@@ -56,25 +56,22 @@ const SubjectQuiz = () => {
   const handleQuizCompletion = () => {
     if (!stateUpdated.current) {
       const finalSubjectResults = {
-        subjectAnswers: answers
+        subjectScores: {
+          Science: (subjectScores.Science / 10) * 100,
+          Technology: (subjectScores.Technology / 10) * 100,
+          English: (subjectScores.English / 10) * 100,
+          Art: (subjectScores.Art / 10) * 100,
+          Math: (subjectScores.Math / 10) * 100
+        }
       };
 
-      console.log('Completing subject quiz. Current state PASSED (DO NOT DELETE):', {
-        newSubjectAnswers: answers.length,
+      console.log('Completing subject quiz:', {
         subjectScoresSummary: Object.entries(subjectScores)
           .map(([subject, score]) => `${subject}: ${score}/10`)
           .join(', ')
       });
       
-      console.log('Sending to updateState:', finalSubjectResults);
-
       updateState(finalSubjectResults, () => {
-        if (answers.length !== 50) {
-          console.error('Invalid number of subject answers:', answers.length);
-          setError('Failed to save subject quiz results. Please try again.');
-          return;
-        }
-        
         stateUpdated.current = true;
         moveToNextSection();
       });
