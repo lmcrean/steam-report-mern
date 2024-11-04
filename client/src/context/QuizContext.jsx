@@ -126,12 +126,25 @@ export const QuizProvider = ({ children }) => {
 
   const validateQuizCompletion = () => {
     const { personalityAnswers, subjectAnswers, username } = state;
+    
+    const validation = {
+      hasUsername: !!username,
+      hasPersonalityLength: personalityAnswers?.length === 25,
+      hasSubjectLength: subjectAnswers?.length === 50,
+      personalityValid: !personalityAnswers?.includes(null),
+      subjectValid: !subjectAnswers?.includes(null),
+      subjectAnswersType: typeof subjectAnswers,
+      isSubjectArray: Array.isArray(subjectAnswers)
+    };
+    
+    console.log('QuizContext validation check:', validation);
+    
     return (
-      username && 
-      personalityAnswers.length === 25 && 
-      subjectAnswers.length === 50 &&
-      !personalityAnswers.includes(null) &&
-      !subjectAnswers.includes(null)
+      validation.hasUsername && 
+      validation.hasPersonalityLength && 
+      validation.hasSubjectLength &&
+      validation.personalityValid &&
+      validation.subjectValid
     );
   };
 

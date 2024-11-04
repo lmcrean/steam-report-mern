@@ -75,6 +75,20 @@ const QuizResults = () => {
   ]);
 
   if (!validateQuizCompletion()) {
+    // Split validation checks for better debugging
+    const validationDetails = {
+      hasPersonalityAnswers: personalityAnswers?.length === 25,
+      hasSubjectAnswers: subjectAnswers?.length === 50,
+      hasStartTime: !!startTime,
+      hasCompletionTime: !!completionTime,
+      personalityAnswersValid: personalityAnswers?.every(a => a !== null && a !== undefined),
+      subjectAnswersValid: subjectAnswers?.every(a => a !== null && a !== undefined),
+      rawSubjectAnswers: subjectAnswers // Log the actual answers array
+    };
+    
+    console.log('Detailed validation check:', validationDetails);
+    console.log('Subject answers array:', subjectAnswers);
+    
     return (
       <div className="text-center p-8">
         <p className="text-lg text-gray-600 dark:text-gray-300">

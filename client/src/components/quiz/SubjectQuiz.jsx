@@ -54,7 +54,11 @@ const SubjectQuiz = () => {
 
   useEffect(() => {
     if (quizCompleted) {
-      console.log('No tie detected, moving to results');
+      console.log('No tie, moving to results, current state:', {
+        answers,
+        subjectScores,
+        quizCompleted
+      });
       moveToNextSection();
       setQuizCompleted(false); // Reset for next time
     }
@@ -78,51 +82,42 @@ const SubjectQuiz = () => {
       const answerResult = checkAnswer(currentQuestionData, currentAnswer);
       const subject = getCurrentSubject();
 
+      // First update the answers array
+      const newAnswers = [...answers];
+      newAnswers[currentQuestion] = answerResult;
+      setAnswers(newAnswers);
+      
+      // Then update the context
+      updateState({ subjectAnswers: newAnswers });
+
+      // Then update the scores
       setSubjectScores(prev => {
         const newScores = { ...prev };
         const currentScore = Number(prev[subject] || 0);
         const newScore = currentScore + (answerResult ? 1 : 0);
         newScores[subject] = newScore;
 
-        // Section summary logging
+        // Section summary logging - NOW USING newAnswers instead of answers
         if ((currentQuestion + 1) % 10 === 0) {
-          const sectionAnswers = answers
+          const sectionAnswers = newAnswers
             .slice(currentQuestion - 9, currentQuestion + 1)
             .map(result => result ? 'true' : 'false');
           
-          console.log('-------------------------');
-          console.log(`\n${subject} Section Summary:`);
-          console.log(`Answers: [${sectionAnswers.join(', ')}]`);
-          console.log(`Score: ${newScore}/10 = ${(newScore * 10)}%`);
-          console.log('-------------------------\n');
-        }
-
-        // If this is the last question
-        if (currentQuestion === totalQuestions - 1) {
-          console.log('===================');
-          console.log('\nFinal Quiz Summary:');
-          Object.entries(newScores).forEach(([subj, score]) => {
-            console.log(`${subj}: ${score}/10 = ${score * 10}%`);
-          });
-          console.log('===================\n');
-          
-          // Set flag for useEffect to handle transition
-          setQuizCompleted(true);
+          if (subject === 'Math') {
+            console.log('-------------------------');
+            console.log(`\n${subject} Section Summary:`);
+            console.log(`Question: ${currentQuestion + 1}/50`);
+            console.log(`Score Progress: ${currentScore} → ${newScore}`);
+            console.log(`Answers: [${sectionAnswers.join(', ')}]`);
+            console.log(`Score: ${newScore}/10 = ${(newScore * 10)}%`);
+            console.log('-------------------------\n');
+          }
         }
 
         return newScores;
       });
 
-      // Update answers array
-      const updatedAnswers = [...answers];
-      updatedAnswers[currentQuestion] = answerResult;
-      setAnswers(updatedAnswers);
-
       if (currentQuestion < totalQuestions - 1) {
-        updateState({ 
-          subjectAnswers: updatedAnswers,
-          progress: ((currentQuestion + 1) / totalQuestions * 100)
-        });
         setCurrentQuestion(currentQuestion + 1);
         setCurrentAnswer(null);
       }
