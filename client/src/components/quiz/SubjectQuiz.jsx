@@ -1,5 +1,5 @@
 // SubjectQuiz.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useQuiz } from '../../context/QuizContext';
 import ProgressBar from '../shared/ProgressBar';
 import RadioGroup from '../shared/RadioGroup';
@@ -9,7 +9,7 @@ import Alert from '../shared/Alert';
 import { subjects, getRandomQuestions } from '../../data/subjectQuestions';
 
 const SubjectQuiz = () => {
-  const { updateState, moveToNextSection } = useQuiz();
+  const { updateState, moveToNextSection, subjectAnswers: contextAnswers } = useQuiz();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [currentAnswer, setCurrentAnswer] = useState(null);
   const [questions, setQuestions] = useState([]);
@@ -24,7 +24,8 @@ const SubjectQuiz = () => {
     Math: 0,
   });
   const [quizCompleted, setQuizCompleted] = useState(false);
-  
+  const stateUpdated = useRef(false);
+
   const totalQuestions = 50;
 
   useEffect(() => {
@@ -52,17 +53,37 @@ const SubjectQuiz = () => {
     }
   }, []);
 
+  const handleQuizCompletion = () => {
+    if (!stateUpdated.current) {
+      console.log('Handling quiz completion:', {
+        localAnswers: answers.map(a => a), // Force array copy for logging
+        answersLength: answers.length,
+        scores: Object.entries(subjectScores)
+      });
+
+      // Update context with a callback to ensure completion
+      updateState(
+        { 
+          subjectAnswers: [...answers],
+          subjectScores: { ...subjectScores }
+        }, 
+        () => {
+          console.log('Context update complete, verifying:', {
+            contextLength: contextAnswers?.length,
+            localLength: answers.length
+          });
+          stateUpdated.current = true;
+          moveToNextSection();
+        }
+      );
+    }
+  };
+
   useEffect(() => {
     if (quizCompleted) {
-      console.log('No tie, moving to results, current state:', {
-        answers,
-        subjectScores,
-        quizCompleted
-      });
-      moveToNextSection();
-      setQuizCompleted(false); // Reset for next time
+      handleQuizCompletion();
     }
-  }, [quizCompleted, moveToNextSection]);
+  }, [quizCompleted]);
 
   const getCurrentSubject = () => {
     if (currentQuestion < 10) return 'Science';
@@ -82,36 +103,42 @@ const SubjectQuiz = () => {
       const answerResult = checkAnswer(currentQuestionData, currentAnswer);
       const subject = getCurrentSubject();
 
-      // First update the answers array
+      // Create new answers array
       const newAnswers = [...answers];
       newAnswers[currentQuestion] = answerResult;
       setAnswers(newAnswers);
-      
-      // Then update the context
-      updateState({ subjectAnswers: newAnswers });
 
-      // Then update the scores
       setSubjectScores(prev => {
         const newScores = { ...prev };
         const currentScore = Number(prev[subject] || 0);
         const newScore = currentScore + (answerResult ? 1 : 0);
         newScores[subject] = newScore;
 
-        // Section summary logging - NOW USING newAnswers instead of answers
-        if ((currentQuestion + 1) % 10 === 0) {
-          const sectionAnswers = newAnswers
-            .slice(currentQuestion - 9, currentQuestion + 1)
-            .map(result => result ? 'true' : 'false');
-          
-          if (subject === 'Math') {
-            console.log('-------------------------');
-            console.log(`\n${subject} Section Summary:`);
-            console.log(`Question: ${currentQuestion + 1}/50`);
-            console.log(`Score Progress: ${currentScore} → ${newScore}`);
-            console.log(`Answers: [${sectionAnswers.join(', ')}]`);
-            console.log(`Score: ${newScore}/10 = ${(newScore * 10)}%`);
-            console.log('-------------------------\n');
-          }
+        // If this is the last question
+        if (currentQuestion === totalQuestions - 1) {
+          // Create a structured scores object
+          const scoreOutput = {
+            answers: newAnswers.map((answer, index) => {
+              const subject = Math.floor(index / 10);
+              return {
+                subject: ['Science', 'Technology', 'English', 'Art', 'Math'][subject],
+                value: answer
+              };
+            }),
+            scores: [
+              { subject: 'Science', value: newScores.Science },
+              { subject: 'Technology', value: newScores.Technology },
+              { subject: 'English', value: newScores.English },
+              { subject: 'Art', value: newScores.Art },
+              { subject: 'Math', value: newScores.Math }
+            ]
+          };
+
+          // console.log('Final question completed for SubjectQuiz:', 
+          //   JSON.stringify(scoreOutput, null, 2)
+          // );
+
+          setQuizCompleted(true);
         }
 
         return newScores;
