@@ -30,9 +30,16 @@ export const QuizProvider = ({ children }) => {
 
   const updateState = (updates, callback) => {
     setState(prev => {
+      // console.log('UpdateState called with:', {
+      //   previousState: { ...prev },
+      //   updates,
+      // });
+      
       const newState = { ...prev, ...updates };
+      
+      // console.log('New state will be:', newState);
+      
       if (callback) {
-        // Execute callback after state update
         setTimeout(() => callback(newState), 0);
       }
       return newState;
@@ -135,9 +142,11 @@ export const QuizProvider = ({ children }) => {
 
       // Special handling for preference selection
       if (nextSection === 'preference-selection') {
-        console.log('Moving to preference selection, current state:', {
-          personalityAnswers: state.personalityAnswers?.length,
-          subjectAnswers: state.subjectAnswers?.length,
+        console.log('State before preference calculation:', {
+          personalityAnswers: state.personalityAnswers,
+          subjectAnswers: state.subjectAnswers,
+          subjectAnswersType: typeof state.subjectAnswers,
+          subjectAnswersLength: state.subjectAnswers?.length
         });
 
         const personalityTopScores = calculateTopScores(state.personalityAnswers, 'personality');

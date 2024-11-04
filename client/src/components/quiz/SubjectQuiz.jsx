@@ -56,16 +56,17 @@ const SubjectQuiz = () => {
   const handleQuizCompletion = () => {
     if (!stateUpdated.current) {
       const finalSubjectResults = {
-        subjectAnswers: answers,
-        subjectScores
+        subjectAnswers: answers
       };
 
-      console.log('Completing subject quiz. Current state:', {
+      console.log('Completing subject quiz. Current state PASSED (DO NOT DELETE):', {
         newSubjectAnswers: answers.length,
         subjectScoresSummary: Object.entries(subjectScores)
           .map(([subject, score]) => `${subject}: ${score}/10`)
           .join(', ')
       });
+      
+      console.log('Sending to updateState:', finalSubjectResults);
 
       updateState(finalSubjectResults, () => {
         if (answers.length !== 50) {
