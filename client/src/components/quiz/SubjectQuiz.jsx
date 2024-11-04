@@ -9,7 +9,7 @@ import Alert from '../shared/Alert';
 import { subjects, getRandomQuestions } from '../../data/subjectQuestions';
 
 const SubjectQuiz = () => {
-  const { updateState, moveToNextSection, subjectAnswers: contextAnswers } = useQuiz();
+  const { updateState, moveToNextSection, subjectAnswers: existingSubjectAnswers } = useQuiz();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [currentAnswer, setCurrentAnswer] = useState(null);
   const [questions, setQuestions] = useState([]);
@@ -55,27 +55,28 @@ const SubjectQuiz = () => {
 
   const handleQuizCompletion = () => {
     if (!stateUpdated.current) {
-      console.log('Handling quiz completion:', {
-        localAnswers: answers.map(a => a), // Force array copy for logging
-        answersLength: answers.length,
-        scores: Object.entries(subjectScores)
+      const finalSubjectResults = {
+        subjectAnswers: answers,
+        subjectScores
+      };
+
+      console.log('Completing subject quiz. Current state:', {
+        newSubjectAnswers: answers.length,
+        subjectScoresSummary: Object.entries(subjectScores)
+          .map(([subject, score]) => `${subject}: ${score}/10`)
+          .join(', ')
       });
 
-      // Update context with a callback to ensure completion
-      updateState(
-        { 
-          subjectAnswers: [...answers],
-          subjectScores: { ...subjectScores }
-        }, 
-        () => {
-          console.log('Context update complete, verifying:', {
-            contextLength: contextAnswers?.length,
-            localLength: answers.length
-          });
-          stateUpdated.current = true;
-          moveToNextSection();
+      updateState(finalSubjectResults, () => {
+        if (answers.length !== 50) {
+          console.error('Invalid number of subject answers:', answers.length);
+          setError('Failed to save subject quiz results. Please try again.');
+          return;
         }
-      );
+        
+        stateUpdated.current = true;
+        moveToNextSection();
+      });
     }
   };
 
