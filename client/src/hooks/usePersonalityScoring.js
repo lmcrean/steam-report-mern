@@ -1,26 +1,27 @@
-import { useCallback } from 'react';
-import { SCORE_TOLERANCE } from '../constants/quizConstants';
+import { useContext } from 'react';
+import { QuizContext } from '../context/QuizContext';
+import { useNextSection } from './useNextSection';
 
 export const usePersonalityScoring = () => {
-  const calculatePersonalityScore = useCallback((answers) => {
-    const scores = {
-      Openness: 0,
-      Conscientiousness: 0,
-      Extraversion: 0,
-      Agreeableness: 0,
-      Neuroticism: 0
-    };
+  const { updateState } = useContext(QuizContext);
+  const { moveToNextSection } = useNextSection();
 
-    Object.keys(scores).forEach((trait, traitIndex) => {
-      const traitAnswers = answers.slice(traitIndex * 5, (traitIndex + 1) * 5);
-      const traitTotal = traitAnswers.reduce((sum, answer) => {
-        return sum + (answer?.value || 0);
-      }, 0);
-      scores[trait] = (traitTotal / 45) * 100;
-    });
+  const calculateAndSubmitScores = (answers) => {
+    const traitTotals = answers.reduce((acc, ans) => {
+      if (ans && ans.trait) {
+        acc[ans.trait] = (acc[ans.trait] || 0) + ans.value;
+      }
+      return acc;
+    }, {});
+    
+    const traitPercentages = Object.keys(traitTotals).reduce((acc, trait) => {
+      acc[trait] = Math.round((traitTotals[trait] / 45) * 100);
+      return acc;
+    }, {});
 
-    return scores;
-  }, []);
+    updateState({ personalityScores: traitPercentages });
+    return moveToNextSection();
+  };
 
-  return { calculatePersonalityScore };
+  return { calculateAndSubmitScores };
 }; 

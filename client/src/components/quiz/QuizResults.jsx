@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { useQuiz } from '../../context/QuizContext';
+import React, { useEffect, useContext } from 'react';
+import { QuizContext } from '../../context/QuizContext';
 import { useQuizResultsData } from './results/QuizResultsDataLogic';
 import { 
   ResultsSection, 
@@ -9,19 +9,15 @@ import {
 import CareerRecommendation from './results/CareerRecommendation';
 
 const QuizResults = () => {
+  const { state, updateState } = useContext(QuizContext);
   const { 
-    username, 
-    personalityAnswers, 
-    subjectAnswers, 
+    personalityScores,
+    subjectScores,
     preferredTrait,
     preferredSubject,
     startTime,
-    completionTime,
-    moveToNextSection,
-    updateState,
-    validateQuizCompletion,
-    results
-  } = useQuiz();
+    completionTime
+  } = state;
 
   const {
     personalityData,
@@ -30,18 +26,14 @@ const QuizResults = () => {
     highestSubject,
     careerFeedback
   } = useQuizResultsData(
-    personalityAnswers, 
-    subjectAnswers,
+    personalityScores,
+    subjectScores,
     preferredTrait,
     preferredSubject
   );
 
-  // Calculate and store results only once when data is ready
   useEffect(() => {
-    if (validateQuizCompletion() && 
-        personalityData.length && 
-        subjectData.length && 
-        !results) {
+    if (personalityData.length && subjectData.length) {
       updateState({
         results: {
           personalityScores: Object.fromEntries(
@@ -59,36 +51,9 @@ const QuizResults = () => {
         }
       });
     }
-  }, [
-    personalityData, 
-    subjectData, 
-    preferredTrait, 
-    preferredSubject, 
-    updateState,
-    validateQuizCompletion,
-    completionTime,
-    startTime,
-    results,
-    highestPersonalityTrait,
-    highestSubject,
-    careerFeedback
-  ]);
+  }, [personalityData, subjectData]);
 
-  if (!validateQuizCompletion()) {
-    // Split validation checks for better debugging
-    const validationDetails = {
-      hasPersonalityAnswers: personalityAnswers?.length === 25,
-      hasSubjectAnswers: subjectAnswers?.length === 50,
-      hasStartTime: !!startTime,
-      hasCompletionTime: !!completionTime,
-      personalityAnswersValid: personalityAnswers?.every(a => a !== null && a !== undefined),
-      subjectAnswersValid: subjectAnswers?.every(a => a !== null && a !== undefined),
-      rawSubjectAnswers: subjectAnswers // Log the actual answers array
-    };
-    
-    // console.log('Detailed validation check:', validationDetails);
-    // console.log('Subject answers array:', subjectAnswers);
-    
+  if (!personalityData.length || !subjectData.length) {
     return (
       <div className="text-center p-8">
         <p className="text-lg text-gray-600 dark:text-gray-300">
@@ -109,7 +74,7 @@ const QuizResults = () => {
       <ResultsSection title="Your Results">
         <div className="space-y-4">
           <p className="text-gray-600 dark:text-gray-300">
-            Hi {username}, here's your personalized career analysis based on your quiz responses
+            Hi {state.username}, here's your personalized career analysis based on your quiz responses
             {(preferredTrait || preferredSubject) && ' and preferences'}.
           </p>
           
@@ -171,7 +136,7 @@ const QuizResults = () => {
       {/* Navigation */}
       <div className="flex justify-end">
         <button
-          onClick={moveToNextSection}
+          onClick={state.moveToNextSection}
           className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
         >
           View Leaderboard

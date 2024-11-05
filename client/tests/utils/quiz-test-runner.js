@@ -1,8 +1,16 @@
 // Import test cases
 import { TEST_CASES } from '../testCases/quizInputs';
+import { createQuizContextMonitor } from './quiz-context-check';
 
 // Base test runner that handles all cases
 export async function runQuizTestCase(page, testCase) {
+  const contextMonitor = createQuizContextMonitor();
+  
+  // Add monitoring to page
+  await page.exposeFunction('monitorQuizContext', (key, value) => {
+    contextMonitor.logStateChange(key, value);
+  });
+
   await startQuiz(page);
   await completePersonalitySection(page, testCase.personalityAnswers);
   await completeSubjectSection(page, testCase.subjectAnswers);
@@ -17,6 +25,25 @@ export async function runQuizTestCase(page, testCase) {
   }
 
   await verifyResults(page, testCase);
+}
+
+async function startQuiz(page) {
+  // Navigate to homepage and start quiz
+  await page.goto('/');
+  
+  // Wait for and click the start button
+  await page.getByRole('button', { name: 'Start Quiz' }).click();
+  
+  // Enter username and continue
+  await page.getByPlaceholder('Enter your username').fill('TestUser');
+  await page.getByRole('button', { name: 'Continue' }).click();
+  
+  // Log the navigation
+  console.log('\n=== Starting Quiz ===');
+  console.log('✓ Navigated to homepage');
+  console.log('✓ Clicked Start Quiz');
+  console.log('✓ Entered username: TestUser');
+  console.log('✓ Clicked Continue');
 }
 
 async function completePersonalitySection(page, answers) {

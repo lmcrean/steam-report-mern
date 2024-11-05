@@ -1,29 +1,33 @@
-import { useCallback } from 'react';
+import { useContext } from 'react';
+import { QuizContext } from '../context/QuizContext';
+import { checkForTies } from '../utils/checkForTies';
+import { SCORE_TOLERANCE } from '../constants/quizConstants';
 
 export const useSubjectValidation = () => {
-  const validateSubjectData = useCallback((subjectAnswers) => {
+  const { state, updateState } = useContext(QuizContext);
+
+  const validateSubjectScores = (scores) => {
     try {
-      console.log('🔍 Validation: Checking subject data');
+      const subjectTies = checkForTies(scores, SCORE_TOLERANCE);
       
-      const validation = {
-        hasAnswers: subjectAnswers?.length === 50,
-        isComplete: !subjectAnswers?.includes(null),
-        hasValidFormat: subjectAnswers?.every(answer => 
-          typeof answer?.correct === 'boolean'
-        )
-      };
-
-      console.log('📋 Subject validation results:', validation);
-
-      const isValid = Object.values(validation).every(v => v);
-      console.log(isValid ? '✅ Subject data valid' : '❌ Subject data invalid');
-
-      return isValid;
+      if (subjectTies.length > 1) {
+        updateState({ 
+          subjectTies,
+          needsPreferenceSelection: true 
+        });
+      } else {
+        updateState({ 
+          preferredSubject: subjectTies[0],
+          needsPreferenceSelection: false 
+        });
+      }
+      
+      return true;
     } catch (error) {
-      console.error('❌ Validation: Error during subject validation:', error);
+      console.error('Error validating subject scores:', error);
       return false;
     }
-  }, []);
+  };
 
-  return { validateSubjectData };
+  return { validateSubjectScores };
 }; 

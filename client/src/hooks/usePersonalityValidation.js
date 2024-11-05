@@ -1,29 +1,33 @@
-import { useCallback } from 'react';
+import { useContext } from 'react';
+import { QuizContext } from '../context/QuizContext';
+import { checkForTies } from '../utils/checkForTies';
+import { SCORE_TOLERANCE } from '../constants/quizConstants';
 
 export const usePersonalityValidation = () => {
-  const validatePersonalityData = useCallback((personalityAnswers) => {
+  const { state, updateState } = useContext(QuizContext);
+
+  const validatePersonalityScores = (scores) => {
     try {
-      console.log('🔍 Validation: Checking personality data');
+      const personalityTies = checkForTies(scores, SCORE_TOLERANCE);
       
-      const validation = {
-        hasAnswers: personalityAnswers?.length === 25,
-        isComplete: !personalityAnswers?.includes(null),
-        hasValidScores: personalityAnswers?.every(answer => 
-          answer?.value >= 1 && answer?.value <= 9
-        )
-      };
-
-      console.log('📋 Personality validation results:', validation);
-
-      const isValid = Object.values(validation).every(v => v);
-      console.log(isValid ? '✅ Personality data valid' : '❌ Personality data invalid');
-
-      return isValid;
+      if (personalityTies.length > 1) {
+        updateState({ 
+          personalityTies,
+          needsPreferenceSelection: true 
+        });
+      } else {
+        updateState({ 
+          preferredTrait: personalityTies[0],
+          needsPreferenceSelection: false 
+        });
+      }
+      
+      return true;
     } catch (error) {
-      console.error('❌ Validation: Error during personality validation:', error);
+      console.error('Error validating personality scores:', error);
       return false;
     }
-  }, []);
+  };
 
-  return { validatePersonalityData };
+  return { validatePersonalityScores };
 }; 

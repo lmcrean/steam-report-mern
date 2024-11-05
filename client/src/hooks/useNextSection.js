@@ -1,10 +1,11 @@
-import { useCallback } from 'react';
-import { QUIZ_SECTIONS, SCORE_TOLERANCE } from '../constants/quizConstants';
-import { checkForTies } from '../utils/checkForTies';
-import { useQuiz } from '../context/QuizContext';
+import { useCallback, useContext } from 'react';
+import { QUIZ_SECTIONS } from '../constants/quizConstants';
+import { checkForPersonalityTies } from '../utils/checkForPersonalityTies';
+import { checkForSubjectTies } from '../utils/checkForSubjectTies';
+import { QuizContext } from '../context/QuizContext';
 
-export const useQuizNavigation = () => {
-  const { state, updateState, setSection } = useQuiz();
+export const useNextSection = () => {
+  const { state, updateState } = useContext(QuizContext);
 
   const moveToNextSection = useCallback(() => {
     try {
@@ -25,8 +26,8 @@ export const useQuizNavigation = () => {
           }
 
           try {
-            const personalityTies = checkForTies(state.personalityScores, SCORE_TOLERANCE);
-            const subjectTies = checkForTies(state.subjectScores, SCORE_TOLERANCE);
+            const personalityTies = checkForPersonalityTies(state.personalityScores);
+            const subjectTies = checkForSubjectTies(state.subjectScores);
 
             console.log('🎯 Navigation: Score analysis:', {
               personalityTies,
@@ -35,7 +36,11 @@ export const useQuizNavigation = () => {
 
             if (personalityTies.length > 1 || subjectTies.length > 1) {
               console.log('👥 Navigation: Ties detected, moving to preference selection');
-              updateState({ section: nextSection });
+              updateState({ 
+                section: nextSection,
+                personalityTies,
+                subjectTies
+              });
             } else {
               console.log('✨ Navigation: No ties, moving directly to results');
               updateState({
@@ -57,13 +62,12 @@ export const useQuizNavigation = () => {
         }
         return true;
       }
-      console.log('🛑 Navigation: At last section, cannot proceed');
       return false;
     } catch (error) {
       console.error('❌ Navigation: Error navigating to next section:', error);
       return false;
     }
-  }, [state, updateState, setSection]);
+  }, [state.section, state.personalityScores, state.subjectScores, updateState]);
 
   return { moveToNextSection };
 }; 

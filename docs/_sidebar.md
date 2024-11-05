@@ -16,7 +16,7 @@
 * [Features](/features.md)
 * [Credits & Project Dependencies](/credits.md)
 * [Usage Instructions & Deployment](/usage.md)
-* [Frontend Readme](/readme_react.md) 
+* [Client Application Architecture](/readme_client.md) 
 * [API Readme](/readme_api.md) 
 * [Test Outcomes](/testing.md)
 * [Agile Method](/agile_method.md)

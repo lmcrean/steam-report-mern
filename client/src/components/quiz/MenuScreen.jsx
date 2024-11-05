@@ -1,31 +1,31 @@
-import React from 'react';
-import { useQuiz } from '../../context/QuizContext';
+import React, { useContext } from 'react';
+import { QuizContext } from '../../context/QuizContext';
 import QuizCard from '../shared/QuizCard';
 
 const MenuScreen = () => {
-  const { setSection } = useQuiz();
+  const { updateState } = useContext(QuizContext);
 
   const menuItems = [
     {
       title: 'Start Quiz',
       description: 'Begin your STEAM career discovery journey',
-      action: () => setSection('username'),
+      action: () => updateState({ section: 'username' }),
       primary: true
     },
     {
       title: 'About OCEAN Test',
       description: 'Learn about the personality assessment',
-      action: () => setSection('about-ocean')
+      action: () => updateState({ section: 'about-ocean' })
     },
     {
       title: 'About STEAM',
       description: 'Understand the subject areas',
-      action: () => setSection('about-steam')
+      action: () => updateState({ section: 'about-steam' })
     },
     {
       title: 'How to Play',
       description: 'Get guidance on taking the quiz',
-      action: () => setSection('how-to-play')
+      action: () => updateState({ section: 'how-to-play' })
     }
   ];
 

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useQuiz } from '../../context/QuizContext';
+import { usePersonalityScoring } from '../../hooks/usePersonalityScoring';
 import Alert from '../shared/Alert';
 import QuizNavigation from '../shared/QuizNavigation';
 
 const PersonalityQuiz = () => {
-  const { updateState, moveToNextSection } = useQuiz();
+  const { calculateAndSubmitScores } = usePersonalityScoring();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedValue, setSelectedValue] = useState(null);
   const [questions, setQuestions] = useState([]);
@@ -34,34 +34,13 @@ const PersonalityQuiz = () => {
       };
       
       newAnswers[currentQuestionIndex] = answer;
-      // console.log('Person. answer:', selectedValue, questions[currentQuestionIndex].trait);
-      
       setAnswers(newAnswers);
 
       if (currentQuestionIndex < 24) {
         setCurrentQuestionIndex(currentQuestionIndex + 1);
         setSelectedValue(null);
       } else {
-        // Log trait totals before moving to next section
-        const traitTotals = newAnswers.reduce((acc, ans) => {
-          if (ans && ans.trait) {
-            acc[ans.trait] = (acc[ans.trait] || 0) + ans.value;
-          }
-          return acc;
-        }, {});
-        
-        const traitPercentages = Object.keys(traitTotals).reduce((acc, trait) => {
-          acc[trait] = ((traitTotals[trait] * 100) / 45).toFixed(0);
-          return acc;
-        }, {});
-        
-        // console.log('Final trait totals / 45:', traitTotals);
-        // console.log('Final trait totals as % (planned):', traitPercentages);
-        
-        updateState({ personalityScores: traitPercentages });
-        
-        const success = moveToNextSection();
-        
+        const success = calculateAndSubmitScores(newAnswers);
         if (!success) {
           setError('Please answer all questions before proceeding.');
         }

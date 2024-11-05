@@ -1,16 +1,14 @@
 // SubjectQuiz.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import { useQuiz } from '../../context/QuizContext';
+import { useSubjectScoring } from '../../hooks/useSubjectScoring';
+import { subjects, getRandomQuestions } from '../../data/subjectQuestions';
 import ProgressBar from '../shared/ProgressBar';
 import RadioGroup from '../shared/RadioGroup';
 import QuizNavigation from '../shared/QuizNavigation';
-import LoadingSpinner from '../shared/LoadingSpinner';
 import Alert from '../shared/Alert';
-import { subjects, getRandomQuestions } from '../../data/subjectQuestions';
-import { useQuizScoring } from '../../hooks/useQuizScoring';
 
 const SubjectQuiz = () => {
-  const { updateState, moveToNextSection, subjectAnswers: existingSubjectAnswers } = useQuiz();
+  const { calculateAndSubmitScore } = useSubjectScoring();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [currentAnswer, setCurrentAnswer] = useState(null);
   const [questions, setQuestions] = useState([]);
@@ -21,8 +19,6 @@ const SubjectQuiz = () => {
   const stateUpdated = useRef(false);
 
   const totalQuestions = 50;
-
-  const { calculateSubjectScore } = useQuizScoring();
 
   useEffect(() => {
     try {
@@ -44,10 +40,11 @@ const SubjectQuiz = () => {
 
   const handleQuizCompletion = () => {
     if (!stateUpdated.current) {
-      const finalSubjectResults = calculateSubjectScore(answers);
-      updateState(finalSubjectResults);
+      const success = calculateAndSubmitScore(answers);
+      if (!success) {
+        setError('Failed to submit quiz results. Please try again.');
+      }
       stateUpdated.current = true;
-      moveToNextSection();
     }
   };
 

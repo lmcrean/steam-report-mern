@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import { useQuiz } from '../../context/QuizContext';
 
 const QuizLeaderboard = () => {
   const { username, personalityAnswers, subjectAnswers } = useQuiz();

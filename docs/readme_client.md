@@ -1,86 +1,12 @@
-# Technical Architecture
+# Client Application Architecture
 
 ## Client Application Flow
 
-```mermaid
-flowchart TB
-    %% Row 1: Core Application Structure
-    subgraph Core ["Core Application"]
-        direction LR
-        A[App.jsx] --> B[QuizContext]
-        B --> C[MainLayout]
-    end
-
-    %% Row 2: User Interface Flow
-    subgraph Interface ["User Interface Flow"]
-        direction LR
-        D[MenuScreen] --> E[UsernameEntry]
-        E --> F[PersonalityQuiz]
-        F --> G[SubjectQuiz]
-        G --> H[PreferenceSelection_if_applicable]
-        H --> I[QuizResults]
-    end
-
-    %% Row 3: Data Management
-    subgraph Data ["Data Layer"]
-        direction LR
-        J[(Personality DB)] --> K[Score Processing]
-        L[(Subject DB)] --> K
-        K --> M[(Results DB)]
-    end
-
-    %% Connect the rows
-    Core --> Interface
-    Interface --> Data
-
-    classDef core fill:#e3f2fd,stroke:#1565c0,color:#000
-    classDef interface fill:#e8f5e9,stroke:#2e7d32,color:#000
-    classDef data fill:#fff3e0,stroke:#ef6c00,color:#000
-
-    class A,B,C core
-    class D,E,F,G,H,I interface
-    class J,K,L,M data
-```
+![Client Application Flow](./diagrams/client_application_flow.md)
 
 ## Component Architecture
 
-```mermaid
-flowchart TB
-    %% Row 1: UI Components
-    subgraph UI ["User Interface Layer"]
-        direction LR
-        A[MainLayout] --> B[Header]
-        A --> C[QuizCard]
-        C --> D[InputControls]
-    end
-    
-    %% Row 2: Business Logic
-    subgraph Logic ["Business Logic Layer"]
-        direction LR
-        E[QuizContext] --> F[ScoreCalculator]
-        F --> G[NavigationControl]
-        G --> H[StateManager]
-    end
-    
-    %% Row 3: Data Processing
-    subgraph Processing ["Data Processing Layer"]
-        direction LR
-        I[DataCollection] --> J[Analysis]
-        J --> K[ResultsGeneration]
-    end
-
-    %% Connect the rows
-    UI --> Logic
-    Logic --> Processing
-
-    classDef ui fill:#e3f2fd,stroke:#1565c0,color:#000
-    classDef logic fill:#e8f5e9,stroke:#2e7d32,color:#000
-    classDef process fill:#fff3e0,stroke:#ef6c00,color:#000
-
-    class A,B,C,D ui
-    class E,F,G,H logic
-    class I,J,K process
-```
+![Component Architecture](./diagrams/component_architecture.md)
 
 ## Data Flow Pipeline
 
@@ -148,7 +74,7 @@ graph TD
 
     subgraph CustomHooks ["Custom Hooks"]
         direction LR
-        N[useQuizNavigation]
+        N[useNextSection]
         PS[usePersonalityScoring]
         SS[useSubjectScoring]
     end
@@ -191,7 +117,7 @@ graph TD
     PV -->|"validated personality data"| QC
     SV -->|"validated subject data"| QC
 
-    %% useQuizNavigation updates section
+    %% useNextSection updates section
     N -->|"update section"| QC
 
     %% Context provides state back to Results
@@ -282,7 +208,7 @@ graph TD
     subgraph CustomHooks["Custom Hooks Layer"]
         QV[useQuizValidation]
         QS[useQuizScoring]
-        QN[useQuizNavigation]
+        QN[useNextSection]
     end
 
     subgraph Features["Feature Layer"]

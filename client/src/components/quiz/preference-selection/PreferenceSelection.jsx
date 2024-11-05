@@ -1,38 +1,27 @@
 // PreferenceSelection.jsx
 import React, { useState } from 'react';
-import { useQuiz } from '../../../context/QuizContext';
+import { useContext } from 'react';
+import { QuizContext } from '../../../context/QuizContext';
+import { useNextSection } from '../../../hooks/useNextSection';
 import TraitPreference from './TraitPreference';
 import SubjectPreference from './SubjectPreference';
 
 const PreferenceSelection = () => {
-  const { 
-    personalityAnswers, 
-    subjectAnswers,
-    updateState,
-    moveToNextSection,
-    calculateTopScores
-  } = useQuiz();
-  
+  const { state, updateState } = useContext(QuizContext);
+  const { moveToNextSection } = useNextSection();
   const [showingPreference, setShowingPreference] = useState('trait');
+
+  const { personalityTies, subjectTies } = state;
 
   console.log('PreferenceSelection - Current State:', {
     showingPreference,
-    personalityAnswersCount: personalityAnswers?.length,
-    subjectAnswersCount: subjectAnswers?.length
+    personalityTies,
+    subjectTies
   });
-
-  // Expected top scorers based on test
-  const expectedTraits = ['Openness', 'Extraversion', 'Agreeableness'];
-  const expectedSubjects = ['Science', 'Technology', 'Math'];
-
-  // Force the top scores to match test expectations
-  const topPersonalityTraits = expectedTraits;
-  const topSubjects = expectedSubjects;
 
   const handlePreferenceSelected = (type, preference) => {
     console.log('PreferenceSelection - Selection Made:', { type, preference });
     
-    // Update state with selection
     updateState({ 
       [`preferred${type}`]: preference,
       ...(type === 'Trait' ? 
@@ -40,12 +29,9 @@ const PreferenceSelection = () => {
         { subjectBonus: preference })
     });
 
-    // Handle navigation
     if (type === 'Trait') {
-      console.log('PreferenceSelection - Moving to subject selection');
       setShowingPreference('subject');
     } else {
-      console.log('PreferenceSelection - Moving to results');
       moveToNextSection();
     }
   };
@@ -55,7 +41,7 @@ const PreferenceSelection = () => {
     console.log('PreferenceSelection - Showing trait selection');
     return (
       <TraitPreference 
-        traits={topPersonalityTraits}
+        traits={personalityTies}
         onSelect={(trait) => handlePreferenceSelected('Trait', trait)}
       />
     );
@@ -66,7 +52,7 @@ const PreferenceSelection = () => {
     console.log('PreferenceSelection - Showing subject selection');
     return (
       <SubjectPreference
-        subjects={topSubjects}
+        subjects={subjectTies}
         onSelect={(subject) => handlePreferenceSelected('Subject', subject)}
       />
     );

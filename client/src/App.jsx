@@ -9,14 +9,15 @@ import QuizResults from './components/quiz/QuizResults';
 import QuizLeaderboard from './components/quiz/QuizLeaderboard';
 import UsernameEntry from './components/quiz/UsernameEntry';
 import PreferenceSelection from './components/quiz/preference-selection/PreferenceSelection';
-import { QuizProvider } from './context/QuizContext';
+import { QuizProvider, QuizContext } from './context/QuizContext';
 import './App.css';
+import { useContext } from 'react';
 
 // Quiz flow component with preference selection
 const QuizFlow = () => {
-  const { section } = useQuiz();
+  const { state } = useContext(QuizContext);
 
-  const renderSection = () => {
+  const renderSection = (section) => {
     switch (section) {
       case 'menu':
         return <MenuScreen />;
@@ -30,8 +31,6 @@ const QuizFlow = () => {
         return <PreferenceSelection />;
       case 'results':
         return <QuizResults />;
-      case 'leaderboard':
-        return <QuizLeaderboard />;
       default:
         return <MenuScreen />;
     }

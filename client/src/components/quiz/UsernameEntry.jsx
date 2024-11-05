@@ -1,25 +1,19 @@
 import React, { useState } from 'react';
-import { useQuiz } from '../../context/QuizContext';
+import { useUsernameValidation } from '../../hooks/useUsernameValidation';
 import QuizCard from '../shared/QuizCard';
 import Alert from '../shared/Alert';
-import { validateUsername } from '../../utils/validators';
 
 const UsernameEntry = () => {
-  const { setUsername, moveToNextSection } = useQuiz();
+  const { validateAndUpdateUsername } = useUsernameValidation();
   const [inputValue, setInputValue] = useState('');
   const [error, setError] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const validation = validateUsername(inputValue);
-    
-    if (!validation.isValid) {
-      setError(validation.error);
-      return;
+    const result = validateAndUpdateUsername(inputValue);
+    if (!result.isValid) {
+      setError(result.error);
     }
-
-    setUsername(inputValue);
-    moveToNextSection();
   };
 
   return (
