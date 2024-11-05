@@ -7,6 +7,7 @@ import QuizNavigation from '../shared/QuizNavigation';
 import LoadingSpinner from '../shared/LoadingSpinner';
 import Alert from '../shared/Alert';
 import { subjects, getRandomQuestions } from '../../data/subjectQuestions';
+import { useQuizScoring } from '../../hooks/useQuizScoring';
 
 const SubjectQuiz = () => {
   const { updateState, moveToNextSection, subjectAnswers: existingSubjectAnswers } = useQuiz();
@@ -16,17 +17,12 @@ const SubjectQuiz = () => {
   const [answers, setAnswers] = useState(new Array(50).fill(null));
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [subjectScores, setSubjectScores] = useState({
-    Science: 0,
-    Technology: 0,
-    English: 0,
-    Art: 0,
-    Math: 0,
-  });
   const [quizCompleted, setQuizCompleted] = useState(false);
   const stateUpdated = useRef(false);
 
   const totalQuestions = 50;
+
+  const { calculateSubjectScore } = useQuizScoring();
 
   useEffect(() => {
     try {
@@ -38,13 +34,6 @@ const SubjectQuiz = () => {
       });
 
       setQuestions(allQuestions);
-      setSubjectScores({
-        Science: 0,
-        Technology: 0,
-        English: 0,
-        Art: 0,
-        Math: 0
-      });
       setIsLoading(false);
     } catch (error) {
       console.error('Error loading questions:', error);
@@ -55,36 +44,7 @@ const SubjectQuiz = () => {
 
   const handleQuizCompletion = () => {
     if (!stateUpdated.current) {
-      const finalSubjectResults = {
-        subjectScores: {
-          Science: (subjectScores.Science / 10) * 100,
-          Technology: (subjectScores.Technology / 10) * 100,
-          English: (subjectScores.English / 10) * 100,
-          Art: (subjectScores.Art / 10) * 100,
-          Math: (subjectScores.Math / 10) * 100
-        }
-      };
-
-      console.log('Subject quiz completion data:', {
-        rawScores: subjectScores,
-        updatePayload: { subjectScores },
-        validation: {
-          hasScores: !!subjectScores,
-          scoreKeys: Object.keys(subjectScores),
-          mathScore: subjectScores.Math
-        }
-      });
-  
-      // Explicitly log the exact object we're sending to updateState
-      const updatePayload = { subjectScores };
-      console.log('Sending to updateState:', JSON.stringify(updatePayload, null, 2));
-
-      console.log('Completing subject quiz:', {
-        subjectScoresSummary: Object.entries(subjectScores)
-          .map(([subject, score]) => `${subject}: ${score}/10`)
-          .join(', ')
-      });
-      
+      const finalSubjectResults = calculateSubjectScore(answers);
       updateState(finalSubjectResults);
       stateUpdated.current = true;
       moveToNextSection();
@@ -120,42 +80,6 @@ const SubjectQuiz = () => {
       newAnswers[currentQuestion] = answerResult;
       setAnswers(newAnswers);
 
-      setSubjectScores(prev => {
-        const newScores = { ...prev };
-        const currentScore = Number(prev[subject] || 0);
-        const newScore = currentScore + (answerResult ? 1 : 0);
-        newScores[subject] = newScore;
-
-        // If this is the last question
-        if (currentQuestion === totalQuestions - 1) {
-          // Create a structured scores object
-          const scoreOutput = {
-            answers: newAnswers.map((answer, index) => {
-              const subject = Math.floor(index / 10);
-              return {
-                subject: ['Science', 'Technology', 'English', 'Art', 'Math'][subject],
-                value: answer
-              };
-            }),
-            scores: [
-              { subject: 'Science', value: newScores.Science },
-              { subject: 'Technology', value: newScores.Technology },
-              { subject: 'English', value: newScores.English },
-              { subject: 'Art', value: newScores.Art },
-              { subject: 'Math', value: newScores.Math }
-            ]
-          };
-
-          // console.log('Final question completed for SubjectQuiz:', 
-          //   JSON.stringify(scoreOutput, null, 2)
-          // );
-
-          setQuizCompleted(true);
-        }
-
-        return newScores;
-      });
-
       if (currentQuestion < totalQuestions - 1) {
         setCurrentQuestion(currentQuestion + 1);
         setCurrentAnswer(null);
@@ -168,8 +92,6 @@ const SubjectQuiz = () => {
     const selectedOption = options.find(opt => opt.value === selectedAnswer);
     const isCorrect = selectedOption?.label === question.correct_answer;
   
-    // console.log(`Q${currentQuestion % 10 + 1} checkAnswer:  ${selectedOption?.label} - ${isCorrect ? 'True' : 'False'}`);
-
     return isCorrect
   };
 

@@ -9,7 +9,7 @@ import QuizResults from './components/quiz/QuizResults';
 import QuizLeaderboard from './components/quiz/QuizLeaderboard';
 import UsernameEntry from './components/quiz/UsernameEntry';
 import PreferenceSelection from './components/quiz/preference-selection/PreferenceSelection';
-import { QuizProvider, useQuiz } from './context/QuizContext';
+import { QuizProvider } from './context/QuizContext';
 import './App.css';
 
 // Quiz flow component with preference selection
