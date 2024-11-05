@@ -13,21 +13,36 @@ test.describe('Set 1: Standard Quiz Flow', () => {
       const personalityScores = Object.entries(testCase.personalityAnswers)
         .map(([trait, scores]) => ({
           trait,
-          total: scores.reduce((sum, score) => sum + score, 0)
+          total: Math.round((scores.reduce((sum, score) => sum + score, 0) / 45) * 100)
         }));
+
+      // Determine expected ties for personality traits
+      const maxPersonalityScore = Math.max(...personalityScores.map(({ total }) => total));
+      const expectedPersonalityTies = personalityScores
+        .filter(({ total }) => total === maxPersonalityScore)
+        .map(({ trait }) => trait);
+
       const subjectScores = Object.entries(testCase.subjectAnswers)
         .map(([subject, scores]) => ({
           subject,
-          total: scores.filter(Boolean).length
+          total: Math.round((scores.filter(Boolean).length / scores.length) * 100)
         }));
+
+      // Determine expected ties for subjects
+      const maxSubjectScore = Math.max(...subjectScores.map(({ total }) => total));
+      const expectedSubjectTies = subjectScores
+        .filter(({ total }) => total === maxSubjectScore)
+        .map(({ subject }) => subject);
 
       console.log('\n=== Rendered Results Will Be ===');
       const personalityPercentages = personalityScores
-        .map(({trait, total}) => `${(total * 10)}% ${trait}`)
+        .map(({ trait, total }) => `${total}% ${expectedPersonalityTies.includes(trait) ? '\x1b[32m' + trait + '\x1b[0m' : trait}`)
         .join(', ');
+
       const subjectPercentages = subjectScores
-        .map(({subject, total}) => `${(total * 20)}% ${subject}`)
+        .map(({ subject, total }) => `${total}% ${expectedSubjectTies.includes(subject) ? '\x1b[32m' + subject + '\x1b[0m' : subject}`)
         .join(', ');
+
       console.log(personalityPercentages);
       console.log(subjectPercentages);
 

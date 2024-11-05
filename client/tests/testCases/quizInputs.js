@@ -2,9 +2,11 @@ const TEST_CASES = {
   // No ties (Cases 1-3)
   set1_standardFlow: {
     case1_clearWinners: {
-      description: "Case 1: Clear single winners: Extraversion (90%) and Math (80%)",
+      description: "Case 1: Clear single winners: Extraversion and Math",
       personalityAnswers: {
-        Openness: [5, 5, 5, 5, 5], // 25/45 = 55%
+        // NOTE on MARKDOWN calculations: scores/45 Percentages appear accurate but only checked in samples, pecentages are out by quite a few %
+        // console.logs in spec files appear to return perfectly accurate values
+        Openness: [5, 5, 5, 5, 5], // 25/45 = 55%... 
         Conscientiousness: [6, 6, 6, 6, 6], // 30/45 = 67%
         Extraversion: [8, 8, 8, 8, 8], // 40/45 = 89%
         Agreeableness: [4, 4, 4, 4, 4], // 20/45 = 44%
@@ -20,7 +22,7 @@ const TEST_CASES = {
     },
 
     case2_barelyNoTies: {
-      description: "Case 2: Winners by 6% margin: Openness (75%) and Science (65%)",
+      description: "Case 2: Winners by 6% margin: Openness and Science",
       personalityAnswers: {
         Openness: [7, 7, 7, 6, 7], // 34/45 = 75%
         Conscientiousness: [6, 6, 6, 6, 6], // 30/45 = 67%
@@ -38,7 +40,7 @@ const TEST_CASES = {
     },
 
     case3_extremeWinners: {
-      description: "Case 3: Extreme differences: Conscientiousness (100%) and Technology (90%)",
+      description: "Case 3: Extreme differences: Conscientiousness and Technology",
       personalityAnswers: {
         Conscientiousness: [9, 9, 9, 9, 9], // 45/45 = 100%
         Openness: [4, 4, 9, 4, 4], // 25/45 = 56%
@@ -59,7 +61,7 @@ const TEST_CASES = {
   // PERSONALITY TIE ONLY (Cases 1-3)
   set2_personalityTieOnly: {
     case1_twoWayTie: {
-      description: "Case 1: Two-way personality tie (Openness & Extraversion 88%), Math clear winner",
+      description: "Case 1: Two-way personality tie Openness & Extraversion, Math clear winner",
       personalityAnswers: {
         Openness: [8, 8, 8, 8, 8], // 40/45 = 88%
         Extraversion: [8, 8, 8, 8, 8], // 40/45 = 88%
@@ -77,7 +79,7 @@ const TEST_CASES = {
       preferredTrait: "Extraversion",
     },
     case2_threeWayTie: {
-      description: "Case 2: Three-way personality tie (Openness, Conscientiousness & Extraversion 80%), Science clear winner",
+      description: "Case 2: Three-way personality tie (Openness, Conscientiousness & Extraversion), Science clear winner",
       personalityAnswers: {
         Openness: [7, 7, 7, 7, 8], // 36/45 = 80%
         Conscientiousness: [7, 7, 7, 8, 7], // 36/45 = 80%
@@ -95,7 +97,7 @@ const TEST_CASES = {
       preferredTrait: "Openness",
     },
     case3_fourWayTie: {
-      description: "Case 3: Four-way personality tie (all 70% except Neuroticism), Technology clear winner",
+      description: "Case 3: Four-way personality tie (all except Neuroticism), Technology clear winner",
       personalityAnswers: {
         Openness: [6, 6, 7, 6, 7], // 32/45 = 71%
         Conscientiousness: [7, 6, 6, 7, 6], // 32/45 = 71%
@@ -116,7 +118,7 @@ const TEST_CASES = {
   // Subject Tie Only (3 variations)
   set3_subjectTieOnly: {
     case1_twoWaySubjectTie: {
-      description: "Case 1: Two-way subject tie (Math & Science 70%), Extraversion clear winner",
+      description: "Case 1: Two-way subject tie (Math & Science), Extraversion clear winner",
       personalityAnswers: {
         Extraversion: [8, 8, 8, 8, 8], // 40/45 = 89%
         Openness: [6, 6, 6, 6, 6], // 30/45 = 67%
@@ -134,7 +136,7 @@ const TEST_CASES = {
       preferredSubject: "Math",
     },
     case2_threeWaySubjectTie: {
-      description: "Case 2: Three-way subject tie (Math, Science & Technology 60%), Openness clear winner",
+      description: "Case 2: Three-way subject tie (Math, Science & Technology), Openness clear winner",
       personalityAnswers: {
         Openness: [8, 8, 8, 8, 8], // 40/45 = 89%
         Conscientiousness: [6, 6, 6, 6, 6], // 30/45 = 67%
@@ -152,7 +154,7 @@ const TEST_CASES = {
       preferredSubject: "Science",
     },
     case3_fourWaySubjectTie: {
-      description: "Case 3: Four-way subject tie (all 60% except Art), Agreeableness clear winner",
+      description: "Case 3: Four-way subject tie (all except Art), Agreeableness clear winner",
       personalityAnswers: {
         Agreeableness: [8, 8, 8, 8, 8], // 40/45 = 89%
         Openness: [6, 6, 6, 6, 6], // 30/45 = 67%
@@ -173,7 +175,7 @@ const TEST_CASES = {
   // Subject and Personality Ties (3 variations)
   set4_subjectAndPersonalityTies: {
     case1_simpleDoubleTie: {
-      description: "Case 1: Two-way ties in both categories (Openness/Extraversion 80%, Math/Science 70%)",
+      description: "Case 1: Two-way ties in both categories (Openness/Extraversion, Math/Science)",
       personalityAnswers: {
         Openness: [7, 7, 7, 7, 8], // 36/45 = 80%
         Extraversion: [8, 7, 7, 7, 7], // 36/45 = 80%
