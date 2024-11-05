@@ -236,7 +236,6 @@ flowchart TB
     %% Final Results Update
     F --> K[Results Updated with Context State]
     SN --> K
-    PN --> K
 
     %% Outcomes
     K -->|Results Normal| L[Results Normal]
