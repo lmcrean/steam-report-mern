@@ -231,6 +231,25 @@ const TEST_CASES = {
       preferredTrait: "Openness",
       preferredSubject: "Science",
     },
+    case4_extremeQuadrupleHundreds: {
+      description: "Case 4: Four-way 100% ties in both categories (all except Neuroticism and Art)",
+      personalityAnswers: {
+        Openness: [9, 9, 9, 9, 9], // 45/45 = 100%
+        Conscientiousness: [9, 9, 9, 9, 9], // 45/45 = 100%
+        Extraversion: [9, 9, 9, 9, 9], // 45/45 = 100%
+        Agreeableness: [9, 9, 9, 9, 9], // 45/45 = 100%
+        Neuroticism: [1, 1, 1, 1, 1], // 5/45 = 11%
+      },
+      subjectAnswers: {
+        Math: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], // 10/10 = 100%
+        Science: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], // 10/10 = 100%
+        Technology: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], // 10/10 = 100%
+        English: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], // 10/10 = 100%
+        Art: [1, 1, 0, 0, 0, 0, 0, 0, 0, 0], // 2/10 = 20%
+      },
+      preferredTrait: "Conscientiousness",
+      preferredSubject: "Technology",
+    },
   },
 };
 
