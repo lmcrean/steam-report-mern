@@ -134,6 +134,8 @@ Acts as the central state container, providing:
 
 ### Data Flow Architecture
 
+This flowchart shows the data flow between the components and the custom hooks.
+
 ```mermaid
 graph TD
     subgraph QuizFlowComponents ["Quiz Flow Components"]
@@ -149,6 +151,12 @@ graph TD
         N[useQuizNavigation]
         PS[usePersonalityScoring]
         SS[useSubjectScoring]
+    end
+
+    subgraph CheckForTies ["Check for Ties Edge Case"]
+        direction LR
+        PST[CheckForPersonalityTies]
+        SST[CheckForSubjectTies]
     end
 
     subgraph ValidationHooks ["Validation Hooks"]
@@ -169,12 +177,14 @@ graph TD
     %% Data flow connections
     NS -->|"updates section"| N
     P -->|"personality answers"| PS
+    PS -->|"check for ties"| PST
+    PST -->|"validated personality data"| PV
     S -->|"subject answers"| SS
+    SS -->|"check for ties"| SST
+    SST -->|"validated subject data"| SV
 
     %% Custom hooks to validation hooks
     U -->|"update username"| NU
-    PS -->|"personality answers"| PV
-    SS -->|"subject answers"| SV
 
     %% Validation hooks update context
     NU -->|"validated username"| QC
@@ -195,10 +205,15 @@ graph TD
 
     class U,P,S,NS flow
     class N,PS,SS hooks
+    class PST,SST ties
     class NU,PV,SV validation
     class QC core
     class R results
 ```
+
+
+### CheckForTies edge case
+
 
 
 ### CheckForTies edge case
@@ -209,47 +224,51 @@ When we travel to Results, we check for ties and if there are any, we display th
 
 ```mermaid
 flowchart TB
-    A[Results] --> B[CheckForTies]
-    
-    %% Check Personality first
-    B --> P[Check Personality?]
-    P -->|Tie?| PY[Personality Tie]
-    P -->|No Tie| PN[Personality No Tie]
-    
-    %% Handle Personality Tie
-    PY --> C[Display Personality Tie]
-    C --> D[User Input for Personality]
-    D --> E[Sends Personality Data to Context]
-    E --> S[Context Updates State]
-    
-    %% Check Subject next
-    PN --> S[Check Subject?]
-    S -->|Tie?| SY[Subject Tie]
-    S -->|No Tie| SN[Subject No Tie]
-    
-    %% Handle Subject Tie
-    SY --> G[Display Subject Tie]
-    G --> H[User Input for Subject]
-    H --> I[Sends Subject Data to Context]
-    I --> F[Context Updates State]
 
-    %% Final Results Update
-    F --> K[Results Updated with Context State]
-    SN --> K
-    PN --> K
+    subgraph PersonalityTie ["Personality Tie"]
+      %% Check Personality first lane
+      P[Personality Tie?]
+      
+      P -->|Yes| C[Display Personality Tie]
 
-    %% Outcomes
-    K -->|Results Normal| L[Results Normal]
-    K -->|Results Subject Tie| M[Results Subject Tie]
-    K -->|Results Personality Tie| N[Results Personality Tie]
-    K -->|Results Two Ties| O[Results Two Ties]
+      %% Personality Tie Calculation
+      C --> D[User Input for Personality]      
+    end
 
-    classDef flow fill:#f9f9f9,stroke:#ff9800,color:#000
-    classDef decision fill:#e3f2fd,stroke:#1565c0,color:#000
-    classDef action fill:#e8f5e9,stroke:#2e7d32,color:#000
+    subgraph SubjectTie ["Subject Tie"]
+      %% Check Subject second lane
+      S[Subject Tie?]
+      S -->|Yes| G[Display Subject Tie]
+      G --> H[User Input for Subject]
+
+    end
+
+    %% Context Updates State
+    subgraph ValidationHooks ["Validation Hooks"]
+      P -->|No| PV
+      D --> PV[Personality Tie Results]
+      H --> SV
+      PV[Personality Validation hooks]
+      SV[Subject Validation hooks]
+
+    end
+
+    subgraph ContextUpdates ["Context Updates State"]
+      PV --> CUS[Context Updates State]
+      SV --> CUS[Context Updates State]
+      CUS --> NS[Next Section]
+    end
+
+    classDef decision fill:white,stroke:#1565c0,color:#000
+    classDef validation fill:white,stroke:grey,color:#000
+    classDef context fill:#fff3e0,stroke:#ef6c00,color:#000
+    classDef userInput fill:purple,stroke:#00796b,color:white
 
     class B,P,S decision
-    class A,C,D,E,F,G,H,I,J,K,L,M,N,O action
+    class A,C,E,F,G,I,J,K,L,M,N,O action
+    class D,H userInput
+    class PV,SV validation
+    class CUS context
 ```
 
 ### Custom Hooks Architecture
