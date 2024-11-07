@@ -37,6 +37,7 @@ const UsernameEntry = () => {
             }}
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
                      focus:ring-2 focus:ring-blue-500 dark:bg-slate-700"
+            aria-label="Username input"
           />
           {error && <Alert type="error">{error}</Alert>}
         </div>

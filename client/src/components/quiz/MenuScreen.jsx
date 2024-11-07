@@ -1,15 +1,17 @@
 import React, { useContext } from 'react';
 import { QuizContext } from '../../context/QuizContext';
 import QuizCard from '../shared/QuizCard';
+import { useNextSection } from '../../hooks/useNextSection';
 
 const MenuScreen = () => {
   const { updateState } = useContext(QuizContext);
+  const { moveToNextSection } = useNextSection();
 
   const menuItems = [
     {
       title: 'Start Quiz',
       description: 'Begin your STEAM career discovery journey',
-      action: () => updateState({ section: 'username' }),
+      action: () => moveToNextSection(),
       primary: true
     },
     {

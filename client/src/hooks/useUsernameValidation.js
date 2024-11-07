@@ -1,15 +1,50 @@
-import { useCallback } from 'react';
+import { useContext } from 'react';
+import { QuizContext } from '../context/QuizContext';
+import { useNextSection } from './useNextSection';
 
 export const useUsernameValidation = () => {
-  const validateUsername = useCallback((username) => {
-    if (!username || username.trim().length < 3) {
-      throw new Error('Username must be at least 3 characters long');
-    }
-    if (username.trim().length > 20) {
-      throw new Error('Username must be less than 20 characters');
-    }
-    return username.trim();
-  }, []);
+  const { updateState } = useContext(QuizContext);
+  const { moveToNextSection } = useNextSection();
 
-  return { validateUsername };
+  const validateAndUpdateUsername = (username) => {
+    // Trim whitespace
+    const trimmedUsername = username.trim();
+
+    // Validation rules
+    if (!trimmedUsername) {
+      return {
+        isValid: false,
+        error: 'Username is required'
+      };
+    }
+
+    if (trimmedUsername.length < 3) {
+      return {
+        isValid: false,
+        error: 'Username must be at least 3 characters long'
+      };
+    }
+
+    if (trimmedUsername.length > 20) {
+      return {
+        isValid: false,
+        error: 'Username must be less than 20 characters'
+      };
+    }
+
+    // If validation passes, update context and move to next section
+    updateState({ 
+      username: trimmedUsername,
+      startTime: new Date().toISOString() 
+    });
+    
+    moveToNextSection();
+    
+    return {
+      isValid: true,
+      error: null
+    };
+  };
+
+  return { validateAndUpdateUsername };
 }; 
