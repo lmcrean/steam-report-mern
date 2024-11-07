@@ -17,10 +17,12 @@ export const INITIAL_STATE = {
   completionTime: null,
   personalityAnswers: [],
   personalityScores: null,
-  subjectAnswers: [],
-  subjectScores: null,
-  preferredTrait: null,
-  preferredSubject: null
+  calculatedTraitPercentages: null,
+  validatedPersonalityScores: null,
+  finalTraitPercentages: null,
+  personalityTies: [],
+  needsPreferenceSelection: false,
+  preferredTrait: null
 };
 
 // Tolerance for considering scores as tied (percentage points)

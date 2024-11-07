@@ -6,6 +6,7 @@ import ProgressBar from '../shared/ProgressBar';
 import RadioGroup from '../shared/RadioGroup';
 import QuizNavigation from '../shared/QuizNavigation';
 import Alert from '../shared/Alert';
+import LoadingSpinner from '../shared/LoadingSpinner';
 
 const SubjectQuiz = () => {
   const { calculateAndSubmitScore } = useSubjectScoring();

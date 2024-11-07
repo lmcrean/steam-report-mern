@@ -1,10 +1,11 @@
 import { useContext } from 'react';
 import { QuizContext } from '../context/QuizContext';
 import { useNextSection } from './useNextSection';
+import { usePersonalityValidation } from './usePersonalityValidation';
 
 export const usePersonalityScoring = () => {
-  const { updateState } = useContext(QuizContext);
   const { moveToNextSection } = useNextSection();
+  const { validatePersonalityScores } = usePersonalityValidation();
 
   const calculateAndSubmitScores = (answers) => {
     const traitTotals = answers.reduce((acc, ans) => {
@@ -19,8 +20,16 @@ export const usePersonalityScoring = () => {
       return acc;
     }, {});
 
-    updateState({ personalityScores: traitPercentages });
-    return moveToNextSection();
+    console.log('📊 Calculated trait percentages:', traitPercentages);
+
+    // Pass to validation for storage and verification
+    const isValid = validatePersonalityScores(traitPercentages);
+
+    if (isValid) {
+      console.log('✅ Personality scores validated, moving to next section');
+      return moveToNextSection();
+    }
+    return false;
   };
 
   return { calculateAndSubmitScores };

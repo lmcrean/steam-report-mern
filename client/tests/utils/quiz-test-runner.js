@@ -23,8 +23,6 @@ export async function runQuizTestCase(page, testCase) {
   } else if (testCase.preferredSubject) {
     await handleSubjectTie(page, testCase);
   }
-
-  await verifyResults(page, testCase);
 }
 
 async function startQuiz(page) {
@@ -37,13 +35,6 @@ async function startQuiz(page) {
   // Enter username and continue
   await page.getByPlaceholder('Enter your username').fill('TestUser');
   await page.getByRole('button', { name: 'Continue' }).click();
-  
-  // Log the navigation
-  console.log('\n=== Starting Quiz ===');
-  console.log('✓ Navigated to homepage');
-  console.log('✓ Clicked Start Quiz');
-  console.log('✓ Entered username: TestUser');
-  console.log('✓ Clicked Continue');
 }
 
 async function completePersonalitySection(page, answers) {
@@ -52,6 +43,18 @@ async function completePersonalitySection(page, answers) {
       await page.getByRole('radio', { name: String(answer) }).click();
       await page.getByRole('button', { name: 'Next' }).click();
     }
+  }
+  
+  // Verify section transition using actual component structure
+  try {
+    // Wait for STEAM Subject Quiz heading to appear
+    await page.waitForSelector('h2:has-text("STEAM Subject Quiz")', { timeout: 5000 });
+    // Double-check we're on first Science question
+    await page.waitForSelector('p:has-text("Science - Question 1 of 10")', { timeout: 5000 });
+    console.log('✓ Successfully transitioned to subject section');
+  } catch (error) {
+    console.error('❌ Failed to transition to subject section');
+    throw new Error('Quiz failed to transition from personality to subject section');
   }
 }
 

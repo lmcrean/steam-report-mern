@@ -40,8 +40,10 @@ const PersonalityQuiz = () => {
         setCurrentQuestionIndex(currentQuestionIndex + 1);
         setSelectedValue(null);
       } else {
+        console.log('📝 Submitting personality answers to usePersonalityScoring:', newAnswers);
         const success = calculateAndSubmitScores(newAnswers);
         if (!success) {
+          console.error('❌ Failed to submit personality scores');
           setError('Please answer all questions before proceeding.');
         }
       }

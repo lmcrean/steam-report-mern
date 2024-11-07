@@ -8,10 +8,13 @@ export const QuizProvider = ({ children }) => {
   const [state, setState] = useState(INITIAL_STATE);
 
   const updateState = useCallback((updates) => {
-    console.log('📝 Context: Updating state with:', updates);
     setState(prev => {
-      const newState = { ...prev, ...updates };
-      console.log('📊 Context: New state:', newState);
+      // If updates is a function, execute it
+      const actualUpdates = typeof updates === 'function' ? updates(prev) : updates;
+      const newState = { ...prev, ...actualUpdates };
+      
+      console.log('📊 Context: New state:', JSON.stringify(newState, null, 2));
+      
       return newState;
     });
   }, []);

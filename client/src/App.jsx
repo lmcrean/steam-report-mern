@@ -14,12 +14,7 @@ import './App.css';
 // Quiz flow component with preference selection
 const QuizFlow = () => {
   const { state } = useContext(QuizContext);
-
-  console.log('🎯 App: Current section:', state.section); // Debug log
-
-  const renderSection = () => {
-    console.log('🎲 App: Rendering section:', state.section); // Debug log
-    
+  const renderSection = () => {    
     switch (state.section) {
       case 'menu':
         return <MenuScreen />;
