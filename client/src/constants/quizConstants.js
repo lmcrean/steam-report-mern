@@ -13,16 +13,11 @@ export const QUIZ_SECTIONS = [
 export const INITIAL_STATE = {
   section: 'menu',
   username: '',
-  startTime: null,
-  completionTime: null,
-  personalityAnswers: [],
-  personalityScores: null,
-  calculatedTraitPercentages: null,
-  validatedPersonalityScores: null,
-  finalTraitPercentages: null,
+  traitPercentages: null,
+  needsPersonalityTieBreaker: false,
   personalityTies: [],
-  needsPreferenceSelection: false,
-  preferredTrait: null
+  preferredTrait: null,
+  traitPercentagesAfterTieBreaker: null,
 };
 
 // Tolerance for considering scores as tied (percentage points)

@@ -49,7 +49,6 @@ test.describe('Set 1: Standard Quiz Flow', () => {
       await runQuizTestCase(page, testCase);
       
       console.log('\n=== Test Complete ===');
-      console.log('✓ Verified standard flow completed successfully');
     });
   }
 }); 

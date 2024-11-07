@@ -35,7 +35,6 @@ export const useUsernameValidation = () => {
     // If validation passes, update context and move to next section
     updateState({ 
       username: trimmedUsername,
-      startTime: new Date().toISOString() 
     });
     
     moveToNextSection();

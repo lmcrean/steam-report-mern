@@ -7,8 +7,8 @@ import PersonalityQuiz from './components/quiz/PersonalityQuiz';
 import SubjectQuiz from './components/quiz/SubjectQuiz';
 import QuizResults from './components/quiz/QuizResults';
 import UsernameEntry from './components/quiz/UsernameEntry';
-import PreferenceSelection from './components/quiz/preference-selection/PreferenceSelection';
 import { QuizProvider, QuizContext } from './context/QuizContext';
+import TraitTieBreaker from './components/quiz/tie-breaker/TraitTieBreaker';
 import './App.css';
 
 // Quiz flow component with preference selection
@@ -21,11 +21,12 @@ const QuizFlow = () => {
       case 'username':
         return <UsernameEntry />;
       case 'personality':
+        if (state.needsPersonalityTiebreaker) {
+          return <TraitTieBreaker />;
+        }
         return <PersonalityQuiz />;
       case 'subject':
         return <SubjectQuiz />;
-      case 'preference-selection':
-        return <PreferenceSelection />;
       case 'results':
         return <QuizResults />;
       default:

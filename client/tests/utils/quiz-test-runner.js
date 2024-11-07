@@ -1,10 +1,5 @@
-// Import test cases
-import { TEST_CASES } from '../testCases/quizInputs';
-import { createQuizContextMonitor } from './quiz-context-check';
-
 // Base test runner that handles all cases
 export async function runQuizTestCase(page, testCase) {
-  const contextMonitor = createQuizContextMonitor();
   
   // Add monitoring to page
   await page.exposeFunction('monitorQuizContext', (key, value) => {

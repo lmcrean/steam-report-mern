@@ -1,10 +1,8 @@
-import { useContext } from 'react';
-import { QuizContext } from '../context/QuizContext';
-import { useNextSection } from './useNextSection';
+import { usePersonalityCheckForTies } from './usePersonalityCheckForTies';
 import { usePersonalityValidation } from './usePersonalityValidation';
 
 export const usePersonalityScoring = () => {
-  const { moveToNextSection } = useNextSection();
+  const { checkForTies } = usePersonalityCheckForTies();
   const { validatePersonalityScores } = usePersonalityValidation();
 
   const calculateAndSubmitScores = (answers) => {
@@ -22,13 +20,12 @@ export const usePersonalityScoring = () => {
 
     console.log('📊 Calculated trait percentages:', traitPercentages);
 
-    // Pass to validation for storage and verification
-    const isValid = validatePersonalityScores(traitPercentages);
+    const noTies = checkForTies(traitPercentages);
 
-    if (isValid) {
-      console.log('✅ Personality scores validated, moving to next section');
-      return moveToNextSection();
+    if (noTies) {
+      return validatePersonalityScores(traitPercentages);
     }
+    // If there are ties, we'll handle the UI transition in the Quiz component
     return false;
   };
 

@@ -24,7 +24,7 @@ const PersonalityQuiz = () => {
     loadQuestions();
   }, []);
 
-  const handleNext = () => {
+  const handleNextQuestion = () => {
     if (selectedValue !== null) {
       const newAnswers = [...answers];
       const answer = {
@@ -40,7 +40,6 @@ const PersonalityQuiz = () => {
         setCurrentQuestionIndex(currentQuestionIndex + 1);
         setSelectedValue(null);
       } else {
-        console.log('📝 Submitting personality answers to usePersonalityScoring:', newAnswers);
         const success = calculateAndSubmitScores(newAnswers);
         if (!success) {
           console.error('❌ Failed to submit personality scores');
@@ -126,7 +125,7 @@ const PersonalityQuiz = () => {
       </div>
 
       <QuizNavigation 
-        onNext={handleNext}
+        onNext={handleNextQuestion}
         onPrev={handlePrevious}
         canProgress={selectedValue !== null}
         showPrev={currentQuestionIndex > 0}

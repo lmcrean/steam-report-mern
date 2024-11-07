@@ -15,7 +15,6 @@ const QuizResults = () => {
     subjectScores,
     preferredTrait,
     preferredSubject,
-    startTime,
     completionTime
   } = state;
 
@@ -47,7 +46,6 @@ const QuizResults = () => {
           preferredTrait,
           preferredSubject,
           careerFeedback,
-          timeTaken: completionTime ? new Date(completionTime) - new Date(startTime) : null
         }
       });
     }
@@ -62,11 +60,6 @@ const QuizResults = () => {
       </div>
     );
   }
-
-  // Calculate time taken in minutes
-  const timeTakenMinutes = startTime && completionTime 
-    ? Math.round((new Date(completionTime) - new Date(startTime)) / 60000) 
-    : null;
 
   return (
     <div className="space-y-8">
