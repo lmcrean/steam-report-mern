@@ -2,9 +2,11 @@ import { startQuiz } from './quiz-runners/startQuiz';
 import { completePersonalitySection } from './quiz-runners/personalitySection';
 import { completeSubjectSection } from './quiz-runners/subjectSection';
 import { 
-  handlePersonalityTieBreaker, 
+  handlePersonalityTieBreaker 
+} from './quiz-runners/personalityTieBreaker';
+import { 
   handleSubjectTieBreaker 
-} from './quiz-runners/tieBreakers';
+} from './quiz-runners/subjectTieBreaker';
 
 export async function runQuizTestCase(page, testCase, subjectsData) {
   // Add monitoring to page
