@@ -13,11 +13,11 @@ const TEST_CASES = {
         Neuroticism: [3, 3, 3, 3, 3], // 15/45 = 33%
       },
       subjectAnswers: {
-        Math: [1, 1, 1, 1, 1, 1, 1, 1, 0, 0], // 8/10 = 80%
         Science: [1, 1, 1, 1, 1, 0, 0, 0, 0, 0], // 5/10 = 50%
         Technology: [1, 1, 1, 1, 0, 0, 0, 0, 0, 0], // 4/10 = 40%
         English: [1, 1, 1, 0, 0, 0, 0, 0, 0, 0], // 3/10 = 30%
         Art: [1, 1, 0, 0, 0, 0, 0, 0, 0, 0], // 2/10 = 20%
+        Math: [1, 1, 1, 1, 1, 1, 1, 1, 0, 0], // 8/10 = 80%
       },
     },
 
@@ -32,28 +32,28 @@ const TEST_CASES = {
       },
       subjectAnswers: {
         Science: [1, 1, 1, 1, 1, 1, 0, 0, 0, 0], // 6.5/10 = 65%
-        Math: [1, 1, 1, 1, 1, 0, 0, 0, 0, 0], // 5/10 = 50%
         Technology: [1, 1, 1, 1, 0, 0, 0, 0, 0, 0], // 4/10 = 40%
         English: [1, 1, 1, 0, 0, 0, 0, 0, 0, 0], // 3/10 = 30%
         Art: [1, 1, 0, 0, 0, 0, 0, 0, 0, 0], // 2/10 = 20%
+        Math: [1, 1, 1, 1, 1, 0, 0, 0, 0, 0], // 5/10 = 50%
       },
     },
 
     case3_extremeWinners: {
       description: "Case 3: Extreme differences: Conscientiousness and Technology",
       personalityAnswers: {
-        Conscientiousness: [9, 9, 9, 9, 9], // 45/45 = 100%
         Openness: [4, 4, 9, 4, 4], // 25/45 = 56%
+        Conscientiousness: [9, 9, 9, 9, 9], // 45/45 = 100%
         Extraversion: [3, 3, 3, 3, 3], // 15/45 = 33%
         Agreeableness: [2, 2, 2, 2, 2], // 10/45 = 22%
         Neuroticism: [1, 1, 1, 1, 1], // 5/45 = 11%
       },
       subjectAnswers: {
-        Technology: [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], // 9/10 = 90%
-        Math: [1, 1, 1, 1, 1, 0, 0, 0, 0, 0], // 5/10 = 50%
         Science: [1, 1, 1, 0, 0, 0, 0, 0, 0, 0], // 3/10 = 30%
+        Technology: [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], // 9/10 = 90%
         English: [1, 1, 0, 0, 0, 0, 0, 0, 0, 0], // 2/10 = 20%
         Art: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0], // 1/10 = 10%
+        Math: [1, 1, 1, 1, 1, 0, 0, 0, 0, 0], // 5/10 = 50%
       },
     },
   },
@@ -89,10 +89,10 @@ const TEST_CASES = {
       },
       subjectAnswers: {
         Science: [1, 1, 1, 1, 1, 1, 1, 0, 0, 0], // 7/10 = 70%
-        Math: [1, 1, 1, 1, 1, 0, 0, 0, 0, 0], // 5/10 = 50%
         Technology: [1, 1, 1, 1, 0, 0, 0, 0, 0, 0], // 4/10 = 40%
         English: [1, 1, 1, 0, 0, 0, 0, 0, 0, 0], // 3/10 = 30%
         Art: [1, 1, 0, 0, 0, 0, 0, 0, 0, 0], // 2/10 = 20%
+        Math: [1, 1, 1, 1, 1, 0, 0, 0, 0, 0], // 5/10 = 50%
       },
       preferredTrait: "Openness",
     },
@@ -106,11 +106,11 @@ const TEST_CASES = {
         Neuroticism: [3, 3, 3, 3, 3], // 15/45 = 33%
       },
       subjectAnswers: {
-        Technology: [1, 1, 1, 1, 1, 1, 1, 1, 0, 0], // 8/10 = 80%
         Science: [1, 1, 1, 1, 1, 0, 0, 0, 0, 0], // 5/10 = 50%
-        Math: [1, 1, 1, 1, 0, 0, 0, 0, 0, 0], // 4/10 = 40%
+        Technology: [1, 1, 1, 1, 1, 1, 1, 1, 0, 0], // 8/10 = 80%
         English: [1, 1, 1, 0, 0, 0, 0, 0, 0, 0], // 3/10 = 30%
         Art: [1, 1, 0, 0, 0, 0, 0, 0, 0, 0], // 2/10 = 20%
+        Math: [1, 1, 1, 1, 0, 0, 0, 0, 0, 0], // 4/10 = 40%
       },
       preferredTrait: "Conscientiousness",
     },
@@ -120,18 +120,18 @@ const TEST_CASES = {
     case1_twoWaySubjectTie: {
       description: "Case 1: Two-way subject tie (Math & Science), Extraversion clear winner",
       personalityAnswers: {
-        Extraversion: [8, 8, 8, 8, 8], // 40/45 = 89%
         Openness: [6, 6, 6, 6, 6], // 30/45 = 67%
         Conscientiousness: [5, 5, 5, 5, 5], // 25/45 = 56%
+        Extraversion: [8, 8, 8, 8, 8], // 40/45 = 89%
         Agreeableness: [4, 4, 4, 4, 4], // 20/45 = 44%
         Neuroticism: [3, 3, 3, 3, 3], // 15/45 = 33%
       },
       subjectAnswers: {
-        Math: [1, 1, 1, 1, 1, 1, 1, 0, 0, 0], // 7/10 = 70%
         Science: [1, 1, 1, 1, 1, 1, 1, 0, 0, 0], // 7/10 = 70%
         Technology: [1, 1, 1, 1, 0, 0, 0, 0, 0, 0], // 4/10 = 40%
         English: [1, 1, 1, 0, 0, 0, 0, 0, 0, 0], // 3/10 = 30%
         Art: [1, 1, 0, 0, 0, 0, 0, 0, 0, 0], // 2/10 = 20%
+        Math: [1, 1, 1, 1, 1, 1, 1, 0, 0, 0], // 7/10 = 70%
       },
       preferredSubject: "Math",
     },
@@ -145,21 +145,21 @@ const TEST_CASES = {
         Neuroticism: [3, 3, 3, 3, 3], // 15/45 = 33%
       },
       subjectAnswers: {
-        Math: [1, 1, 1, 1, 1, 1, 0, 0, 0, 0], // 6/10 = 60%
         Science: [1, 1, 1, 1, 1, 1, 0, 0, 0, 0], // 6/10 = 60%
         Technology: [1, 1, 1, 1, 1, 1, 0, 0, 0, 0], // 6/10 = 60%
         English: [1, 1, 1, 0, 0, 0, 0, 0, 0, 0], // 3/10 = 30%
         Art: [1, 1, 0, 0, 0, 0, 0, 0, 0, 0], // 2/10 = 20%
+        Math: [1, 1, 1, 1, 1, 1, 0, 0, 0, 0], // 6/10 = 60%
       },
       preferredSubject: "Science",
     },
     case3_fourWaySubjectTie: {
       description: "Case 3: Four-way subject tie (all except Art), Agreeableness clear winner",
       personalityAnswers: {
-        Agreeableness: [8, 8, 8, 8, 8], // 40/45 = 89%
         Openness: [6, 6, 6, 6, 6], // 30/45 = 67%
         Conscientiousness: [5, 5, 5, 5, 5], // 25/45 = 56%
         Extraversion: [4, 4, 4, 4, 4], // 20/45 = 44%
+        Agreeableness: [8, 8, 8, 8, 8], // 40/45 = 89%
         Neuroticism: [3, 3, 3, 3, 3], // 15/45 = 33%
       },
       subjectAnswers: {
@@ -178,17 +178,17 @@ const TEST_CASES = {
       description: "Case 1: Two-way ties in both categories (Openness/Extraversion, Math/Science)",
       personalityAnswers: {
         Openness: [7, 7, 7, 7, 8], // 36/45 = 80%
-        Extraversion: [8, 7, 7, 7, 7], // 36/45 = 80%
         Conscientiousness: [6, 6, 6, 6, 6], // 30/45 = 67%
+        Extraversion: [8, 7, 7, 7, 7], // 36/45 = 80%
         Agreeableness: [5, 5, 5, 5, 5], // 25/45 = 56%
         Neuroticism: [4, 4, 4, 4, 4], // 20/45 = 44%
       },
       subjectAnswers: {
-        Math: [1, 1, 1, 1, 1, 1, 1, 0, 0, 0], // 7/10 = 70%
         Science: [1, 1, 1, 1, 1, 1, 1, 0, 0, 0], // 7/10 = 70%
         Technology: [1, 1, 1, 1, 0, 0, 0, 0, 0, 0], // 4/10 = 40%
         English: [1, 1, 1, 0, 0, 0, 0, 0, 0, 0], // 3/10 = 30%
         Art: [1, 1, 0, 0, 0, 0, 0, 0, 0, 0], // 2/10 = 20%
+        Math: [1, 1, 1, 1, 1, 1, 1, 0, 0, 0], // 7/10 = 70%
       },
       preferredTrait: "Extraversion",
       preferredSubject: "Math",
@@ -203,11 +203,11 @@ const TEST_CASES = {
         Neuroticism: [4, 4, 4, 4, 4], // 20/45 = 44%
       },
       subjectAnswers: {
-        Math: [1, 1, 1, 1, 1, 1, 1, 1, 0, 0], // 8/10 = 80%
         Science: [1, 1, 1, 1, 1, 1, 1, 1, 0, 0], // 8/10 = 80%
         Technology: [1, 1, 1, 1, 1, 0, 0, 0, 0, 0], // 5/10 = 50%
         English: [1, 1, 1, 0, 0, 0, 0, 0, 0, 0], // 3/10 = 30%
         Art: [1, 1, 0, 0, 0, 0, 0, 0, 0, 0], // 2/10 = 20%
+        Math: [1, 1, 1, 1, 1, 1, 1, 1, 0, 0], // 8/10 = 80%
       },
       preferredTrait: "Conscientiousness",
       preferredSubject: "Science",
@@ -222,11 +222,11 @@ const TEST_CASES = {
         Neuroticism: [4, 4, 4, 4, 4], // 20/45 = 44%
       },
       subjectAnswers: {
-        Math: [1, 1, 1, 1, 1, 1, 0, 0, 0, 0], // 6/10 = 60%
         Science: [1, 1, 1, 1, 1, 1, 0, 0, 0, 0], // 6/10 = 60%
         Technology: [1, 1, 1, 1, 1, 1, 0, 0, 0, 0], // 6/10 = 60%
         English: [1, 1, 1, 1, 1, 1, 0, 0, 0, 0], // 6/10 = 60%
         Art: [1, 1, 0, 0, 0, 0, 0, 0, 0, 0], // 2/10 = 20%
+        Math: [1, 1, 1, 1, 1, 1, 0, 0, 0, 0], // 6/10 = 60%
       },
       preferredTrait: "Openness",
       preferredSubject: "Science",
@@ -241,11 +241,11 @@ const TEST_CASES = {
         Neuroticism: [1, 1, 1, 1, 1], // 5/45 = 11%
       },
       subjectAnswers: {
-        Math: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], // 10/10 = 100%
         Science: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], // 10/10 = 100%
         Technology: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], // 10/10 = 100%
         English: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], // 10/10 = 100%
         Art: [1, 1, 0, 0, 0, 0, 0, 0, 0, 0], // 2/10 = 20%
+        Math: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], // 10/10 = 100%
       },
       preferredTrait: "Conscientiousness",
       preferredSubject: "Technology",
