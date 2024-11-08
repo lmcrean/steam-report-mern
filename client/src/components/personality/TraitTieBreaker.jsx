@@ -18,10 +18,13 @@ const TraitTieBreaker = () => {
       return;
     }
 
-    // Add bonus point to selected trait
+    // Get the raw score from the percentage
+    const currentScore = Math.round((traitPercentages[selectedTrait] * 45) / 100);
+    
+    // Add bonus point and recalculate percentage
     const updatedScores = {
       ...traitPercentages,
-      [selectedTrait]: traitPercentages[selectedTrait] + 1
+      [selectedTrait]: Math.round(((currentScore + 1) / 45) * 100)
     };
 
     validatePersonalityScores(updatedScores, selectedTrait);

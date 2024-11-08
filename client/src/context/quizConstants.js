@@ -17,7 +17,6 @@ export const INITIAL_STATE = {
   needsPersonalityTieBreaker: false,
   personalityTies: [],
   preferredTrait: null,
-  traitPercentagesAfterTieBreaker: null,
 };
 
 // Tolerance for considering scores as tied (percentage points)

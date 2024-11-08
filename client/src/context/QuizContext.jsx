@@ -13,7 +13,7 @@ export const QuizProvider = ({ children }) => {
       const actualUpdates = typeof updates === 'function' ? updates(prev) : updates;
       const newState = { ...prev, ...actualUpdates };
       
-      // console.log('📊 Context: New state:', JSON.stringify(newState, null, 2));
+      console.log('📊 Context: New state:', JSON.stringify(newState, null, 2));
       
       return newState;
     });

@@ -64,17 +64,17 @@ const TEST_CASES = {
       description: "Case 1: Two-way personality tie Openness & Extraversion, Math clear winner",
       personalityAnswers: {
         Openness: [8, 8, 8, 8, 8], // 40/45 = 88%
-        Extraversion: [8, 8, 8, 8, 8], // 40/45 = 88%
         Conscientiousness: [6, 6, 6, 6, 6], // 30/45 = 67%
+        Extraversion: [8, 8, 8, 8, 8], // 40/45 = 88%
         Agreeableness: [4, 4, 4, 4, 4], // 20/45 = 44%
         Neuroticism: [3, 3, 3, 3, 3], // 15/45 = 33%
       },
       subjectAnswers: {
-        Math: [1, 1, 1, 1, 1, 1, 1, 1, 0, 0], // 8/10 = 80%
         Science: [1, 1, 1, 1, 1, 0, 0, 0, 0, 0], // 5/10 = 50%
         Technology: [1, 1, 1, 1, 0, 0, 0, 0, 0, 0], // 4/10 = 40%
         English: [1, 1, 1, 0, 0, 0, 0, 0, 0, 0], // 3/10 = 30%
         Art: [1, 1, 0, 0, 0, 0, 0, 0, 0, 0], // 2/10 = 20%
+        Math: [1, 1, 1, 1, 1, 1, 1, 1, 0, 0], // 8/10 = 80%
       },
       preferredTrait: "Extraversion",
     },

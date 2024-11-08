@@ -88,8 +88,12 @@ async function handlePersonalityTieBreaker(page, preferredTrait) {
       throw new Error('Tie breaker component not found');
     }
     
-    // Wait a moment for the buttons to be fully rendered
-    await page.waitForTimeout(500);
+    // Log available buttons for debugging
+    const buttons = await page.$$('button');
+    const buttonTexts = await Promise.all(
+      buttons.map(button => button.textContent())
+    );
+    console.log('Available buttons:', buttonTexts);
     
     // Find and click the button with the preferred trait
     const traitButton = await page.getByRole('button', { 
@@ -98,7 +102,7 @@ async function handlePersonalityTieBreaker(page, preferredTrait) {
     });
     
     if (!traitButton) {
-      throw new Error(`Button for trait "${preferredTrait}" not found`);
+      throw new Error(`Button for trait "${preferredTrait}" not found. Available buttons: ${buttonTexts.join(', ')}`);
     }
     
     await traitButton.click();
@@ -129,8 +133,10 @@ async function handlePersonalityTieBreaker(page, preferredTrait) {
     console.log('✓ Successfully transitioned to subject section after tie breaker');
   } catch (error) {
     console.error('❌ Failed to handle personality tie breaker:', error);
-    // Take a screenshot to help debug the failure
+    // Take a screenshot and log the page HTML for debugging
     await page.screenshot({ path: 'personality-tie-breaker-error.png' });
+    const html = await page.content();
+    console.log('Page HTML:', html);
     throw error;
   }
 }
