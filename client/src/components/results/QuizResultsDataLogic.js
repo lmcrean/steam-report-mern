@@ -1,6 +1,6 @@
 // QuizResultsDataLogic.js
 import { useMemo } from 'react';
-import { getCareerFeedback } from '../../../data/feedbackDatabase';
+import { getCareerFeedback } from '../../data/feedbackDatabase';
 
 export const ensureNumber = (value) => {
   const num = Number(value);

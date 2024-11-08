@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useContext } from 'react';
 import { QuizContext } from '../../context/QuizContext';
 import { usePersonalityValidation } from './usePersonalityValidation';
+import Alert from '../shared/Alert';
 
 const TraitTieBreaker = () => {
   const [selectedTrait, setSelectedTrait] = useState(null);
@@ -35,11 +36,13 @@ const TraitTieBreaker = () => {
         </p>
 
         <div className="space-y-4">
-          {personalities.map(trait => (
+          {personalityTies.map(trait => (
             <button
               key={trait}
               onClick={() => setSelectedTrait(trait)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className={`px-4 py-2 w-full text-white rounded-lg transition-colors ${
+                selectedTrait === trait ? 'bg-blue-700' : 'bg-blue-600 hover:bg-blue-700'
+              }`}
             >
               {trait}
             </button>
@@ -48,7 +51,7 @@ const TraitTieBreaker = () => {
 
         {error && <Alert type="error">{error}</Alert>}
 
-        <div className="flex justify-end">
+        <div className="flex justify-end mt-6">
           <button
             onClick={handleSubmit}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"

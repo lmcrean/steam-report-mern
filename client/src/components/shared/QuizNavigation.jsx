@@ -10,7 +10,7 @@ const QuizNavigation = ({ onNext, canProgress }) => {
           ${!canProgress 
             ? 'bg-gray-200 text-gray-500 cursor-not-allowed dark:bg-gray-700 dark:text-gray-400'
             : 'bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400'
-          } ${!showPrev ? 'ml-auto' : ''}`}
+          }`}
         name="Next"
         type="button"
         aria-disabled={!canProgress}

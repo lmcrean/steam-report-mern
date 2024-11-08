@@ -16,12 +16,14 @@ export const usePersonalityValidation = () => {
         updateState({
           traitPercentages: scores,
           preferredTrait,
-          needsPersonalityTiebreaker: false
+          needsPersonalityTieBreaker: false,
+          personalityTies: [] // Clear the ties array
         });
       } else {
         // Handle normal case (no ties)
         updateState({
-          traitPercentages: scores
+          traitPercentages: scores,
+          needsPersonalityTieBreaker: false
         });
       }
       

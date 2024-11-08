@@ -19,7 +19,7 @@ export const usePersonalityCheckForTies = () => {
     if (tiedTraits.length > 1) {
       updateState({
         personalityTies: tiedTraits,
-        needsPersonalityTiebreaker: true
+        needsPersonalityTieBreaker: true
       });
       return false;
     }

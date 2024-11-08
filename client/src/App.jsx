@@ -4,7 +4,7 @@ import MainLayout from './components/layout/MainLayout';
 import Header from './components/layout/Header';
 import MenuScreen from './components/menu/MenuScreen';
 import PersonalityQuiz from './components/personality/PersonalityQuiz';
-import SubjectQuiz from './components/SubjectQuiz';
+import SubjectQuiz from './components/subject/SubjectQuiz';
 import QuizResults from './components/results/QuizResults';
 import UsernameEntry from './components/username/UsernameEntry';
 import { QuizProvider, QuizContext } from './context/QuizContext';

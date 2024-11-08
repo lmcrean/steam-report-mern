@@ -49,14 +49,6 @@ const PersonalityQuiz = () => {
     }
   };
 
-  const handlePrevious = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
-      const previousAnswer = answers[currentQuestionIndex - 1];
-      setSelectedValue(previousAnswer ? previousAnswer.value : null);
-    }
-  };
-
   if (error) {
     return <Alert type="error">{error}</Alert>;
   }
@@ -126,9 +118,7 @@ const PersonalityQuiz = () => {
 
       <QuizNavigation 
         onNext={handleNextQuestion}
-        onPrev={handlePrevious}
         canProgress={selectedValue !== null}
-        showPrev={currentQuestionIndex > 0}
       />
     </div>
   );

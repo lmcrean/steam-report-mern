@@ -25,8 +25,7 @@ export const usePersonalityScoring = () => {
     if (noTies) {
       return validatePersonalityScores(traitPercentages);
     }
-    // If there are ties, we'll handle the UI transition in the Quiz component
-    return false;
+    return true; // Changed to true since tie detection is successful
   };
 
   return { calculateAndSubmitScores };

@@ -1,12 +1,12 @@
 // SubjectQuiz.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import { useSubjectScoring } from '../hooks/useSubjectScoring';
-import { subjects, getRandomQuestions } from '../data/subjectQuestions';
-import ProgressBar from './shared/ProgressBar';
-import RadioGroup from './shared/RadioGroup';
-import QuizNavigation from './shared/QuizNavigation';
-import Alert from './shared/Alert';
-import LoadingSpinner from './shared/LoadingSpinner';
+import { useSubjectScoring } from './useSubjectScoring';
+import { subjects, getRandomQuestions } from '../../data/subjectQuestions';
+import ProgressBar from '../shared/ProgressBar';
+import RadioGroup from '../shared/RadioGroup';
+import QuizNavigation from '../shared/QuizNavigation';
+import Alert from '../shared/Alert';
+import LoadingSpinner from '../shared/LoadingSpinner';
 
 const SubjectQuiz = () => {
   const { calculateAndSubmitScore } = useSubjectScoring();
@@ -91,14 +91,6 @@ const SubjectQuiz = () => {
     const isCorrect = selectedOption?.label === question.correct_answer;
   
     return isCorrect
-  };
-
-  const handlePrevious = () => {
-    if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion - 1);
-      const previousAnswer = answers[currentQuestion - 1];
-      setCurrentAnswer(previousAnswer ? previousAnswer.selectedAnswer : null);
-    }
   };
 
   const getCurrentQuestionData = () => {
@@ -195,9 +187,7 @@ const SubjectQuiz = () => {
 
           <QuizNavigation
             onNext={handleNext}
-            onPrev={handlePrevious}
             canProgress={currentAnswer !== null}
-            showPrev={currentQuestion > 0}
           />
         </div>
       </div>
