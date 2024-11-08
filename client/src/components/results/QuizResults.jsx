@@ -21,7 +21,7 @@ const QuizResults = () => {
   const {
     personalityData,
     subjectData,
-    highestPersonalityTrait,
+    highestTrait,
     highestSubject,
     careerFeedback
   } = useQuizResultsData(
@@ -41,7 +41,7 @@ const QuizResults = () => {
           subjectScores: Object.fromEntries(
             subjectData.map(item => [item.subject, item.score])
           ),
-          highestPersonalityTrait,
+          highestTrait,
           highestSubject,
           preferredTrait,
           preferredSubject,
@@ -119,7 +119,7 @@ const QuizResults = () => {
       <ResultsSection title="Career Recommendations">
         <CareerRecommendation 
           careerFeedback={careerFeedback}
-          highestPersonalityTrait={highestPersonalityTrait}
+          highestTrait={highestTrait}
           highestSubject={highestSubject}
           preferredTrait={preferredTrait}
           preferredSubject={preferredSubject}

@@ -2,14 +2,14 @@
 import React from 'react';
 import { ResultsSection } from './QuizResultsCharts';
 
-const StrengthsCard = ({ highestPersonalityTrait, highestSubject }) => (
+const StrengthsCard = ({ highestTrait, highestSubject }) => (
   <div className="bg-blue-50 p-4 rounded-lg">
     <h4 className="font-medium text-gray-700">Key Strengths</h4>
     <div className="mt-2 space-y-2">
-      {highestPersonalityTrait && (
+      {highestTrait && (
         <div>
           <span className="text-gray-600 font-medium">Strongest trait: </span>
-          <span className="text-blue-600">{highestPersonalityTrait}</span>
+          <span className="text-blue-600">{highestTrait}</span>
         </div>
       )}
       {highestSubject && (
@@ -54,10 +54,10 @@ const CareerSummary = ({ personalityTrait, subject }) => (
 
 const CareerRecommendation = ({ 
   careerFeedback, 
-  highestPersonalityTrait, 
+  highestTrait, 
   highestSubject 
 }) => {
-  if (!highestPersonalityTrait || !highestSubject) {
+  if (!highestTrait || !highestSubject) {
     return (
       <ResultsSection title="Career Recommendations">
         <div className="text-center text-gray-600">
@@ -71,7 +71,7 @@ const CareerRecommendation = ({
     <ResultsSection title="Career Recommendations">
       <div className="space-y-6">
         <StrengthsCard 
-          highestPersonalityTrait={highestPersonalityTrait}
+          highestTrait={highestTrait}
           highestSubject={highestSubject}
         />
         
@@ -80,7 +80,7 @@ const CareerRecommendation = ({
         )}
         
         <CareerSummary 
-          personalityTrait={highestPersonalityTrait}
+          personalityTrait={highestTrait}
           subject={highestSubject}
         />
       </div>

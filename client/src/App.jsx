@@ -8,7 +8,7 @@ import SubjectQuiz from './components/subject/SubjectQuiz';
 import QuizResults from './components/results/QuizResults';
 import UsernameEntry from './components/username/UsernameEntry';
 import { QuizProvider, QuizContext } from './context/QuizContext';
-import TraitTieBreaker from './components/personality/TraitTieBreaker';
+import PersonalityTieBreaker from './components/personality/PersonalityTieBreaker';
 import './App.css';
 
 // Quiz flow component with preference selection
@@ -22,7 +22,7 @@ const QuizFlow = () => {
         return <UsernameEntry />;
       case 'personality':
         if (state.needsPersonalityTiebreaker) {
-          return <TraitTieBreaker />;
+          return <PersonalityTieBreaker />;
         }
         return <PersonalityQuiz />;
       case 'subject':

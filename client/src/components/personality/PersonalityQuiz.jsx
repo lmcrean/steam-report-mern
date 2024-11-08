@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { usePersonalityScoring } from './usePersonalityScoring';
 import { QuizContext } from '../../context/QuizContext';
-import TraitTieBreaker from './TraitTieBreaker';
+import PersonalityTieBreaker from './PersonalityTieBreaker';
 import Alert from '../shared/Alert';
 import QuizNavigation from '../shared/QuizNavigation';
 
@@ -62,7 +62,7 @@ const PersonalityQuiz = () => {
   }
 
   if (needsPersonalityTieBreaker) {
-    return <TraitTieBreaker />;
+    return <PersonalityTieBreaker />;
   }
 
   const currentQuestion = questions[currentQuestionIndex];

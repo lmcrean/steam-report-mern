@@ -1,5 +1,5 @@
 // src/components/quiz/preference-selection/preferenceDescriptions.js
-export const getTraitDescription = (trait) => {
+export const getPersonalityTraitDescription = (trait) => {
     const descriptions = {
       Openness: "Curiosity and willingness to try new experiences",
       Conscientiousness: "Organization and attention to detail",

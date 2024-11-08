@@ -1,11 +1,11 @@
-// TraitTieBreaker.jsx
+// PersonalityTieBreaker.jsx
 import React, { useState } from 'react';
 import { useContext } from 'react';
 import { QuizContext } from '../../context/QuizContext';
 import { usePersonalityValidation } from './usePersonalityValidation';
 import Alert from '../shared/Alert';
 
-const TraitTieBreaker = () => {
+const PersonalityTieBreaker = () => {
   const [selectedTrait, setSelectedTrait] = useState(null);
   const [error, setError] = useState(null);
   const { validatePersonalityScores } = usePersonalityValidation();
@@ -67,4 +67,4 @@ const TraitTieBreaker = () => {
   );
 };
 
-export default TraitTieBreaker;
+export default PersonalityTieBreaker;

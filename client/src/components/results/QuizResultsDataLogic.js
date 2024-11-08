@@ -147,14 +147,14 @@ export const useQuizResultsData = (
     : null;
 
   // console.log('Final Results Summary:', {
-  //   highestPersonalityTrait: highest.personalityTrait,
+  //   highestTrait: highest.personalityTrait,
   //   highestSubject: highest.subject,
   // });
 
   return {
     personalityData,
     subjectData,
-    highestPersonalityTrait: highest.personalityTrait,
+    highestTrait: highest.personalityTrait,
     highestSubject: highest.subject,
     careerFeedback: feedback
   };
