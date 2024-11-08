@@ -10,14 +10,17 @@ export const usePersonalityCheckForTies = () => {
     // Find the highest score
     const maxScore = Math.max(...Object.values(traitPercentages));
     
-    // Find all traits that share the highest score
+    // Find all traits that share the highest score (with exact matching)
     const tiedTraits = Object.entries(traitPercentages)
-      .filter(([_, score]) => score === maxScore)
-      .map(([trait]) => trait);
+      .filter(([_, score]) => Math.abs(score - maxScore) < 0.01) // Use small epsilon for float comparison
+      .map(([trait]) => trait)
+      .sort(); // Sort to ensure consistent order
 
     // If there's more than one trait with the highest score
     if (tiedTraits.length > 1) {
+      console.log('🔍 Found personality ties:', tiedTraits);
       updateState({
+        traitPercentages,
         personalityTies: tiedTraits,
         needsPersonalityTieBreaker: true
       });

@@ -8,15 +8,17 @@ export async function runQuizTestCase(page, testCase) {
 
   await startQuiz(page);
   await completePersonalitySection(page, testCase.personalityAnswers);
+  
+  // Handle personality tie breaker if needed
+  if (testCase.preferredTrait) {
+    await handlePersonalityTieBreaker(page, testCase.preferredTrait);
+  }
+  
   await completeSubjectSection(page, testCase.subjectAnswers);
   
-  // Handle different tie scenarios
-  if (testCase.preferredTrait && testCase.preferredSubject) {
-    await handleBothTies(page, testCase);
-  } else if (testCase.preferredTrait) {
-    await handlePersonalityTie(page, testCase);
-  } else if (testCase.preferredSubject) {
-    await handleSubjectTie(page, testCase);
+  // Handle subject tie breaker if needed
+  if (testCase.preferredSubject) {
+    await handleSubjectTieBreaker(page, testCase.preferredSubject);
   }
 }
 
@@ -40,16 +42,25 @@ async function completePersonalitySection(page, answers) {
     }
   }
   
-  // Verify section transition using actual component structure
+  // After completing all personality questions, check for tie breaker
   try {
-    // Wait for STEAM Subject Quiz heading to appear
-    await page.waitForSelector('h2:has-text("STEAM Subject Quiz")', { timeout: 5000 });
-    // Double-check we're on first Science question
-    await page.waitForSelector('p:has-text("Science - Question 1 of 10")', { timeout: 5000 });
-    console.log('✓ Successfully transitioned to subject section');
+    // First check if we landed on the tie breaker page
+    const tieBreaker = await page.waitForSelector('h2:has-text("We Found a Tie!")', { timeout: 5000 });
+    
+    if (tieBreaker) {
+      console.log('✓ Detected personality tie breaker screen');
+      return; // Exit here and let the tie breaker handler take over
+    }
   } catch (error) {
-    console.error('❌ Failed to transition to subject section');
-    throw new Error('Quiz failed to transition from personality to subject section');
+    // No tie breaker found, verify we moved to subject section
+    try {
+      await page.waitForSelector('h2:has-text("STEAM Subject Quiz")', { timeout: 5000 });
+      await page.waitForSelector('p:has-text("Science - Question 1 of 10")', { timeout: 5000 });
+      console.log('✓ Successfully transitioned to subject section');
+    } catch (error) {
+      console.error('❌ Failed to transition to either tie breaker or subject section');
+      throw new Error('Quiz failed to transition properly after personality section');
+    }
   }
 }
 
@@ -63,14 +74,84 @@ async function completeSubjectSection(page, answers) {
   }
 }
 
-async function handlePreferenceSelection(page, testCase) {
-  if (testCase.preferredTrait) {
-    await page.getByRole('radio', { name: testCase.preferredTrait }).click();
-    await page.getByRole('button', { name: 'Confirm Selection' }).click();
+async function handlePersonalityTieBreaker(page, preferredTrait) {
+  try {
+    console.log(`\nAttempting to handle personality tie breaker - will select ${preferredTrait}`);
+    
+    // Wait for the tie breaker component and verify it's visible
+    const tieBreaker = await page.waitForSelector('h2:has-text("We Found a Tie!")', { 
+      timeout: 5000,
+      state: 'visible'
+    });
+    
+    if (!tieBreaker) {
+      throw new Error('Tie breaker component not found');
+    }
+    
+    // Wait a moment for the buttons to be fully rendered
+    await page.waitForTimeout(500);
+    
+    // Find and click the button with the preferred trait
+    const traitButton = await page.getByRole('button', { 
+      name: preferredTrait,
+      exact: true 
+    });
+    
+    if (!traitButton) {
+      throw new Error(`Button for trait "${preferredTrait}" not found`);
+    }
+    
+    await traitButton.click();
+    console.log(`✓ Selected preferred trait: ${preferredTrait}`);
+    
+    // Wait for button state to update
+    await page.waitForTimeout(100);
+    
+    // Find and click the confirm button
+    const confirmButton = await page.getByRole('button', { 
+      name: 'Confirm Selection',
+      exact: true
+    });
+    
+    if (!confirmButton) {
+      throw new Error('Confirm Selection button not found');
+    }
+    
+    await confirmButton.click();
+    console.log('✓ Clicked confirm selection');
+    
+    // Wait for transition to subject section
+    await page.waitForSelector('h2:has-text("STEAM Subject Quiz")', { 
+      timeout: 5000,
+      state: 'visible'
+    });
+    
+    console.log('✓ Successfully transitioned to subject section after tie breaker');
+  } catch (error) {
+    console.error('❌ Failed to handle personality tie breaker:', error);
+    // Take a screenshot to help debug the failure
+    await page.screenshot({ path: 'personality-tie-breaker-error.png' });
+    throw error;
   }
-  
-  if (testCase.preferredSubject) {
-    await page.getByRole('radio', { name: testCase.preferredSubject }).click();
+}
+
+async function handleSubjectTieBreaker(page, preferredSubject) {
+  try {
+    // Wait for the subject tie breaker component to appear
+    await page.waitForSelector('h2:has-text("Subject Tie Detected!")', { timeout: 5000 });
+    
+    // Select the preferred subject
+    await page.getByRole('button', { name: preferredSubject }).click();
+    
+    // Click confirm selection
     await page.getByRole('button', { name: 'Confirm Selection' }).click();
+    
+    // Wait for results page
+    await page.waitForSelector('h2:has-text("Your Results")', { timeout: 5000 });
+    
+    console.log(`✓ Successfully handled subject tie breaker - selected ${preferredSubject}`);
+  } catch (error) {
+    console.error('❌ Failed to handle subject tie breaker:', error);
+    throw new Error('Failed to handle subject tie breaker');
   }
-} 
+}

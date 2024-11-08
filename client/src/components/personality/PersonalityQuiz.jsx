@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { usePersonalityScoring } from './usePersonalityScoring';
+import { QuizContext } from '../../context/QuizContext';
+import TraitTieBreaker from './TraitTieBreaker';
 import Alert from '../shared/Alert';
 import QuizNavigation from '../shared/QuizNavigation';
 
 const PersonalityQuiz = () => {
+  const { state } = useContext(QuizContext);
+  const { needsPersonalityTieBreaker } = state;
   const { calculateAndSubmitScores } = usePersonalityScoring();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedValue, setSelectedValue] = useState(null);
@@ -55,6 +59,10 @@ const PersonalityQuiz = () => {
 
   if (questions.length === 0) {
     return <div className="text-center">Loading questions...</div>;
+  }
+
+  if (needsPersonalityTieBreaker) {
+    return <TraitTieBreaker />;
   }
 
   const currentQuestion = questions[currentQuestionIndex];

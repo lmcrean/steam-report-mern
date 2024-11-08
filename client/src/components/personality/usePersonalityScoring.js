@@ -8,13 +8,15 @@ export const usePersonalityScoring = () => {
   const calculateAndSubmitScores = (answers) => {
     const traitTotals = answers.reduce((acc, ans) => {
       if (ans && ans.trait) {
-        acc[ans.trait] = (acc[ans.trait] || 0) + ans.value;
+        if (!acc[ans.trait]) acc[ans.trait] = [];
+        acc[ans.trait].push(ans.value);
       }
       return acc;
     }, {});
     
-    const traitPercentages = Object.keys(traitTotals).reduce((acc, trait) => {
-      acc[trait] = Math.round((traitTotals[trait] / 45) * 100);
+    const traitPercentages = Object.entries(traitTotals).reduce((acc, [trait, values]) => {
+      const total = values.reduce((sum, val) => sum + val, 0);
+      acc[trait] = Math.round((total / 45) * 100);
       return acc;
     }, {});
 
@@ -25,7 +27,7 @@ export const usePersonalityScoring = () => {
     if (noTies) {
       return validatePersonalityScores(traitPercentages);
     }
-    return true; // Changed to true since tie detection is successful
+    return true;
   };
 
   return { calculateAndSubmitScores };
