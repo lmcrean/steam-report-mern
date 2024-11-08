@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { usePersonalityScoring } from '../../hooks/usePersonalityScoring';
+import { usePersonalityScoring } from './usePersonalityScoring';
 import Alert from '../shared/Alert';
 import QuizNavigation from '../shared/QuizNavigation';
 

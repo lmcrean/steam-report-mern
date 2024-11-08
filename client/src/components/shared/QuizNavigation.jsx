@@ -1,20 +1,8 @@
 import React from 'react';
 
-const QuizNavigation = ({ onNext, onPrev, canProgress, showPrev = true }) => {
+const QuizNavigation = ({ onNext, canProgress }) => {
   return (
     <div className="flex justify-between mt-6">
-      {showPrev && (
-        <button
-          onClick={onPrev}
-          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 
-                   transition-colors dark:bg-gray-700 dark:text-gray-200 
-                   dark:hover:bg-gray-600"
-          name="Previous"
-          type="button"
-        >
-          Previous
-        </button>
-      )}
       <button
         onClick={onNext}
         disabled={!canProgress}

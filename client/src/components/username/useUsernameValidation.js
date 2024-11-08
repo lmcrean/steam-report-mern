@@ -1,6 +1,6 @@
 import { useContext } from 'react';
-import { QuizContext } from '../context/QuizContext';
-import { useNextSection } from './useNextSection';
+import { QuizContext } from '../../context/QuizContext';
+import { useNextSection } from '../shared/useNextSection';
 
 export const useUsernameValidation = () => {
   const { updateState } = useContext(QuizContext);

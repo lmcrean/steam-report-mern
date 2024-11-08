@@ -1,6 +1,6 @@
 // QuizContext.jsx
 import React, { createContext, useState, useCallback } from 'react';
-import { INITIAL_STATE } from '../constants/quizConstants';
+import { INITIAL_STATE } from './quizConstants';
 
 const QuizContext = createContext(null);
 

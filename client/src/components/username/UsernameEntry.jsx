@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useUsernameValidation } from '../../hooks/useUsernameValidation';
+import { useUsernameValidation } from './useUsernameValidation';
 import QuizCard from '../shared/QuizCard';
 import Alert from '../shared/Alert';
 

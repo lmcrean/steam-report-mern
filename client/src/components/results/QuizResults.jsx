@@ -1,12 +1,12 @@
 import React, { useEffect, useContext } from 'react';
 import { QuizContext } from '../../context/QuizContext';
-import { useQuizResultsData } from './results/QuizResultsDataLogic';
+import { useQuizResultsData } from './QuizResultsDataLogic';
 import { 
   ResultsSection, 
   PersonalityChart, 
   SubjectChart
-} from './results/QuizResultsCharts';
-import CareerRecommendation from './results/CareerRecommendation';
+} from './QuizResultsCharts';
+import CareerRecommendation from './CareerRecommendation';
 
 const QuizResults = () => {
   const { state, updateState } = useContext(QuizContext);

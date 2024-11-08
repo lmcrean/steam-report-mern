@@ -1,6 +1,6 @@
 import { useCallback, useContext } from 'react';
-import { QUIZ_SECTIONS } from '../constants/quizConstants';
-import { QuizContext } from '../context/QuizContext';
+import { QUIZ_SECTIONS } from '../../context/quizConstants';
+import { QuizContext } from '../../context/QuizContext';
 
 export const useNextSection = () => {
   const { state, updateState } = useContext(QuizContext);

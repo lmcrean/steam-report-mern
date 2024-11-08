@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { QuizContext } from '../context/QuizContext';
+import { QuizContext } from '../../context/QuizContext';
 import { checkForTies } from '../utils/checkForTies';
 import { SCORE_TOLERANCE } from '../constants/quizConstants';
 

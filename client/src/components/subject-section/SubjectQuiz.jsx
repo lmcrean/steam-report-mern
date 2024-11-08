@@ -1,12 +1,12 @@
 // SubjectQuiz.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import { useSubjectScoring } from '../../hooks/useSubjectScoring';
-import { subjects, getRandomQuestions } from '../../data/subjectQuestions';
-import ProgressBar from '../shared/ProgressBar';
-import RadioGroup from '../shared/RadioGroup';
-import QuizNavigation from '../shared/QuizNavigation';
-import Alert from '../shared/Alert';
-import LoadingSpinner from '../shared/LoadingSpinner';
+import { useSubjectScoring } from '../hooks/useSubjectScoring';
+import { subjects, getRandomQuestions } from '../data/subjectQuestions';
+import ProgressBar from './shared/ProgressBar';
+import RadioGroup from './shared/RadioGroup';
+import QuizNavigation from './shared/QuizNavigation';
+import Alert from './shared/Alert';
+import LoadingSpinner from './shared/LoadingSpinner';
 
 const SubjectQuiz = () => {
   const { calculateAndSubmitScore } = useSubjectScoring();

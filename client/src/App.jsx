@@ -2,13 +2,13 @@
 import React, { useContext } from 'react';
 import MainLayout from './components/layout/MainLayout';
 import Header from './components/layout/Header';
-import MenuScreen from './components/quiz/MenuScreen';
-import PersonalityQuiz from './components/quiz/PersonalityQuiz';
-import SubjectQuiz from './components/quiz/SubjectQuiz';
-import QuizResults from './components/quiz/QuizResults';
-import UsernameEntry from './components/quiz/UsernameEntry';
+import MenuScreen from './components/menu/MenuScreen';
+import PersonalityQuiz from './components/personality/PersonalityQuiz';
+import SubjectQuiz from './components/SubjectQuiz';
+import QuizResults from './components/results/QuizResults';
+import UsernameEntry from './components/username/UsernameEntry';
 import { QuizProvider, QuizContext } from './context/QuizContext';
-import TraitTieBreaker from './components/quiz/tie-breaker/TraitTieBreaker';
+import TraitTieBreaker from './components/personality/TraitTieBreaker';
 import './App.css';
 
 // Quiz flow component with preference selection

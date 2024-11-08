@@ -1,8 +1,8 @@
 // TraitTieBreaker.jsx
 import React, { useState } from 'react';
 import { useContext } from 'react';
-import { QuizContext } from '../../../context/QuizContext';
-import { usePersonalityValidation } from '../../../hooks/usePersonalityValidation';
+import { QuizContext } from '../../context/QuizContext';
+import { usePersonalityValidation } from './usePersonalityValidation';
 
 const TraitTieBreaker = () => {
   const [selectedTrait, setSelectedTrait] = useState(null);

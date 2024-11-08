@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { QuizContext } from '../../context/QuizContext';
 import QuizCard from '../shared/QuizCard';
-import { useNextSection } from '../../hooks/useNextSection';
+import { useNextSection } from '../shared/useNextSection';
 
 const MenuScreen = () => {
   const { updateState } = useContext(QuizContext);

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import QuizCard from '../../shared/QuizCard';
 import RadioGroup from '../../shared/RadioGroup';
 import Alert from '../../shared/Alert';
-import { getSubjectDescription } from './preferenceDescriptions';
+import { getSubjectDescription } from '../tie-breaker/preferenceDescriptions';
 
 const SubjectPreference = ({ subjects, onSelect }) => {
   const [selectedSubject, setSelectedSubject] = useState(null);
