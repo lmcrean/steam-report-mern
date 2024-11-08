@@ -1,30 +1,29 @@
 import { useContext } from 'react';
 import { QuizContext } from '../../context/QuizContext';
-import { checkForTies } from '../utils/checkForTies';
-import { SCORE_TOLERANCE } from '../constants/quizConstants';
+import { useNextSection } from '../shared/useNextSection';
 
 export const useSubjectValidation = () => {
-  const { state, updateState } = useContext(QuizContext);
+  const { updateState } = useContext(QuizContext);
+  const { moveToNextSection } = useNextSection();
 
   const validateSubjectScores = (scores) => {
     try {
-      const subjectTies = checkForTies(scores, SCORE_TOLERANCE);
+      console.log('🔍 Validating subject scores:', JSON.stringify(scores, null, 2));
       
-      if (subjectTies.length > 1) {
-        updateState({ 
-          subjectTies,
-          needsPreferenceSelection: true 
-        });
-      } else {
-        updateState({ 
-          preferredSubject: subjectTies[0],
-          needsPreferenceSelection: false 
-        });
-      }
+      // Update context with subject scores
+      const contextUpdate = {
+        subjectPercentages: scores,
+        needsSubjectTieBreaker: false
+      };
       
+      console.log('📝 Updating context with:', contextUpdate);
+      updateState(contextUpdate);
+      
+      console.log('✅ Context updated, moving to next section');
+      moveToNextSection();
       return true;
     } catch (error) {
-      console.error('Error validating subject scores:', error);
+      console.error('❌ Error validating subject scores:', error);
       return false;
     }
   };

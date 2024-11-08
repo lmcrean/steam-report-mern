@@ -1,6 +1,7 @@
 import { test } from '@playwright/test';
 import { runQuizTestCase } from './utils/quiz-test-runner';
 import { TEST_CASES } from './testCases/quizInputs';
+import { subjects } from '../src/data/subjectQuestions';
 
 test.describe('Set 2: Personality Tie Cases', () => {
   test.setTimeout(120000);
@@ -60,7 +61,7 @@ test.describe('Set 2: Personality Tie Cases', () => {
       console.log(`${updatedPersonalityPercentages} (after adding 1 point to ${testCase.preferredTrait})`);
       console.log(subjectPercentages);
 
-      await runQuizTestCase(page, testCase);
+      await runQuizTestCase(page, testCase, subjects);
       await expect(page.getByText(`Personality Trait: ${testCase.preferredTrait}`)).toBeVisible();
       await expect(page.getByText(testCase.preferredTrait, { exact: true })).toHaveClass(/text-green-600/);
       

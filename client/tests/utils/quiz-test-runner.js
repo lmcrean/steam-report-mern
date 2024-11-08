@@ -1,5 +1,5 @@
 // Base test runner that handles all cases
-export async function runQuizTestCase(page, testCase) {
+export async function runQuizTestCase(page, testCase, subjectsData) {
   
   // Add monitoring to page
   await page.exposeFunction('monitorQuizContext', (key, value) => {
@@ -14,7 +14,7 @@ export async function runQuizTestCase(page, testCase) {
     await handlePersonalityTieBreaker(page, testCase.preferredTrait);
   }
   
-  await completeSubjectSection(page, testCase.subjectAnswers);
+  await completeSubjectSection(page, testCase.subjectAnswers, subjectsData);
   
   // Handle subject tie breaker if needed
   if (testCase.preferredSubject) {
@@ -35,6 +35,7 @@ async function startQuiz(page) {
 }
 
 async function completePersonalitySection(page, answers) {
+  // Complete all personality questions
   for (const trait of Object.keys(answers)) {
     for (const answer of answers[trait]) {
       await page.getByRole('radio', { name: String(answer) }).click();
@@ -42,33 +43,58 @@ async function completePersonalitySection(page, answers) {
     }
   }
   
-  // After completing all personality questions, check for tie breaker
+  // Wait for either the tie breaker screen OR the subject quiz screen
   try {
-    // First check if we landed on the tie breaker page
-    const tieBreaker = await page.waitForSelector('h2:has-text("We Found a Tie!")', { timeout: 5000 });
-    
+    const [tieBreaker, subjectQuiz] = await Promise.race([
+      Promise.all([
+        page.waitForSelector('h2:has-text("We Found a Tie!")', { timeout: 2000 }),
+        Promise.resolve(null)
+      ]),
+      Promise.all([
+        Promise.resolve(null),
+        page.waitForSelector('h2:has-text("STEAM Subject Quiz")', { timeout: 2000 })
+      ])
+    ]);
+
     if (tieBreaker) {
       console.log('✓ Detected personality tie breaker screen');
       return; // Exit here and let the tie breaker handler take over
+    } else if (subjectQuiz) {
+      console.log('✓ No personality tie breaker detected, proceeding to subject section');
+      return;
     }
   } catch (error) {
-    // No tie breaker found, verify we moved to subject section
-    try {
-      await page.waitForSelector('h2:has-text("STEAM Subject Quiz")', { timeout: 5000 });
-      await page.waitForSelector('p:has-text("Science - Question 1 of 10")', { timeout: 5000 });
-      console.log('✓ Successfully transitioned to subject section');
-    } catch (error) {
-      console.error('❌ Failed to transition to either tie breaker or subject section');
-      throw new Error('Quiz failed to transition properly after personality section');
-    }
+    console.error('❌ Failed to detect next screen after personality section');
+    throw new Error('Quiz failed to transition properly after personality section');
   }
 }
 
-async function completeSubjectSection(page, answers) {
+async function completeSubjectSection(page, answers, subjectsData) {
   for (const subject of Object.keys(answers)) {
-    for (const answer of answers[subject]) {
+    console.log(`📝 Starting ${subject} questions...`);
+    
+    // Get questions for this subject from the passed data
+    const subjectQuestions = subjectsData[subject].questions;
+    
+    for (let i = 0; i < answers[subject].length; i++) {
+      const shouldBeCorrect = answers[subject][i] === 1;
+      const question = subjectQuestions[i];
+      
+      // Wait for options to be visible
       const options = await page.$$('.relative.flex.items-center');
-      await options[answer ? 0 : 1].click();
+      
+      // Log for debugging
+      console.log(`Q${i + 1}: ${shouldBeCorrect ? 'Should select correct' : 'Should select incorrect'}`);
+      console.log(`Correct answer: ${question.correct_answer}`);
+      
+      if (shouldBeCorrect) {
+        // Click the correct answer
+        await page.getByText(question.correct_answer).click();
+      } else {
+        // Click the first incorrect answer
+        await page.getByText(question.incorrect_answers[0]).click();
+      }
+      
       await page.getByRole('button', { name: 'Next' }).click();
     }
   }

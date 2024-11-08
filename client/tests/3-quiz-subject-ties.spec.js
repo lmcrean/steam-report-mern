@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { runQuizTestCase } from './utils/quiz-test-runner';
 import { TEST_CASES } from './testCases/quizInputs';
+import { subjects } from '../src/data/subjectQuestions';
 
 test.describe('Set 3: Subject Tie Cases', () => {
   test.setTimeout(120000);
@@ -65,7 +66,7 @@ test.describe('Set 3: Subject Tie Cases', () => {
       console.log(`${initialSubjectPercentages} (initial calculation)\x1b[0m`);
       console.log(`${updatedSubjectPercentages} (after adding 1 point to ${testCase.preferredSubject})`);
 
-      await runQuizTestCase(page, testCase);
+      await runQuizTestCase(page, testCase, subjects);
       await expect(page.getByText(`Subject Area: ${testCase.preferredSubject}`)).toBeVisible();
       await expect(page.getByText(testCase.preferredSubject, { exact: true })).toHaveClass(/text-green-600/);
       

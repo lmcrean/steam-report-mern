@@ -71,8 +71,7 @@ const SubjectQuiz = () => {
     if (currentAnswer !== null) {
       const currentQuestionData = getCurrentQuestionData();
       const answerResult = checkAnswer(currentQuestionData, currentAnswer);
-      const subject = getCurrentSubject();
-
+      
       // Create new answers array
       const newAnswers = [...answers];
       newAnswers[currentQuestion] = answerResult;
@@ -81,6 +80,9 @@ const SubjectQuiz = () => {
       if (currentQuestion < totalQuestions - 1) {
         setCurrentQuestion(currentQuestion + 1);
         setCurrentAnswer(null);
+      } else {
+        console.log('🏁 Quiz completed, triggering scoring...');
+        setQuizCompleted(true);
       }
     }
   };

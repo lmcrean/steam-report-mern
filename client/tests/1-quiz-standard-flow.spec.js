@@ -1,6 +1,7 @@
 import { test } from '@playwright/test';
 import { runQuizTestCase } from './utils/quiz-test-runner';
 import { TEST_CASES } from './testCases/quizInputs';
+import { subjects } from '../src/data/subjectQuestions';
 
 test.describe('Set 1: Standard Quiz Flow', () => {
   for (const [caseName, testCase] of Object.entries(TEST_CASES.set1_standardFlow)) {
@@ -46,7 +47,7 @@ test.describe('Set 1: Standard Quiz Flow', () => {
       console.log(personalityPercentages);
       console.log(subjectPercentages);
 
-      await runQuizTestCase(page, testCase);
+      await runQuizTestCase(page, testCase, subjects);
       
       console.log('\n=== Test Complete ===');
     });
