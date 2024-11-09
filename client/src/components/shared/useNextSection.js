@@ -6,29 +6,22 @@ export const useNextSection = () => {
   const { state, updateState } = useContext(QuizContext);
 
   const moveToNextSection = useCallback(() => {
-    try {
-      const currentIndex = QUIZ_SECTIONS.indexOf(state.section);
-      
-      if (currentIndex < QUIZ_SECTIONS.length - 1) {
-        let nextSection = QUIZ_SECTIONS[currentIndex + 1];
-        
-        // Skip personality-tiebreaker if no ties
-        if (nextSection === 'personality-tiebreaker' && !state.needsPersonalityTieBreaker) {
-          nextSection = 'subject';
-        }
-        // Skip subject-tiebreaker if no ties
-        else if (nextSection === 'subject-tiebreaker' && !state.needsSubjectTieBreaker) {
-          nextSection = 'results';
-        }
-
-        updateState({ section: nextSection });
-        return true;
+    // Get the index of the current section
+    const currentIndex = QUIZ_SECTIONS.indexOf(state.section);
+    // If the current section is not the last section, move to the next section
+    if (currentIndex < QUIZ_SECTIONS.length - 1) {
+      let nextSection = QUIZ_SECTIONS[currentIndex + 1];
+      if (nextSection === 'personality-tiebreaker' && !state.needsPersonalityTieBreaker) {
+        nextSection = 'subject'; // If the next section is a personality tiebreaker and the user has already resolved the tie, skip it. 
       }
-      return false;
-    } catch (error) {
-      console.error('❌ Navigation: Error navigating to next section:', error);
-      return false;
+      else if (nextSection === 'subject-tiebreaker' && !state.needsSubjectTieBreaker) {
+        nextSection = 'results'; // If the next section is a subject tiebreaker and the user has already resolved the tie, go to results
+      }
+      // Otherwise, move to the next section.
+      updateState({ section: nextSection });
+      return true;
     }
+    return false;
   }, [state, updateState]);
 
   return { moveToNextSection };
