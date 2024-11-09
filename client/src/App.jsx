@@ -10,8 +10,8 @@ import UsernameEntry from './components/username/UsernameEntry';
 import { QuizProvider, QuizContext } from './context/QuizContext';
 import PersonalityTieBreaker from './components/personality/PersonalityTieBreaker';
 import './App.css';
+import SubjectTieBreaker from './components/subject/SubjectTieBreaker';
 
-// Quiz flow component with preference selection
 const QuizFlow = () => {
   const { state } = useContext(QuizContext);
   const renderSection = () => {    
@@ -21,12 +21,13 @@ const QuizFlow = () => {
       case 'username':
         return <UsernameEntry />;
       case 'personality':
-        if (state.needsPersonalityTiebreaker) {
-          return <PersonalityTieBreaker />;
-        }
         return <PersonalityQuiz />;
+      case 'personality-tiebreaker':
+        return <PersonalityTieBreaker />;
       case 'subject':
         return <SubjectQuiz />;
+      case 'subject-tiebreaker':
+        return <SubjectTieBreaker />;
       case 'results':
         return <QuizResults />;
       default:
