@@ -58,12 +58,12 @@ test.describe('Set 4: Both Personality and Subject Ties', () => {
           total: Math.round((scores.filter(Boolean).length / scores.length) * 100)
         }));
 
-      // Calculate updated subject scores (with +1 point for preferred subject)
+      // Calculate updated subject scores (with +1 percentage point for preferred subject)
       const updatedSubjectScores = Object.entries(testCase.subjectAnswers)
         .map(([subject, scores]) => ({
           subject,
-          total: Math.round(((scores.filter(Boolean).length + 
-            (subject === testCase.preferredSubject ? 1 : 0)) / scores.length) * 100)
+          total: Math.round((scores.filter(Boolean).length / scores.length) * 100) + 
+            (subject === testCase.preferredSubject ? 1 : 0)
         }));
 
       console.log('\n=== Rendered Results Will Be ===');
@@ -87,10 +87,6 @@ test.describe('Set 4: Both Personality and Subject Ties', () => {
       console.log(`${updatedSubjectPercentages} (after adding 1 point to ${testCase.preferredSubject})`);
 
       await runQuizTestCase(page, testCase, subjects);
-      // await expect(page.getByText(`Personality Trait: ${testCase.preferredTrait}`)).toBeVisible();
-      // await expect(page.getByText(`Subject Area: ${testCase.preferredSubject}`)).toBeVisible();
-      // await expect(page.getByText(testCase.preferredTrait, { exact: true })).toHaveClass(/text-green-600/);
-      // await expect(page.getByText(testCase.preferredSubject, { exact: true })).toHaveClass(/text-green-600/);
       
       console.log('\n=== Test Complete ===');
       console.log(`✓ Verified ${testCase.preferredTrait} was selected and highlighted`);

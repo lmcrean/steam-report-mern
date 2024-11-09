@@ -1,6 +1,5 @@
 export async function completeSubjectSection(page, answers, subjectsData) {
   for (const subject of Object.keys(answers)) {
-    console.log(`\n📚 Starting ${subject} section...`);
     
     for (let i = 0; i < answers[subject].length; i++) {
       const shouldBeCorrect = answers[subject][i] === 1;
@@ -32,7 +31,6 @@ export async function completeSubjectSection(page, answers, subjectsData) {
         await handleAnswerError(error, page, subject, i);
       }
     }
-    console.log(`✅ Completed ${subject} section`);
   }
 }
 

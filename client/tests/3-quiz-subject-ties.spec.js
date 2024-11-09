@@ -41,12 +41,12 @@ test.describe('Set 3: Subject Tie Cases', () => {
           total: Math.round((scores.filter(Boolean).length / scores.length) * 100)
         }));
 
-      // Calculate updated subject scores (with +1 point for preferred subject)
+      // Calculate updated subject scores (with +1 percentage point for preferred subject)
       const updatedSubjectScores = Object.entries(testCase.subjectAnswers)
         .map(([subject, scores]) => ({
           subject,
-          total: Math.round(((scores.filter(Boolean).length + 
-            (subject === testCase.preferredSubject ? 1 : 0)) / scores.length) * 100)
+          total: Math.round((scores.filter(Boolean).length / scores.length) * 100) + 
+            (subject === testCase.preferredSubject ? 1 : 0)
         }));
 
       console.log('\n=== Rendered Results Will Be ===');
