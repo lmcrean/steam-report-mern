@@ -1,5 +1,5 @@
 // SubjectQuiz.jsx
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useSubjectScoring } from './useSubjectScoring';
 import { subjects, getRandomQuestions } from '../../data/subjectQuestions';
 import ProgressBar from '../shared/ProgressBar';
@@ -7,8 +7,13 @@ import RadioGroup from '../shared/RadioGroup';
 import QuizNavigation from '../shared/QuizNavigation';
 import Alert from '../shared/Alert';
 import LoadingSpinner from '../shared/LoadingSpinner';
+import { QuizContext } from '../../context/QuizContext';
+import SubjectTieBreaker from './SubjectTieBreaker';
 
 const SubjectQuiz = () => {
+  const { state } = useContext(QuizContext);
+  const { needsSubjectTieBreaker, subjectTies } = state;
+
   const { calculateAndSubmitScore } = useSubjectScoring();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [currentAnswer, setCurrentAnswer] = useState(null);
@@ -123,6 +128,10 @@ const SubjectQuiz = () => {
 
     return shuffledAnswers;
   };
+
+  if (needsSubjectTieBreaker && subjectTies?.length > 1) {
+    return <SubjectTieBreaker subjects={subjectTies} />;
+  }
 
   if (isLoading) {
     return (

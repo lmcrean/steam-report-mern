@@ -1,9 +1,9 @@
-/**
- * Checks for tied subject scores within a tolerance range
- * @param {Object} scores - Object containing subject scores
- * @param {number} tolerance - Acceptable difference to consider scores tied (default: 5)
- * @returns {string[]} Array of subjects with tied highest scores
- */
+/*
+  Checks for tied subject scores within a tolerance range
+  @param {Object} scores - Object containing subject scores
+  @param {number} tolerance - Acceptable difference to consider scores tied (default: 5)
+  @returns {string[]} Array of subjects with tied highest scores
+*/
 export const checkForSubjectTies = (scores, tolerance = 5) => {
   if (!scores || Object.keys(scores).length === 0) {
     return [];

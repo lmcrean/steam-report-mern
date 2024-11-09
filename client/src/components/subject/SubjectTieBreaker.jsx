@@ -1,23 +1,41 @@
-// SubjectPreference.jsx
+// SubjectTieBreaker.jsx
 import React, { useState } from 'react';
-import QuizCard from '../../shared/QuizCard';
-import RadioGroup from '../../shared/RadioGroup';
-import Alert from '../../shared/Alert';
+import QuizCard from '../shared/QuizCard';
+import RadioGroup from '../shared/RadioGroup';
+import Alert from '../shared/Alert';
 import { getSubjectDescription } from '../tie-breaker/preferenceDescriptions';
+import { useSubjectValidation } from './useSubjectValidation';
+import { useContext } from 'react';
+import { QuizContext } from '../../context/QuizContext';
 
-const SubjectPreference = ({ subjects, onSelect }) => {
+const SubjectTieBreaker = ({ subjects }) => {
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [error, setError] = useState(null);
+  const { validateSubjectScores } = useSubjectValidation();
+  const { state } = useContext(QuizContext);
+  const { subjectPercentages } = state;
 
-  console.log('SubjectPreference - Available subjects:', subjects);
+  console.log('🔄 SubjectTieBreaker - Processing tied subjects:', subjects);
+  console.log('Current scores:', subjectPercentages);
 
   const handleSubmit = () => {
-    console.log('SubjectPreference - Submitting selection:', selectedSubject);
     if (!selectedSubject) {
       setError('Please select a subject before continuing');
       return;
     }
-    onSelect(selectedSubject);
+
+    console.log('👉 Selected subject for tie-break:', selectedSubject);
+    
+    // Add bonus points to selected subject
+    const updatedScores = {
+      ...subjectPercentages,
+      [selectedSubject]: Math.min(100, subjectPercentages[selectedSubject] + 1)
+    };
+
+    console.log('📊 Updated scores after tie-break:', updatedScores);
+
+    // Pass directly to validation
+    validateSubjectScores(updatedScores, selectedSubject);
   };
 
   const options = subjects.map(subject => ({
@@ -38,7 +56,7 @@ const SubjectPreference = ({ subjects, onSelect }) => {
           options={options}
           value={selectedSubject}
           onChange={(value) => {
-            console.log('SubjectPreference - Selection changed:', value);
+            console.log('SubjectTieBreaker - Selection changed:', value);
             setSelectedSubject(value);
             setError(null);
           }}
@@ -60,4 +78,4 @@ const SubjectPreference = ({ subjects, onSelect }) => {
   );
 };
 
-export default SubjectPreference;
+export default SubjectTieBreaker;
