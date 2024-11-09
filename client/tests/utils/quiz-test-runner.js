@@ -10,24 +10,31 @@ import {
 import { verifyResultsText } from './quiz-runners/resultsTextCheck';
 
 export async function runQuizTestCase(page, testCase, subjectsData) {
-  // Add monitoring to page
-  await page.exposeFunction('monitorQuizContext', (key, value) => {
-    contextMonitor.logStateChange(key, value);
-  });
-
   await startQuiz(page);
   await completePersonalitySection(page, testCase.personalityAnswers);
   
-  if (testCase.preferredTrait) {
+  const tieBreakerVisible = await page.isVisible('h2:has-text("We Found a Tie!")');
+  if (tieBreakerVisible) {
+    if (!testCase.preferredTrait) {
+      throw new Error('Tie breaker screen shown but no preferred trait specified in test case');
+    }
     await handlePersonalityTieBreaker(page, testCase.preferredTrait);
+  } else {
+    await page.waitForSelector('h2:has-text("STEAM Subject Quiz")', { 
+      timeout: 2000,
+      state: 'visible'
+    });
   }
   
   await completeSubjectSection(page, testCase.subjectAnswers, subjectsData);
   
-  if (testCase.preferredSubject) {
+  const subjectTieBreakerVisible = await page.isVisible('h2:has-text("Your Strongest Subjects")');
+  if (subjectTieBreakerVisible) {
+    if (!testCase.preferredSubject) {
+      throw new Error('Subject tie breaker screen shown but no preferred subject specified in test case');
+    }
     await handleSubjectTieBreaker(page, testCase.preferredSubject);
   }
 
-  // Verify the final results
   await verifyResultsText(page, testCase);
 }

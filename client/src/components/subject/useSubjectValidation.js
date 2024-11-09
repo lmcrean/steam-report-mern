@@ -1,26 +1,20 @@
 import { useContext } from 'react';
 import { QuizContext } from '../../context/QuizContext';
-import { useNextSection } from '../shared/useNextSection';
 
 export const useSubjectValidation = () => {
   const { updateState } = useContext(QuizContext);
-  const { moveToNextSection } = useNextSection();
 
   const validateSubjectScores = (scores, preferredSubject = null) => {
     try {
-      // Update context with final scores and clear tie-breaker state
-      const contextUpdate = {
+      // Update context with final scores and navigate directly to results
+      updateState({
         subjectPercentages: scores,
         needsSubjectTieBreaker: false,
         subjectTies: [],
-        preferredSubject
-      };
+        preferredSubject,
+        section: 'results'  // Directly set the section to results
+      });
       
-
-      updateState(contextUpdate);
-      
-
-      moveToNextSection();
       return true;
     } catch (error) {
       console.error('❌ Error validating subject scores:', error);

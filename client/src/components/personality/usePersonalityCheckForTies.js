@@ -22,12 +22,13 @@ export const usePersonalityCheckForTies = () => {
       updateState({
         traitPercentages,
         personalityTies: tiedTraits,
-        needsPersonalityTieBreaker: true
+        needsPersonalityTieBreaker: true,
+        section: 'personality-tiebreaker'
       });
       return false;
     }
 
-    // No ties, proceed with validation
+    // No ties, proceed with validation and move to subject section
     return validatePersonalityScores(traitPercentages);
   };
 

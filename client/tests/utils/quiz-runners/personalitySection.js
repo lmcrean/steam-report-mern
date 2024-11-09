@@ -7,28 +7,17 @@ export async function completePersonalitySection(page, answers) {
     }
   }
   
-  // Wait for either the tie breaker screen OR the subject quiz screen
-  try {
-    const [tieBreaker, subjectQuiz] = await Promise.race([
-      Promise.all([
-        page.waitForSelector('h2:has-text("We Found a Tie!")', { timeout: 2000 }),
-        Promise.resolve(null)
-      ]),
-      Promise.all([
-        Promise.resolve(null),
-        page.waitForSelector('h2:has-text("STEAM Subject Quiz")', { timeout: 2000 })
-      ])
-    ]);
+  // Wait for EITHER screen to appear
+  await Promise.race([
+    page.waitForSelector('h2:has-text("We Found a Tie!")', { 
+      timeout: 2000,
+      state: 'visible' 
+    }).catch(() => null),
+    page.waitForSelector('h2:has-text("STEAM Subject Quiz")', { 
+      timeout: 2000,
+      state: 'visible'
+    }).catch(() => null)
+  ]);
 
-    if (tieBreaker) {
-
-      return;
-    } else if (subjectQuiz) {
-
-      return;
-    }
-  } catch (error) {
-    console.error('❌ Failed to detect next screen after personality section');
-    throw new Error('Quiz failed to transition properly after personality section');
-  }
+  // Let the test runner handle which path to take
 }
