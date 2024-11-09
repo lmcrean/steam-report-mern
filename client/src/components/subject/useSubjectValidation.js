@@ -8,9 +8,6 @@ export const useSubjectValidation = () => {
 
   const validateSubjectScores = (scores, preferredSubject = null) => {
     try {
-
-
-      
       // Update context with final scores and clear tie-breaker state
       const contextUpdate = {
         subjectPercentages: scores,

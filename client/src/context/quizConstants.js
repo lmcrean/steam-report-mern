@@ -3,10 +3,10 @@ export const QUIZ_SECTIONS = [
   'menu',
   'username',
   'personality',
+  'personality-tiebreaker',
   'subject',
-  'preference-selection',
-  'results',
-  'leaderboard'
+  'subject-tiebreaker',
+  'results'
 ];
 
 // Initial state for the quiz context

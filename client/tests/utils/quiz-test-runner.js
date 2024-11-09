@@ -7,6 +7,7 @@ import {
 import { 
   handleSubjectTieBreaker 
 } from './quiz-runners/subjectTieBreaker';
+import { verifyResultsText } from './quiz-runners/resultsTextCheck';
 
 export async function runQuizTestCase(page, testCase, subjectsData) {
   // Add monitoring to page
@@ -26,4 +27,7 @@ export async function runQuizTestCase(page, testCase, subjectsData) {
   if (testCase.preferredSubject) {
     await handleSubjectTieBreaker(page, testCase.preferredSubject);
   }
+
+  // Verify the final results
+  await verifyResultsText(page, testCase);
 }
