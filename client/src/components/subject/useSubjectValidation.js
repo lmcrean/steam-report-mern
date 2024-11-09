@@ -8,8 +8,8 @@ export const useSubjectValidation = () => {
 
   const validateSubjectScores = (scores, preferredSubject = null) => {
     try {
-      console.log('🔍 Validating subject scores:', JSON.stringify(scores, null, 2));
-      console.log('Preferred subject:', preferredSubject);
+
+
       
       // Update context with final scores and clear tie-breaker state
       const contextUpdate = {
@@ -19,10 +19,10 @@ export const useSubjectValidation = () => {
         preferredSubject
       };
       
-      console.log('📝 Updating context with:', contextUpdate);
+
       updateState(contextUpdate);
       
-      console.log('✅ Context updated, moving to next section');
+
       moveToNextSection();
       return true;
     } catch (error) {

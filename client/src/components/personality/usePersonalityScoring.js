@@ -20,7 +20,7 @@ export const usePersonalityScoring = () => {
       return acc;
     }, {});
 
-    console.log('📊 Calculated trait percentages:', traitPercentages);
+
 
     const noTies = checkForTies(traitPercentages);
 

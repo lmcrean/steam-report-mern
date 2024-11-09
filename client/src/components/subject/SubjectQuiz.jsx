@@ -86,7 +86,7 @@ const SubjectQuiz = () => {
         setCurrentQuestion(currentQuestion + 1);
         setCurrentAnswer(null);
       } else {
-        console.log('🏁 Quiz completed, triggering scoring...');
+
         setQuizCompleted(true);
       }
     }

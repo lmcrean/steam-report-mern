@@ -27,7 +27,7 @@ const COLORS = {
 
 export const ResultsChart = ({ data, type = 'bar', xKey, yKey }) => {
   if (!Array.isArray(data) || data.length === 0) {
-    console.log('No data available for chart');
+
     return null;
   }
 
@@ -152,7 +152,7 @@ export const PersonalityChart = ({ data }) => {
     const concatenatedResults = chartData.map(item => `${item.fullTrait} - ${formatScore(item.score)}%`).join(', ');
 
     if (JSON.stringify(prevChartData) !== JSON.stringify(chartData)) {
-      console.log('Rendered results:', concatenatedResults);
+
       prevChartDataRef.current = chartData;
     }
   }, [chartData]);
@@ -190,7 +190,7 @@ export const SubjectChart = ({ data }) => {
     const concatenatedResults = chartData.map(item => `${item.subject} - ${formatScore(item.score)}%`).join(', ');
 
     if (JSON.stringify(prevChartData) !== JSON.stringify(chartData)) {
-      console.log('Rendered results:', concatenatedResults);
+
       prevChartDataRef.current = chartData;
     }
   }, [chartData]);

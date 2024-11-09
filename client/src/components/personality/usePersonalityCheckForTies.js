@@ -18,7 +18,7 @@ export const usePersonalityCheckForTies = () => {
 
     // If there's more than one trait with the highest score
     if (tiedTraits.length > 1) {
-      console.log('🔍 Found personality ties:', tiedTraits);
+
       updateState({
         traitPercentages,
         personalityTies: tiedTraits,

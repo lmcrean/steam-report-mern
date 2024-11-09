@@ -1,6 +1,6 @@
 export async function handlePersonalityTieBreaker(page, preferredTrait) {
   try {
-    console.log(`\nAttempting to handle personality tie breaker - will select ${preferredTrait}`);
+
     
     const tieBreaker = await page.waitForSelector('h2:has-text("We Found a Tie!")', { 
       timeout: 5000,
@@ -25,7 +25,7 @@ export async function handlePersonalityTieBreaker(page, preferredTrait) {
     }
     
     await traitButton.click();
-    console.log(`✓ Selected preferred trait: ${preferredTrait}`);
+
     
     await page.waitForTimeout(100);
     
@@ -39,19 +39,19 @@ export async function handlePersonalityTieBreaker(page, preferredTrait) {
     }
     
     await confirmButton.click();
-    console.log('✓ Clicked confirm selection');
+
     
     await page.waitForSelector('h2:has-text("STEAM Subject Quiz")', { 
       timeout: 5000,
       state: 'visible'
     });
     
-    console.log('✓ Successfully transitioned to subject section after tie breaker');
+
   } catch (error) {
     console.error('❌ Failed to handle personality tie breaker:', error);
     await page.screenshot({ path: 'personality-tie-breaker-error.png' });
     const html = await page.content();
-    console.log('Page HTML:', html);
+
     throw error;
   }
 }

@@ -8,11 +8,11 @@ export const usePersonalityValidation = () => {
 
   const validatePersonalityScores = (scores, preferredTrait = null) => {    
     try {
-      console.log('🔍 Validating personality scores:', JSON.stringify(scores, null, 2));
+
       
       if (preferredTrait) {
         // Handle tie-breaker case
-        console.log('👔 Processing tie-breaker selection:', preferredTrait);
+
         updateState({
           traitPercentages: scores,
           preferredTrait,

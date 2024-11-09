@@ -21,10 +21,10 @@ export async function completePersonalitySection(page, answers) {
     ]);
 
     if (tieBreaker) {
-      console.log('✓ Detected personality tie breaker screen');
+
       return;
     } else if (subjectQuiz) {
-      console.log('✓ No personality tie breaker detected, proceeding to subject section');
+
       return;
     }
   } catch (error) {

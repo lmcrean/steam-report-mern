@@ -15,8 +15,8 @@ const SubjectTieBreaker = ({ subjects }) => {
   const { state } = useContext(QuizContext);
   const { subjectPercentages } = state;
 
-  console.log('🔄 SubjectTieBreaker - Processing tied subjects:', subjects);
-  console.log('Current scores:', subjectPercentages);
+
+
 
   const handleSubmit = () => {
     if (!selectedSubject) {
@@ -24,7 +24,7 @@ const SubjectTieBreaker = ({ subjects }) => {
       return;
     }
 
-    console.log('👉 Selected subject for tie-break:', selectedSubject);
+
     
     // Add bonus points to selected subject
     const updatedScores = {
@@ -32,7 +32,7 @@ const SubjectTieBreaker = ({ subjects }) => {
       [selectedSubject]: Math.min(100, subjectPercentages[selectedSubject] + 1)
     };
 
-    console.log('📊 Updated scores after tie-break:', updatedScores);
+
 
     // Pass directly to validation
     validateSubjectScores(updatedScores, selectedSubject);
@@ -56,7 +56,7 @@ const SubjectTieBreaker = ({ subjects }) => {
           options={options}
           value={selectedSubject}
           onChange={(value) => {
-            console.log('SubjectTieBreaker - Selection changed:', value);
+
             setSelectedSubject(value);
             setError(null);
           }}
