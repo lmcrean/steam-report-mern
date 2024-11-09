@@ -8,23 +8,18 @@ import { useSubjectValidation } from './useSubjectValidation';
 import { useContext } from 'react';
 import { QuizContext } from '../../context/QuizContext';
 
-const SubjectTieBreaker = ({ subjects }) => {
+const SubjectTieBreaker = () => {
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [error, setError] = useState(null);
   const { validateSubjectScores } = useSubjectValidation();
   const { state } = useContext(QuizContext);
-  const { subjectPercentages } = state;
-
-
-
+  const { subjectPercentages, subjectTies } = state;
 
   const handleSubmit = () => {
     if (!selectedSubject) {
       setError('Please select a subject before continuing');
       return;
     }
-
-
     
     // Add bonus points to selected subject
     const updatedScores = {
@@ -32,13 +27,11 @@ const SubjectTieBreaker = ({ subjects }) => {
       [selectedSubject]: Math.min(100, subjectPercentages[selectedSubject] + 1)
     };
 
-
-
     // Pass directly to validation
     validateSubjectScores(updatedScores, selectedSubject);
   };
 
-  const options = subjects.map(subject => ({
+  const options = subjectTies.map(subject => ({
     value: subject,
     label: subject,
     description: getSubjectDescription(subject)
@@ -56,7 +49,6 @@ const SubjectTieBreaker = ({ subjects }) => {
           options={options}
           value={selectedSubject}
           onChange={(value) => {
-
             setSelectedSubject(value);
             setError(null);
           }}

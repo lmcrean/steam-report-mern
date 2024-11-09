@@ -4,15 +4,15 @@ import { QuizContext } from '../../context/QuizContext';
 const QuizResults = () => {
   const { state } = useContext(QuizContext);
   const { 
-    personalityScores,
-    subjectScores,
+    traitPercentages,
+    subjectPercentages,
     preferredTrait,
     preferredSubject
   } = state;
 
   // Calculate max scores
-  const maxPersonalityScore = Math.max(...Object.values(personalityScores));
-  const maxSubjectScore = Math.max(...Object.values(subjectScores));
+  const maxPersonalityScore = Math.max(...Object.values(traitPercentages));
+  const maxSubjectScore = Math.max(...Object.values(subjectPercentages));
 
   const getTraitColor = (trait, score) => {
     if (score === maxPersonalityScore && trait === preferredTrait) {
@@ -40,7 +40,7 @@ const QuizResults = () => {
       <div className="space-y-4">
         <h3 className="text-xl font-semibold">Personality Traits</h3>
         <div className="space-y-2">
-          {Object.entries(personalityScores).map(([trait, score]) => (
+          {Object.entries(traitPercentages).map(([trait, score]) => (
             <div key={trait} className="flex justify-between">
               <span className={getTraitColor(trait, score)}>{trait}</span>
               <span>{score}%</span>
@@ -53,7 +53,7 @@ const QuizResults = () => {
       <div className="space-y-4">
         <h3 className="text-xl font-semibold">Subject Areas</h3>
         <div className="space-y-2">
-          {Object.entries(subjectScores).map(([subject, score]) => (
+          {Object.entries(subjectPercentages).map(([subject, score]) => (
             <div key={subject} className="flex justify-between">
               <span className={getSubjectColor(subject, score)}>{subject}</span>
               <span>{score}%</span>
