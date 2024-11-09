@@ -8,7 +8,6 @@ export const useSubjectValidation = () => {
 
   const validateSubjectScores = (scores, preferredSubject = null) => {
     try {
-      console.log('🔍 Validating subject scores:', scores);
       // First update the scores and clear tie state
       updateState(prevState => ({
         ...prevState,
@@ -18,6 +17,8 @@ export const useSubjectValidation = () => {
         preferredSubject,
         section: 'results' // Explicitly set to results section
       }));
+
+      console.log('🔍 Validated subject scores:', scores);
       
       return true;
     } catch (error) {

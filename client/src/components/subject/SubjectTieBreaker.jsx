@@ -21,11 +21,13 @@ const SubjectTieBreaker = () => {
       return;
     }
     
-    // Add bonus points to selected subject
+    // Calculate updated scores without capping at 100%
     const updatedScores = {
       ...subjectPercentages,
-      [selectedSubject]: Math.min(100, subjectPercentages[selectedSubject] + 1)
+      [selectedSubject]: subjectPercentages[selectedSubject] + 1 
     };
+
+    console.log('🔍 Updated scores:', updatedScores);
 
     // Pass directly to validation
     validateSubjectScores(updatedScores, selectedSubject);
