@@ -8,6 +8,7 @@ import {
   handleSubjectTieBreaker 
 } from './quiz-runners/subjectTieBreaker';
 import { verifyResultsText } from './quiz-runners/resultsTextCheck';
+import { verifyCareerRecommendations } from './quiz-runners/careerRecommendation';
 
 export async function runQuizTestCase(page, testCase, subjectsData) {
   await startQuiz(page);
@@ -37,4 +38,5 @@ export async function runQuizTestCase(page, testCase, subjectsData) {
   }
 
   await verifyResultsText(page, testCase);
+  await verifyCareerRecommendations(page, testCase);
 }

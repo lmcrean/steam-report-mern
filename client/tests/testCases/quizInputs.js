@@ -19,6 +19,7 @@ const TEST_CASES = {
         Art: [1, 1, 0, 0, 0, 0, 0, 0, 0, 0], // 2/10 = 20%
         Math: [1, 1, 1, 1, 1, 1, 1, 1, 0, 0], // 8/10 = 80%
       },
+      topScores: "Math and Extraversion",
     },
 
     case2_barelyNoTies: {
@@ -37,6 +38,7 @@ const TEST_CASES = {
         Art: [1, 1, 0, 0, 0, 0, 0, 0, 0, 0], // 2/10 = 20%
         Math: [1, 1, 1, 1, 1, 0, 0, 0, 0, 0], // 5/10 = 50%
       },
+      topScores: "Openness and Science",
     },
 
     case3_extremeWinners: {
@@ -55,6 +57,7 @@ const TEST_CASES = {
         Art: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0], // 1/10 = 10%
         Math: [1, 1, 1, 1, 1, 0, 0, 0, 0, 0], // 5/10 = 50%
       },
+      topScores: "Conscientiousness and Technology",
     },
   },
 
@@ -77,6 +80,7 @@ const TEST_CASES = {
         Math: [1, 1, 1, 1, 1, 1, 1, 1, 0, 0], // 8/10 = 80%
       },
       preferredTrait: "Extraversion",
+      topScores: "Math and Extraversion",
     },
     case2_threeWayTie: {
       description: "Case 2: Three-way personality tie (Openness, Conscientiousness & Extraversion), Science clear winner",
@@ -95,6 +99,7 @@ const TEST_CASES = {
         Math: [1, 1, 1, 1, 1, 0, 0, 0, 0, 0], // 5/10 = 50%
       },
       preferredTrait: "Openness",
+      topScores: "Science and Openness",
     },
     case3_fourWayTie: {
       description: "Case 3: Four-way personality tie (all except Neuroticism), Technology clear winner",
@@ -113,6 +118,7 @@ const TEST_CASES = {
         Math: [1, 1, 1, 1, 0, 0, 0, 0, 0, 0], // 4/10 = 40%
       },
       preferredTrait: "Conscientiousness",
+      topScores: "Technology and Conscientiousness",
     },
   },
   // Subject Tie Only (3 variations)
@@ -134,6 +140,7 @@ const TEST_CASES = {
         Math: [1, 1, 1, 1, 1, 1, 1, 0, 0, 0], // 7/10 = 70%
       },
       preferredSubject: "Math",
+      topScores: "Math and Extraversion",
     },
     case2_threeWaySubjectTie: {
       description: "Case 2: Three-way subject tie (Math, Science & Technology), Openness clear winner",
@@ -152,6 +159,7 @@ const TEST_CASES = {
         Math: [1, 1, 1, 1, 1, 1, 0, 0, 0, 0], // 6/10 = 60%
       },
       preferredSubject: "Science",
+      topScores: "Science and Openness",
     },
     case3_fourWaySubjectTie: {
       description: "Case 3: Four-way subject tie (all except Art), Agreeableness clear winner",
@@ -170,6 +178,7 @@ const TEST_CASES = {
         Math: [1, 1, 1, 1, 1, 1, 0, 0, 0, 0], // 6/10 = 60%
       },
       preferredSubject: "Technology",
+      topScores: "Technology and Agreeableness",
     },
   },
   // Subject and Personality Ties (3 variations)
@@ -192,6 +201,7 @@ const TEST_CASES = {
       },
       preferredTrait: "Extraversion",
       preferredSubject: "Math",
+      topScores: "Math and Extraversion",
     },
     case2_complexMixedTies: {
       description: "Case 2: Three-way personality tie, two-way subject tie (different scores)",
@@ -211,6 +221,7 @@ const TEST_CASES = {
       },
       preferredTrait: "Conscientiousness",
       preferredSubject: "Science",
+      topScores: "Science and Conscientiousness",
     },
     case3_allWayTies: {
       description: "Case 3: All traits tied (except Neuroticism), all subjects tied (except Art)",
@@ -230,6 +241,7 @@ const TEST_CASES = {
       },
       preferredTrait: "Openness",
       preferredSubject: "Science",
+      topScores: "Science and Openness",
     },
     case4_extremeQuadrupleHundreds: {
       description: "Case 4: Four-way 100% ties in both categories (all except Neuroticism and Art)",
@@ -249,6 +261,7 @@ const TEST_CASES = {
       },
       preferredTrait: "Conscientiousness",
       preferredSubject: "Technology",
+      topScores: "Technology and Conscientiousness",
     },
   },
 };
