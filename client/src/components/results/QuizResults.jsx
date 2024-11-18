@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { QuizContext } from '../../context/QuizContext';
+import CareerRecommendation from './CareerRecommendation';
 
 const QuizResults = () => {
   const { state } = useContext(QuizContext);
@@ -10,9 +11,16 @@ const QuizResults = () => {
     preferredSubject
   } = state;
 
-  // Calculate max scores
+  // Calculate max scores and find corresponding names
   const maxPersonalityScore = Math.max(...Object.values(traitPercentages));
   const maxSubjectScore = Math.max(...Object.values(subjectPercentages));
+
+  // Find the trait and subject names that correspond to max scores
+  const maxPersonalityTrait = Object.entries(traitPercentages)
+    .find(([trait, score]) => score === maxPersonalityScore)?.[0];
+  
+  const maxSubjectName = Object.entries(subjectPercentages)
+    .find(([subject, score]) => score === maxSubjectScore)?.[0];
 
   const getTraitColor = (trait, score) => {
     if (score === maxPersonalityScore && trait === preferredTrait) {
@@ -61,6 +69,11 @@ const QuizResults = () => {
           ))}
         </div>
       </div>
+
+      <CareerRecommendation 
+        maxSubjectScore={maxSubjectName}
+        maxPersonalityScore={maxPersonalityTrait}
+      />
     </div>
   );
 };

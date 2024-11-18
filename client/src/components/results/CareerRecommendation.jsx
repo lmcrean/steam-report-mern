@@ -1,90 +1,58 @@
 // CareerRecommendation.jsx
-import React from 'react';
-import { ResultsSection } from './QuizResultsCharts';
+import React, { useContext } from 'react';
+import { QuizContext } from '../../context/QuizContext';
+import { getCareerFeedback } from '../../data/feedbackDatabase';
 
-const StrengthsCard = ({ highestTrait, highestSubject }) => (
-  <div className="bg-blue-50 p-4 rounded-lg">
-    <h4 className="font-medium text-gray-700">Key Strengths</h4>
-    <div className="mt-2 space-y-2">
-      {highestTrait && (
-        <div>
-          <span className="text-gray-600 font-medium">Strongest trait: </span>
-          <span className="text-blue-600">{highestTrait}</span>
-        </div>
-      )}
-      {highestSubject && (
-        <div>
-          <span className="text-gray-600 font-medium">Best subject: </span>
-          <span className="text-blue-600">{highestSubject}</span>
-        </div>
-      )}
-    </div>
-  </div>
-);
+const CareerRecommendation = ({ maxSubjectScore, maxPersonalityScore }) => {
+  const { state } = useContext(QuizContext);
+  const { 
+    preferredTrait,
+    preferredSubject
+  } = state;
 
-const RecommendationCard = ({ feedback }) => (
-  <div className="bg-green-50 p-4 rounded-lg">
-    <h4 className="font-medium text-gray-700">Career Paths</h4>
-    {feedback.environment && (
-      <div className="mt-2 text-gray-600">
-        <p className="font-medium">Ideal Work Environment:</p>
-        <p>You thrive in {feedback.environment} environments where {feedback.thrive}.</p>
-      </div>
-    )}
-    {feedback.feedback && (
-      <div className="mt-4 text-gray-600">
-        <p className="font-medium">Recommendation:</p>
-        <p className="whitespace-pre-line">{feedback.feedback}</p>
-      </div>
-    )}
-  </div>
-);
+  // Construct key in correct order - Subject and Trait
+  const topScores = `${maxSubjectScore} and ${maxPersonalityScore}`;
 
-const CareerSummary = ({ personalityTrait, subject }) => (
-  <div className="bg-yellow-50 p-4 rounded-lg">
-    <h4 className="font-medium text-gray-700">Quick Summary</h4>
-    <p className="mt-2 text-gray-600">
-      Based on your results, consider careers that combine your strong{' '}
-      <span className="text-blue-600 font-medium">{subject?.toLowerCase()}</span> skills 
-      with your{' '}
-      <span className="text-blue-600 font-medium">{personalityTrait?.toLowerCase()}</span> tendencies.
-    </p>
-  </div>
-);
+  // get career recommendations from feedback database, use the maxSubjectScore and maxPersonalityScore as a search key.
+  const careerFeedback = getCareerFeedback(maxSubjectScore, maxPersonalityScore);
 
-const CareerRecommendation = ({ 
-  careerFeedback, 
-  highestTrait, 
-  highestSubject 
-}) => {
-  if (!highestTrait || !highestSubject) {
-    return (
-      <ResultsSection title="Career Recommendations">
-        <div className="text-center text-gray-600">
-          Completing both quizzes is required for career recommendations.
-        </div>
-      </ResultsSection>
-    );
-  }
+  console.log('Max Subject Score:', maxSubjectScore);
+  console.log('Max Personality Score:', maxPersonalityScore);
+  console.log('Top Scores:', topScores); // Debug log
+  console.log('Career Feedback:', careerFeedback); // Debug log
 
   return (
-    <ResultsSection title="Career Recommendations">
-      <div className="space-y-6">
-        <StrengthsCard 
-          highestTrait={highestTrait}
-          highestSubject={highestSubject}
-        />
-        
-        {careerFeedback && (
-          <RecommendationCard feedback={careerFeedback} />
-        )}
-        
-        <CareerSummary 
-          personalityTrait={highestTrait}
-          subject={highestSubject}
-        />
+    <div className="p-8 space-y-8">
+      <h2 className="text-2xl font-bold">Career Recommendations</h2>
+      
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-xl font-semibold">Your Top Scores</h3>
+          <p>{topScores}</p>
+        </div>
+
+        <div>
+          <h3 className="text-xl font-semibold">Environment</h3>
+          <p>Choose a workplace that is {careerFeedback.environment}</p>
+        </div>
+
+        <div>
+          <h3 className="text-xl font-semibold">Feedback</h3>
+          <p className="whitespace-pre-line">
+            {careerFeedback.feedback}
+          </p>
+        </div>
+
+        <div>
+          <h3 className="text-xl font-semibold">Recommended Career Paths</h3>
+          <ul className="list-disc pl-5">
+            {careerFeedback.recommendedCareers?.map((career, index) => (
+              <li key={index}>{career}</li>
+            ))}
+          </ul>
+        </div>
       </div>
-    </ResultsSection>
+    </div>
   );
 };
 

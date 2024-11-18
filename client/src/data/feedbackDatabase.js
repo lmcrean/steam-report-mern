@@ -18,7 +18,7 @@ export const feedbackDatabase = {
     highest_OCEAN: "Conscientiousness",
     environment: "structured and analytical",
     thrive: "precision and methodical work",
-    feedback: "Based on your test results, it seems that you might be\nbest suited to a structured and analytical environment.\nYou'll thrive in a setting that values precision and\nmethodical work. A career in a research laboratory or a\nquality assurance role in a manufacturing company could be\nexcellent choices for you.",
+    feedback: "Your affinity for Science and Conscientiousness suggests you are well-suited for a structured and detail-oriented environment. You will excel in roles that require precision, thoroughness, and a methodical approach to problem-solving. Consider pursuing careers in scientific research, quality assurance, or laboratory management, where your conscientious nature can lead to impactful contributions.",
     recommendedCareers: [
       "Laboratory Manager",
       "Quality Control Scientist",
@@ -279,8 +279,8 @@ export const feedbackDatabase = {
       "Art Critic"
     ]
   },
-  "Maths and Openness": {
-    highest_STEAM: "Maths",
+  "Math and Openness": {
+    highest_STEAM: "Math",
     highest_OCEAN: "Openness",
     environment: "exploratory and innovative",
     thrive: "problem-solving and creativity",
@@ -293,12 +293,12 @@ export const feedbackDatabase = {
       "Mathematical Modeling Consultant"
     ]
   },
-  "Maths and Conscientiousness": {
-    highest_STEAM: "Maths",
+  "Math and Conscientiousness": {
+    highest_STEAM: "Math",
     highest_OCEAN: "Conscientiousness",
     environment: "structured and analytical",
     thrive: "precision and methodical work",
-    feedback: "With a strong foundation in maths and a conscientious\nnature, a structured and analytical environment could\nsuit you well. Your precision and methodical approach to\nwork would be valued in fields like actuarial science,\naccounting, or operations research.",
+    feedback: "With a strong foundation in Math and a conscientious\nnature, a structured and analytical environment could\nsuit you well. Your precision and methodical approach to\nwork would be valued in fields like actuarial science,\naccounting, or operations research.",
     recommendedCareers: [
       "Actuarial Scientist",
       "Accountant",
@@ -307,8 +307,8 @@ export const feedbackDatabase = {
       "Actuarial Consultant"
     ]
   },
-  "Maths and Extraversion": {
-    highest_STEAM: "Maths",
+  "Math and Extraversion": {
+    highest_STEAM: "Math",
     highest_OCEAN: "Extraversion",
     environment: "collaborative and dynamic",
     thrive: "communication and teamwork",
@@ -321,8 +321,8 @@ export const feedbackDatabase = {
       "Mathematical Analyst"
     ]
   },
-  "Maths and Agreeableness": {
-    highest_STEAM: "Maths",
+  "Math and Agreeableness": {
+    highest_STEAM: "Math",
     highest_OCEAN: "Agreeableness",
     environment: "supportive and cooperative",
     thrive: "empathy and interpersonal skills",
@@ -335,12 +335,12 @@ export const feedbackDatabase = {
       "Educational Consultant"
     ]
   },
-  "Maths and Neuroticism": {
-    highest_STEAM: "Maths",
+  "Math and Neuroticism": {
+    highest_STEAM: "Math",
     highest_OCEAN: "Neuroticism",
     environment: "predictable and well-defined",
     thrive: "meticulous analysis and problem-solving",
-    feedback: "With a solid background in maths and a meticulous nature,\nyou may find comfort in predictable and well-defined\nenvironments. Your ability for meticulous analysis and\nproblem-solving could serve you well in roles like data\nanalysis, financial planning, or risk management.",
+    feedback: "With a solid background in Math and a meticulous nature,\nyou may find comfort in predictable and well-defined\nenvironments. Your ability for meticulous analysis and\nproblem-solving could serve you well in roles like data\nanalysis, financial planning, or risk management.",
     recommendedCareers: [
       "Data Analyst",
       "Financial Analyst",
@@ -357,6 +357,13 @@ export const getCareerFeedback = (steamCategory, oceanTrait) => {
   return feedbackDatabase[key] || {
     environment: "dynamic and adaptable",
     thrive: "versatility and adaptability",
-    feedback: "Your unique combination of skills and traits suggests you could succeed in various roles. Consider exploring positions that combine your technical abilities with your personality strengths."
+    feedback: "Your unique combination of skills and traits suggests you could succeed in various roles. Consider exploring positions that combine your technical abilities with your personality strengths.",
+    recommendedCareers: [
+      "Career Counselor",
+      "Professional Development Coach",
+      "Skills Assessment Specialist",
+      "Career Development Specialist",
+      "Vocational Advisor"
+    ]
   };
 };

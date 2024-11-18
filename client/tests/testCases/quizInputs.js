@@ -23,7 +23,7 @@ const TEST_CASES = {
     },
 
     case2_barelyNoTies: {
-      description: "Case 2: Winners by 6% margin: Openness and Science",
+      description: "Case 2: Winners by 6% margin: Science and Openness",
       personalityAnswers: {
         Openness: [7, 7, 7, 6, 7], // 34/45 = 75%
         Conscientiousness: [6, 6, 6, 6, 6], // 30/45 = 67%
@@ -38,7 +38,7 @@ const TEST_CASES = {
         Art: [1, 1, 0, 0, 0, 0, 0, 0, 0, 0], // 2/10 = 20%
         Math: [1, 1, 1, 1, 1, 0, 0, 0, 0, 0], // 5/10 = 50%
       },
-      topScores: "Openness and Science",
+      topScores: "Science and Openness",
     },
 
     case3_extremeWinners: {
@@ -57,7 +57,7 @@ const TEST_CASES = {
         Art: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0], // 1/10 = 10%
         Math: [1, 1, 1, 1, 1, 0, 0, 0, 0, 0], // 5/10 = 50%
       },
-      topScores: "Conscientiousness and Technology",
+      topScores: "Technology and Conscientiousness",
     },
   },
 
@@ -240,8 +240,8 @@ const TEST_CASES = {
         Math: [1, 1, 1, 1, 1, 1, 0, 0, 0, 0], // 6/10 = 60%
       },
       preferredTrait: "Openness",
-      preferredSubject: "Science",
-      topScores: "Science and Openness",
+      preferredSubject: "English",
+      topScores: "English and Openness",
     },
     case4_extremeQuadrupleHundreds: {
       description: "Case 4: Four-way 100% ties in both categories (all except Neuroticism and Art)",
