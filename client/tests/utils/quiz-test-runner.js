@@ -39,5 +39,10 @@ export async function runQuizTestCase(page, testCase, subjectsData) {
 
   await verifyResultsText(page, testCase);
   await verifyCareerRecommendations(page, testCase);
-  await verifyNetworkBoard(page, testCase);
+  try {
+    await verifyNetworkBoard(page, testCase);
+  } catch (error) {
+    console.error('Network Board verification failed:', error);
+    throw error;
+  }
 }

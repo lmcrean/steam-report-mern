@@ -23,6 +23,16 @@ export const INITIAL_STATE = {
   preferredSubject: null,
 };
 
+export const NETWORK_BOARD_USER_RESULTS = {
+  username: '',
+  bestSubject: '',
+  subjectScore: 0,
+  bestPersonalityTrait: '',
+  personalityScore: 0,
+  preferredEnvironment: '',
+  dateOfSubmission: ''
+}
+
 // Tolerance for considering scores as tied (percentage points)
 // for example, if the score is 50.001, it will be considered 50
 export const SCORE_TOLERANCE = 5; 

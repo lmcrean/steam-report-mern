@@ -10,77 +10,54 @@ const NetworkBoard = () => {
   // State for loading
   const [loading, setLoading] = useState(true);
   const [networkData, setNetworkData] = useState([]);
+  const [error, setError] = useState(null);
   const { username } = useContext(UserContext); // Get username from context
   const navigate = useNavigate();
 
   // Fetch network board data
   const fetchNetworkBoardData = async () => {
     try {
-      const response = await fetch('/api/network-board');
+      const response = await fetch('http://localhost:8000/api/network-board');
       if (!response.ok) throw new Error('Failed to fetch network board data');
       const data = await response.json();
       setNetworkData(data);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching network board data:', error);
+      setError('Failed to load network board data');
       setLoading(false);
     }
   };
 
-  // Collect and send user results
-  const collectUserResultsData = async (quizResults, careerRecommendation) => {
-    const userResult = {
-      username,
-      bestSubject: quizResults.bestSubject,
-      subjectScore: quizResults.subjectScore,
-      bestPersonalityTrait: quizResults.bestPersonalityTrait,
-      personalityScore: quizResults.personalityScore,
-      preferredEnvironment: careerRecommendation.preferredEnvironment,
-      dateOfSubmission: new Date().toISOString()
-    };
-
-    return userResult;
-  };
-
-  // Send results to network board
-  const sendUserResultToNetworkBoard = async (userResult) => {
+  // Delete user result
+  const deleteUserResult = async (id) => {
     try {
-      const response = await fetch('/api/user-result', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userResult)
+      const response = await fetch(`http://localhost:8000/api/user-result/${id}`, {
+        method: 'DELETE',
       });
       
-      if (!response.ok) throw new Error('Failed to submit user result');
+      if (!response.ok) throw new Error('Failed to delete user result');
       
-      // Refresh network board data after submission
       await fetchNetworkBoardData();
+      navigate('/quiz-start');
     } catch (error) {
-      console.error('Error submitting user result:', error);
+      console.error('Error deleting user result:', error);
+      setError('Failed to delete user result');
     }
   };
 
   // Calculate network board data using memoization
-  const getNetworkBoardData = useMemo(() => {
-    // Retrieve the network board data from the AWS Lambda
-    
-    // Have demo entries in the frontend for testing. See collectUserResultsData for columns.
-
-    // Return the sorted network board data
-  }, [username, subjectAnswers]);
-
-
-
-  // Function to delete user result
-  const deleteUserResult = () => {
-    // Logic to delete User Result from the Network Board AWS Lambda and redirect to quiz start
-  };
+  const sortedNetworkData = useMemo(() => {
+    return [...networkData].sort((a, b) => b.subjectScore - a.subjectScore);
+  }, [networkData]);
 
   useEffect(() => {
     fetchNetworkBoardData();
   }, []);
+
+  if (error) {
+    return <div className="error-message">{error}</div>;
+  }
 
   // Render the component
   return (
@@ -101,10 +78,11 @@ const NetworkBoard = () => {
                 <th>Personality Score</th>
                 <th>Preferred Environment</th>
                 <th>Date</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {networkData.map((entry, index) => (
+              {sortedNetworkData.map((entry, index) => (
                 <tr key={entry.id} className={entry.username === username ? 'current-user' : ''}>
                   <td>{index + 1}</td>
                   <td>{entry.username}</td>
@@ -114,6 +92,16 @@ const NetworkBoard = () => {
                   <td>{entry.personalityScore}</td>
                   <td>{entry.preferredEnvironment}</td>
                   <td>{new Date(entry.dateOfSubmission).toLocaleDateString()}</td>
+                  <td>
+                    {entry.username === username && (
+                      <button 
+                        className="delete-button"
+                        onClick={() => deleteUserResult(entry.id)}
+                      >
+                        Delete
+                      </button>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>

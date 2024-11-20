@@ -1,14 +1,35 @@
 // CareerRecommendation.jsx
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { QuizContext } from '../../context/QuizContext';
 import { getCareerFeedback } from '../../data/feedbackDatabase';
+import { useNavigate } from 'react-router-dom';
 
 const CareerRecommendation = ({ maxSubjectScore, maxPersonalityScore }) => {
-  const { state } = useContext(QuizContext);
-  const { 
-    preferredTrait,
-    preferredSubject
-  } = state;
+  const { state, submitToNetworkBoard } = useContext(QuizContext);
+  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const handleSubmitToNetworkBoard = async () => {
+    setIsSubmitting(true);
+    
+    const results = {
+      username: state.username,
+      bestSubject: maxSubjectScore,
+      bestPersonalityTrait: maxPersonalityScore,
+      subjectScore: state.subjectScores[maxSubjectScore],
+      personalityScore: state.personalityScores[maxPersonalityScore],
+      preferredEnvironment: careerFeedback.environment,
+      dateOfSubmission: new Date().toISOString()
+    };
+
+    const success = await submitToNetworkBoard(results);
+    
+    if (success) {
+      navigate('/network-board');
+    }
+    
+    setIsSubmitting(false);
+  };
 
   // Construct key in correct order - Subject and Trait
   const topScores = `${maxSubjectScore} and ${maxPersonalityScore}`;
@@ -51,6 +72,16 @@ const CareerRecommendation = ({ maxSubjectScore, maxPersonalityScore }) => {
             ))}
           </ul>
         </div>
+      </div>
+
+      <div className="mt-8">
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+          onClick={handleSubmitToNetworkBoard}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? 'Submitting...' : 'Submit to Network Board'}
+        </button>
       </div>
     </div>
   );

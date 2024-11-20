@@ -61,14 +61,14 @@ app.delete("/api/user-result/:id", async (req, res) => {
   try {
     const { id } = req.params;
     
-    const params = {
+    const deleteParams = {
       TableName: TABLE_NAME,
       Key: {
         id: id
       }
     };
     
-    await dynamoDB.delete(params).promise();
+    await dynamoDB.delete(deleteParams).promise();
     res.json({ message: 'User result deleted successfully' });
   } catch (error) {
     console.error('Error deleting user result:', error);

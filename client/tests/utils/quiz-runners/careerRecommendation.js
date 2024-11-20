@@ -25,5 +25,20 @@ export async function verifyCareerRecommendations(page, testCase) {
     });
   }
 
+  // Wait for and click the submit to network board button
+  const submitButton = await page.waitForSelector('button:has-text("Submit to Network Board")', {
+    state: 'visible',
+    timeout: 2000
+  });
+  
+  await submitButton.click();
+  
+  // Wait for success message or network board redirect
+  await page.waitForSelector('.network-board', {
+    state: 'visible',
+    timeout: 5000
+  });
+
   console.log(`✓ Verified career recommendations for ${expectedKey}`);
+  console.log('✓ Successfully submitted results to network board');
 }
