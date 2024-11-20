@@ -9,7 +9,7 @@ import {
 } from './quiz-runners/subjectTieBreaker';
 import { verifyResultsText } from './quiz-runners/resultsTextCheck';
 import { verifyCareerRecommendations } from './quiz-runners/careerRecommendation';
-
+import { verifyNetworkBoard } from './quiz-runners/networkBoard';
 export async function runQuizTestCase(page, testCase, subjectsData) {
   await startQuiz(page);
   await completePersonalitySection(page, testCase.personalityAnswers);
@@ -39,4 +39,5 @@ export async function runQuizTestCase(page, testCase, subjectsData) {
 
   await verifyResultsText(page, testCase);
   await verifyCareerRecommendations(page, testCase);
+  await verifyNetworkBoard(page, testCase);
 }

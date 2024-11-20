@@ -1,36 +1,77 @@
 // NetworkBoard.jsx
 
 // Import necessary libraries and hooks
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { UserContext } from '../../contexts/UserContext'; // Assuming you have this
 
 // Define the NetworkBoard component
 const NetworkBoard = () => {
   // State for loading
   const [loading, setLoading] = useState(true);
+  const [networkData, setNetworkData] = useState([]);
+  const { username } = useContext(UserContext); // Get username from context
+  const navigate = useNavigate();
 
-  // Retrieve username and answers from quiz context
+  // Fetch network board data
+  const fetchNetworkBoardData = async () => {
+    try {
+      const response = await fetch('/api/network-board');
+      if (!response.ok) throw new Error('Failed to fetch network board data');
+      const data = await response.json();
+      setNetworkData(data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching network board data:', error);
+      setLoading(false);
+    }
+  };
+
+  // Collect and send user results
+  const collectUserResultsData = async (quizResults, careerRecommendation) => {
+    const userResult = {
+      username,
+      bestSubject: quizResults.bestSubject,
+      subjectScore: quizResults.subjectScore,
+      bestPersonalityTrait: quizResults.bestPersonalityTrait,
+      personalityScore: quizResults.personalityScore,
+      preferredEnvironment: careerRecommendation.preferredEnvironment,
+      dateOfSubmission: new Date().toISOString()
+    };
+
+    return userResult;
+  };
+
+  // Send results to network board
+  const sendUserResultToNetworkBoard = async (userResult) => {
+    try {
+      const response = await fetch('/api/user-result', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userResult)
+      });
+      
+      if (!response.ok) throw new Error('Failed to submit user result');
+      
+      // Refresh network board data after submission
+      await fetchNetworkBoardData();
+    } catch (error) {
+      console.error('Error submitting user result:', error);
+    }
+  };
 
   // Calculate network board data using memoization
-  const networkBoardData = useMemo(() => {
-    // Retrieve the username from Context
-    // Retrieve the best subject best personality traits subject score and personality score from quizResults.jsx
-    // Retrieve the preferred environment from careerRecommendation.jsx
-    // Log the date of submission
-
-
-    // Create an entry for the current user with:
-    // - username
-    // - best subject
-    // - best personality trait
-    // - subject score
-    // - personality score
-    // - preferred environment
-    // - date of submission
-
-    // Have demo entries in the frontend for testing. See above for columns.
+  const getNetworkBoardData = useMemo(() => {
+    // Retrieve the network board data from the AWS Lambda
+    
+    // Have demo entries in the frontend for testing. See collectUserResultsData for columns.
 
     // Return the sorted network board data
   }, [username, subjectAnswers]);
+
+
 
   // Function to delete user result
   const deleteUserResult = () => {
