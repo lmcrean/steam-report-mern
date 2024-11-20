@@ -1,6 +1,8 @@
 import Express from "express";
 import cors from "cors";
 import AWS from 'aws-sdk';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app = Express();
 
@@ -10,13 +12,13 @@ app.use(Express.json()); // Add this to parse JSON bodies
 
 // Configure AWS
 AWS.config.update({
-  region: 'your-region', // e.g., 'us-east-1'
+  region: process.env.AWS_REGION,
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
 });
 
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
-const TABLE_NAME = 'your-table-name';
+const TABLE_NAME = 'NetworkBoard';
 
 // Get network board data
 app.get("/api/network-board", async (req, res) => {
@@ -55,14 +57,14 @@ app.post("/api/user-result", async (req, res) => {
 });
 
 // Delete user result
-app.delete("/api/user-result/:username", async (req, res) => {
+app.delete("/api/user-result/:id", async (req, res) => {
   try {
-    const { username } = req.params;
+    const { id } = req.params;
     
     const params = {
       TableName: TABLE_NAME,
       Key: {
-        username: username
+        id: id
       }
     };
     
@@ -74,6 +76,27 @@ app.delete("/api/user-result/:username", async (req, res) => {
   }
 });
 
+
+app.get("/api/test-aws", async (req, res) => {
+    try {
+      const params = {
+        TableName: 'NetworkBoard',
+        Item: {
+          id: 'test-' + Date.now(),
+          message: 'Test connection successful'
+        }
+      };
+      
+      await dynamoDB.put(params).promise();
+      res.json({ message: 'AWS connection successful' });
+    } catch (error) {
+      console.error('AWS connection error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
 app.listen(8000, () => {
   console.log('Server running on port 8000');
+}).on('error', (error) => {
+  console.error('Failed to start server:', error);
 });

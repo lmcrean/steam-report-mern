@@ -78,34 +78,48 @@ const NetworkBoard = () => {
     // Logic to delete User Result from the Network Board AWS Lambda and redirect to quiz start
   };
 
+  useEffect(() => {
+    fetchNetworkBoardData();
+  }, []);
+
   // Render the component
   return (
-    // Main container for the network board
-    <div>
+    <div className="network-board">
       {loading ? (
-        // Show loading spinner
         <div>Loading...</div>
       ) : (
-        // Header for the network board
-        <h2>Network Board</h2>
+        <>
+          <h2>Network Board</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Username</th>
+                <th>Best Subject</th>
+                <th>Subject Score</th>
+                <th>Best Personality Trait</th>
+                <th>Personality Score</th>
+                <th>Preferred Environment</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {networkData.map((entry, index) => (
+                <tr key={entry.id} className={entry.username === username ? 'current-user' : ''}>
+                  <td>{index + 1}</td>
+                  <td>{entry.username}</td>
+                  <td>{entry.bestSubject}</td>
+                  <td>{entry.subjectScore}</td>
+                  <td>{entry.bestPersonalityTrait}</td>
+                  <td>{entry.personalityScore}</td>
+                  <td>{entry.preferredEnvironment}</td>
+                  <td>{new Date(entry.dateOfSubmission).toLocaleDateString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
       )}
-      
-      // Table to display network board data
-      <table>
-        <thead>
-          // Table headers for Rank, Username, Score, Best Subject, Best Personality Trait, Subject Score, Personality Score, Preferred Environment, Date of Submission
-        </thead>
-        <tbody>
-          // Map through network board data to create table rows
-          // Highlight the current user's row
-        </tbody>
-      </table>
-
-      // Delete User Result Button
-      <button onClick={deleteUserResult}>Delete User Result</button>
-
-      // Redirect to Quiz Start Button
-      <button onClick={redirectToQuizStart}>Start again</button>
     </div>
   );
 };
