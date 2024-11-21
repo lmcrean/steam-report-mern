@@ -14,31 +14,9 @@ export const QuizProvider = ({ children }) => {
     });
   }, []);
 
-  const submitToNetworkBoard = useCallback(async (results) => {
-    try {
-      const response = await fetch('http://localhost:8000/api/user-result', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(results)
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to submit to network board');
-      }
-      
-      return true;
-    } catch (error) {
-      console.error('Error submitting to network board:', error);
-      return false;
-    }
-  }, []);
-
   const value = {
     state,
-    updateState,
-    submitToNetworkBoard
+    updateState
   };
 
   return (
