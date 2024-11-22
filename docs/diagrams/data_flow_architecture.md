@@ -10,18 +10,17 @@
            R[Results]
            NB[NetworkBoard]
            DB[Delete Button]
-           RE[Restart Quiz Button]
+           RQB[Restart Quiz Button]
        end
 
        subgraph Functionality ["Functionality"]
         subgraph CustomHooks ["Custom Hooks"]
             direction LR
-            
             PS[usePersonalityScoring]
             SS[useSubjectScoring]
         end
 
-        N[useNextSection]
+        
 
         subgraph CheckForTies ["Check for Ties Edge Case"]
             direction LR
@@ -37,15 +36,21 @@
         end
 
         subgraph CoreState ["Core State"]
-            QC[QuizContext: INITIAL_STATE]
+            QC[QuizContext]
+            UPR[usePrepareResult]
+            QC2[QuizContext]
         end
+
+        N[useNextSection]
     end
 
        subgraph NetworkBoardAPI ["Network Board API"]
-           NA[QuizContext: NETWORK_BOARD_USER_RESULTS]
-           A[API]
-
-           D[DELETE]
+           UPRA[usePostResult]
+           UGRA[useGetResult]
+           UDR[useDeleteResult]
+           URQC[useResetQuizContext]
+           API[API]
+           API2[API]
        end
 
        %% Menu to UsernameEntry
@@ -74,29 +79,38 @@
        N -->|"update section"| QC
 
        %% Context provides state back to Results
-       QC -->|"all quiz data"| R
+       QC --> UPR
+       UPR -->|"Update Context"| QC2
+       QC2 -->|"Sent to results"| R
 
        %% Results submits data to Network Board API
-       R -->|"submit data from QuizContext"| NA
-       NA -->|"submit data"| A
-       A -->|"response"| NB
-       NB -->|"delete data"| DB
-       DB -->|"restart quiz"| D
-       NB -->|"restart quiz"| RE
-       RE -->|"restart quiz"| M
+       R --> UPRA
+       UPRA -->|"POST request to API"| API
+       API -->|"GET request from API to Network Board"| UGRA
+       UGRA --> NB
+       NB --> DB
+       DB --> UDR
+       UDR -->|"DELETE request to API"| API2
+       API2 -->|"Reset quiz context"| URQC
+       URQC -->|"reset Context and restart quiz"| M
+       NB --> RQB
+       RQB --> URQC
 
 
        classDef flow fill:royalblue,stroke:#ff9800,color:white
        classDef hooks fill:#e3f2fd,stroke:#1565c0,color:#000
-       classDef core fill:#e8f5e9,stroke:#2e7d32,color:#000
+       classDef core fill:green,stroke:#2e7d32,color:white
        classDef results fill:#fff3e0,stroke:#ef6c00,color:#000
        classDef validation fill:#e0f7fa,stroke:#00796b,color:#000
        classDef functionality fill:grey,stroke:#9e9e9e,color:white
-
+       classDef api fill:maroon,stroke:#606060,color:white,rx:150px,ry:150px
+       classDef buttons fill:lightgrey,stroke:#000000,color:#000,rx:50px,ry:50px
        class M,U,P,S,R,NB flow
        class N,PS,SS hooks
        class PST,SST ties
        class NU,PV,SV validation
-       class QC,NA core
+       class QC,NA,QC2 core
        class Functionality functionality
+       class API,API2 api
+       class RQB,DB,NS buttons
 ```

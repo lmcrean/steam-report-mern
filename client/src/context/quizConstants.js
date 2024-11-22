@@ -3,9 +3,9 @@ export const QUIZ_SECTIONS = [
   'menu',
   'username',
   'personality',
-  'personality-tiebreaker',
+  'personality-tiebreaker', // Skips if no tiebreaker is needed
   'subject',
-  'subject-tiebreaker',
+  'subject-tiebreaker', // Skips if no tiebreaker is needed
   'results',
   'network-board'
 ];
@@ -23,10 +23,8 @@ export const INITIAL_STATE = {
   subjectTies: [],
   preferredSubject: null,
   // The following fields are implemented after the quiz is submitted
-  bestSubject: '',
-  subjectScore: 0,
-  bestPersonalityTrait: '',
-  personalityScore: 0,
+  preferredSubjectScore: 0,
+  preferredTraitScore: 0,
   preferredEnvironment: '',
   dateOfSubmission: ''
 };

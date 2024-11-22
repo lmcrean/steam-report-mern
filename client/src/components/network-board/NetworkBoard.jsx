@@ -1,49 +1,31 @@
 // NetworkBoard.jsx
 
 // Import necessary libraries and hooks
-import React, { useMemo, useState, useEffect, useContext } from 'react';
+import React, { useMemo, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserContext } from '../../contexts/UserContext'; // Assuming you have this
+import { UserContext } from '../../contexts/UserContext';
+import { useGetNetworkBoard } from './useGetNetworkBoard';
+import { useDeleteResult } from './useDeleteResult';
+import { useResetQuizContext } from '../../context/useResetQuizContext';
 
 // Define the NetworkBoard component
 const NetworkBoard = () => {
-  // State for loading
-  const [loading, setLoading] = useState(true);
-  const [networkData, setNetworkData] = useState([]);
-  const [error, setError] = useState(null);
-  const { username } = useContext(UserContext); // Get username from context
+  const { networkData, loading, error, fetchNetworkBoardData } = useGetNetworkBoard();
+  const deleteUserResult = useDeleteResult(fetchNetworkBoardData);
+  const { resetQuiz, resetToStart } = useResetQuizContext();
+  const { username } = useContext(UserContext);
   const navigate = useNavigate();
 
-  // Fetch network board data
-  const fetchNetworkBoardData = async () => {
-    try {
-      const response = await fetch('http://localhost:8000/api/network-board');
-      if (!response.ok) throw new Error('Failed to fetch network board data');
-      const data = await response.json();
-      setNetworkData(data);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching network board data:', error);
-      setError('Failed to load network board data');
-      setLoading(false);
+  const handleDelete = async (id) => {
+    const success = await deleteUserResult(id);
+    if (success) {
+      resetQuiz(); // Complete reset after successful deletion
     }
   };
 
-  // Delete user result
-  const deleteUserResult = async (id) => {
-    try {
-      const response = await fetch(`http://localhost:8000/api/user-result/${id}`, {
-        method: 'DELETE',
-      });
-      
-      if (!response.ok) throw new Error('Failed to delete user result');
-      
-      await fetchNetworkBoardData();
-      navigate('/quiz-start');
-    } catch (error) {
-      console.error('Error deleting user result:', error);
-      setError('Failed to delete user result');
-    }
+  const handleRestartQuiz = () => {
+    resetToStart(); // Partial reset for restart
+    navigate('/menu');
   };
 
   // Calculate network board data using memoization
@@ -53,7 +35,7 @@ const NetworkBoard = () => {
 
   useEffect(() => {
     fetchNetworkBoardData();
-  }, []);
+  }, [fetchNetworkBoardData]);
 
   if (error) {
     return <div className="error-message">{error}</div>;
@@ -67,6 +49,14 @@ const NetworkBoard = () => {
       ) : (
         <>
           <h2>Network Board</h2>
+          <div className="actions-container">
+            <button 
+              className="restart-quiz-button"
+              onClick={handleRestartQuiz}
+            >
+              Restart Quiz
+            </button>
+          </div>
           <table>
             <thead>
               <tr>
@@ -96,9 +86,9 @@ const NetworkBoard = () => {
                     {entry.username === username && (
                       <button 
                         className="delete-button"
-                        onClick={() => deleteUserResult(entry.id)}
+                        onClick={() => handleDelete(entry.id)}
                       >
-                        Delete
+                        Delete my result
                       </button>
                     )}
                   </td>

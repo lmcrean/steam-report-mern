@@ -1,9 +1,20 @@
 import React, { useContext } from 'react';
 import { QuizContext } from '../../context/QuizContext';
 import CareerRecommendation from './CareerRecommendation';
+import { useNavigate } from 'react-router-dom';
+import { useSubmitResults } from '../network-board/usePostResult';
+import { usePrepareResult } from '../../context/usePrepareResult';
 
 const QuizResults = () => {
-  const { state } = useContext(QuizContext);
+  const { state, submitToNetworkBoard } = useContext(QuizContext);
+  const navigate = useNavigate();
+  const submitResults = useSubmitResults();
+  const { 
+    maxPersonalityTrait,
+    maxSubjectName,
+    isReady
+  } = usePrepareResult();
+  
   const { 
     traitPercentages,
     subjectPercentages,
@@ -11,33 +22,40 @@ const QuizResults = () => {
     preferredSubject
   } = state;
 
-  // Calculate max scores and find corresponding names
-  const maxPersonalityScore = Math.max(...Object.values(traitPercentages));
-  const maxSubjectScore = Math.max(...Object.values(subjectPercentages));
-
-  // Find the trait and subject names that correspond to max scores
-  const maxPersonalityTrait = Object.entries(traitPercentages)
-    .find(([trait, score]) => score === maxPersonalityScore)?.[0];
-  
-  const maxSubjectName = Object.entries(subjectPercentages)
-    .find(([subject, score]) => score === maxSubjectScore)?.[0];
+  if (!isReady) {
+    return <div>Preparing your results...</div>;
+  }
 
   const getTraitColor = (trait, score) => {
-    if (score === maxPersonalityScore && trait === preferredTrait) {
+    if (score === maxPersonalityTrait && trait === preferredTrait) {
       return 'text-purple-600';
-    } else if (score === maxPersonalityScore) {
+    } else if (score === maxPersonalityTrait) {
       return 'text-green-600';
     }
     return 'text-blue-600';
   };
 
   const getSubjectColor = (subject, score) => {
-    if (score === maxSubjectScore && subject === preferredSubject) {
+    if (score === maxSubjectName && subject === preferredSubject) {
       return 'text-purple-600';
-    } else if (score === maxSubjectScore) {
+    } else if (score === maxSubjectName) {
       return 'text-green-600';
     }
     return 'text-blue-600';
+  };
+
+  const handleSubmitResults = async () => {
+    const results = {
+      traitPercentages,
+      subjectPercentages,
+      preferredTrait,
+      preferredSubject,
+      maxPersonalityTrait,
+      maxSubjectName,
+      timestamp: new Date().toISOString()
+    };
+
+    await submitResults(results);
   };
 
   return (
@@ -74,6 +92,16 @@ const QuizResults = () => {
         maxSubjectScore={maxSubjectName}
         maxPersonalityScore={maxPersonalityTrait}
       />
+
+      {/* Add submission button */}
+      <div className="mt-8 flex justify-center">
+        <button
+          onClick={handleSubmitResults}
+          className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          Share Results to Network Board
+        </button>
+      </div>
     </div>
   );
 };
