@@ -12,8 +12,4 @@ export async function verifyResultsText(page, testCase) {
       return { trait, score };
     })
   );
-
-
-  // Log the results
-  console.log("Scores:", scores);
 }

@@ -1,5 +1,6 @@
 import { useEffect, useContext } from 'react';
 import { QuizContext } from './QuizContext';
+import { getCareerFeedback } from '../data/feedbackDatabase';
 
 export const usePrepareResult = () => {
   const { state, updateState } = useContext(QuizContext);
@@ -23,13 +24,23 @@ export const usePrepareResult = () => {
     const maxSubjectName = Object.entries(subjectPercentages)
       .find(([subject, score]) => score === maxSubjectScore)?.[0];
 
+    // Get career feedback and environment
+    const careerFeedback = getCareerFeedback(maxSubjectName, maxPersonalityTrait);
+
     const results = {
       maxPersonalityScore,
       maxSubjectScore,
       maxPersonalityTrait,
       maxSubjectName,
+      preferredEnvironment: careerFeedback.environment,
       isReady: true
     };
+
+    console.log('🎯 Prepared results with environment:', {
+      subject: maxSubjectName,
+      trait: maxPersonalityTrait,
+      environment: careerFeedback.environment
+    });
 
     return results;
   };
@@ -38,7 +49,14 @@ export const usePrepareResult = () => {
     if (state.traitPercentages && state.subjectPercentages) {
       const results = prepareResults();
       if (results) {
-        updateState(results);
+        console.log('🔄 Updating state with prepared results:', {
+          ...results,
+          preferredEnvironment: results.preferredEnvironment
+        });
+        updateState({
+          ...results,
+          preferredEnvironment: results.preferredEnvironment
+        });
       }
     }
   }, [state.traitPercentages, state.subjectPercentages, updateState]);
@@ -48,6 +66,7 @@ export const usePrepareResult = () => {
     maxSubjectScore: state.maxSubjectScore,
     maxPersonalityTrait: state.maxPersonalityTrait,
     maxSubjectName: state.maxSubjectName,
+    preferredEnvironment: state.preferredEnvironment,
     isReady: state.isReady
   };
 };

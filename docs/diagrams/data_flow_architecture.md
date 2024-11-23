@@ -11,6 +11,7 @@
            NB[NetworkBoard]
            DB[Delete Button]
            RQB[Restart Quiz Button]
+           SNB[Submit Results Button]
        end
 
        subgraph Functionality ["Functionality"]
@@ -82,9 +83,10 @@
        QC --> UPR
        UPR -->|"Update Context"| QC2
        QC2 -->|"Sent to results"| R
+       R --> SNB
+       SNB --> UPRA
 
        %% Results submits data to Network Board API
-       R --> UPRA
        UPRA -->|"POST request to API"| API
        API -->|"GET request from API to Network Board"| UGRA
        UGRA --> NB
@@ -112,5 +114,5 @@
        class QC,NA,QC2 core
        class Functionality functionality
        class API,API2 api
-       class RQB,DB,NS buttons
+       class RQB,DB,NS,SNB buttons
 ```

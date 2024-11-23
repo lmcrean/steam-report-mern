@@ -10,7 +10,14 @@ export const QuizProvider = ({ children }) => {
   const updateState = useCallback((updates) => {
     setState(prev => {
       const actualUpdates = typeof updates === 'function' ? updates(prev) : updates;
-      const newState = { ...prev, ...actualUpdates };
+
+      const newState = { 
+        ...prev, 
+        ...actualUpdates,
+        // Ensure preferredEnvironment persists if it exists
+        preferredEnvironment: actualUpdates.preferredEnvironment || prev.preferredEnvironment
+      };
+
       return newState;
     });
   }, []);

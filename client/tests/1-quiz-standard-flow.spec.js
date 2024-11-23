@@ -47,6 +47,10 @@ test.describe('Set 1: Standard Quiz Flow', () => {
       console.log(personalityPercentages);
       console.log(subjectPercentages);
 
+      console.log('============================================');
+      console.log('User results will be rendered in a network board with these columns');
+      console.log('Username	Best Subject	Subject Score	Best Personality Trait	Personality Score	Preferred Environment	Date	Actions');
+      console.log('============================================');
       await runQuizTestCase(page, testCase, subjects);
       
       console.log('\n=== Test Complete ===');

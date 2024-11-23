@@ -18,7 +18,7 @@ const CareerRecommendation = ({ maxSubjectScore, maxPersonalityScore }) => {
       bestPersonalityTrait: maxPersonalityScore,
       subjectScore: state.subjectScores[maxSubjectScore],
       personalityScore: state.personalityScores[maxPersonalityScore],
-      preferredEnvironment: careerFeedback.environment,
+      preferredEnvironment: state.preferredEnvironment,
       dateOfSubmission: new Date().toISOString()
     };
 
@@ -49,7 +49,7 @@ const CareerRecommendation = ({ maxSubjectScore, maxPersonalityScore }) => {
 
         <div>
           <h3 className="text-xl font-semibold">Environment</h3>
-          <p>Choose a workplace that is {careerFeedback.environment}</p>
+          <p>Choose a workplace that is {state.preferredEnvironment}</p>
         </div>
 
         <div>

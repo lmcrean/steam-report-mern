@@ -36,6 +36,128 @@ try {
   process.exit(1); // Exit if AWS config fails
 }
 
+// Initialize DynamoDB client
+const dynamoDB = new AWS.DynamoDB.DocumentClient();
+
+// Add the POST endpoint for user results
+app.post('/api/user-result', async (req, res) => {
+  console.log('📝 Received user result request:', {
+    body: req.body,
+    timestamp: new Date().toISOString()
+  });
+
+  try {
+    const params = {
+      TableName: TABLE_NAME,
+      Item: {
+        id: `user_${req.body.username}_${Date.now()}`,
+        username: req.body.username,
+        traitPercentages: req.body.traitPercentages,
+        subjectPercentages: req.body.subjectPercentages,
+        bestSubject: req.body.bestSubject,
+        bestPersonalityTrait: req.body.bestPersonalityTrait,
+        preferredEnvironment: req.body.preferredEnvironment || null,
+        timestamp: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        // Calculate scores at time of save
+        subjectScore: req.body.subjectPercentages[req.body.bestSubject],
+        personalityScore: req.body.traitPercentages[req.body.bestPersonalityTrait]
+      }
+    };
+
+    console.log('💾 Attempting to save to DynamoDB with data:', {
+      id: params.Item.id,
+      username: params.Item.username,
+      bestSubject: params.Item.bestSubject,
+      bestPersonalityTrait: params.Item.bestPersonalityTrait,
+      scores: {
+        subject: params.Item.subjectScore,
+        personality: params.Item.personalityScore
+      }
+    });
+
+    await dynamoDB.put(params).promise();
+
+    console.log('✅ Successfully saved user result');
+    res.status(200).json({
+      success: true,
+      message: 'User result saved successfully',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('❌ Error saving user result:', {
+      error: error.message,
+      code: error.code,
+      requestBody: req.body
+    });
+    
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Add GET endpoint for network board data
+app.get('/api/network-board', async (req, res) => {
+  console.log('📥 Received network board request');
+
+  try {
+    const params = {
+      TableName: TABLE_NAME,
+      Limit: 50
+    };
+
+    console.log('🔍 Querying DynamoDB:', {
+      tableName: TABLE_NAME,
+      params: JSON.stringify(params, null, 2)
+    });
+
+    const result = await dynamoDB.scan(params).promise();
+
+    // Format the items before sending
+    const formattedItems = result.Items.map(item => ({
+      ...item,
+      // Format the timestamp into a readable date
+      date: new Date(item.timestamp).toLocaleDateString(),
+      // Ensure all required fields are present
+      subjectScore: item.subjectPercentages?.[item.bestSubject] || 0,
+      personalityScore: item.traitPercentages?.[item.bestPersonalityTrait] || 0,
+      preferredEnvironment: item.preferredEnvironment || 'Not specified'
+    }));
+
+    console.log('✨ Network board data retrieved:', {
+      itemCount: formattedItems.length,
+      sampleItem: formattedItems[0] ? {
+        username: formattedItems[0].username,
+        bestSubject: formattedItems[0].bestSubject,
+        bestPersonalityTrait: formattedItems[0].bestPersonalityTrait,
+        date: formattedItems[0].date
+      } : 'No items'
+    });
+
+    // Sort by timestamp descending (newest first)
+    const sortedItems = formattedItems.sort((a, b) => 
+      new Date(b.timestamp) - new Date(a.timestamp)
+    );
+
+    res.status(200).json(sortedItems);
+  } catch (error) {
+    console.error('❌ Error fetching network board:', {
+      error: error.message,
+      code: error.code,
+      tableName: TABLE_NAME
+    });
+    
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 // Server startup
 const server = app.listen(8000, () => {
   console.log(`

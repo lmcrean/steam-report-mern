@@ -27,6 +27,11 @@ export const useSubmitResults = () => {
         throw new Error('Server is not responding');
       }
 
+      // Get the environment from results
+      const preferredEnvironment = results.preferredEnvironment;
+
+      console.log('🔄 Preferred Environment from State (currently FAILing to Render, expecting a result such as: collaborative and dynamic):\n' + preferredEnvironment);
+
       // Prepare payloads
       const contextPayload = {
         bestSubject: results.maxSubjectName,
@@ -34,6 +39,7 @@ export const useSubmitResults = () => {
         bestPersonalityTrait: results.maxPersonalityTrait,
         personalityScore: results.traitPercentages[results.maxPersonalityTrait],
         dateOfSubmission: new Date().toISOString(),
+        preferredEnvironment: preferredEnvironment,
         section: 'network-board'
       };
 
@@ -45,6 +51,7 @@ export const useSubmitResults = () => {
         preferredSubject: results.preferredSubject,
         bestSubject: results.maxSubjectName,
         bestPersonalityTrait: results.maxPersonalityTrait,
+        preferredEnvironment: preferredEnvironment,
         timestamp: new Date().toISOString()
       };
 
@@ -56,6 +63,7 @@ export const useSubmitResults = () => {
       );
 
       // Make the request
+      console.log('📤 Sending request to:', 'http://localhost:8000/api/user-result');
       const response = await fetch('http://localhost:8000/api/user-result', {
         method: 'POST',
         headers: {
@@ -64,8 +72,11 @@ export const useSubmitResults = () => {
         body: JSON.stringify(apiPayload)
       });
 
+      console.log('📥 Response status:', response.status, response.statusText);
+      
       if (!response.ok) {
-        throw new Error(`Server error: ${response.status}`);
+        const errorText = await response.text().catch(e => 'No error text available');
+        throw new Error(`Server error: ${response.status}\nResponse: ${errorText}`);
       }
 
       const data = await response.json();
@@ -78,7 +89,10 @@ export const useSubmitResults = () => {
       console.error('❌ Submit failed:', {
         message: error.message,
         type: error.name,
-        serverRunning: await checkServerHealth()
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        serverRunning: await checkServerHealth(),
+        endpoint: 'http://localhost:8000/api/user-result'
       });
       return false;
     }

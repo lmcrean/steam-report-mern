@@ -15,7 +15,8 @@ const QuizResults = () => {
     traitPercentages,
     subjectPercentages,
     preferredTrait,
-    preferredSubject
+    preferredSubject,
+    preferredEnvironment
   } = state;
 
   const { 
@@ -54,8 +55,11 @@ const QuizResults = () => {
       preferredSubject,
       maxPersonalityTrait,
       maxSubjectName,
+      preferredEnvironment,
       timestamp: new Date().toISOString()
     };
+
+    console.log('🔄 Preferred Environment in handleSubmitResults:' + preferredEnvironment);
 
     try {
       await submitResults(results);

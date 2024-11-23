@@ -60,7 +60,6 @@ const NetworkBoard = () => {
           <table>
             <thead>
               <tr>
-                <th>Rank</th>
                 <th>Username</th>
                 <th>Best Subject</th>
                 <th>Subject Score</th>
@@ -74,7 +73,6 @@ const NetworkBoard = () => {
             <tbody>
               {sortedNetworkData.map((entry, index) => (
                 <tr key={entry.id} className={entry.username === state.username ? 'current-user' : ''}>
-                  <td>{index + 1}</td>
                   <td>{entry.username}</td>
                   <td>{entry.bestSubject}</td>
                   <td>{entry.subjectScore}</td>
