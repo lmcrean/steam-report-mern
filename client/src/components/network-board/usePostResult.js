@@ -6,19 +6,37 @@ export const useSubmitResults = () => {
   const { state, updateState } = useContext(QuizContext);
   const navigate = useNavigate();
 
-  const submitResults = useCallback(async (results) => {
+  const checkServerHealth = async () => {
     try {
-      // Prepare the context update payload
+      const response = await fetch('http://localhost:8000/health');
+      const data = await response.json();
+      console.log('🏥 Server health check:', data);
+      return data.status === 'ok';
+    } catch (error) {
+      console.error('❌ Server health check failed:', error);
+      return false;
+    }
+  };
+
+  const submitResults = useCallback(async (results) => {
+    console.log('🚀 Starting submitResults');
+    try {
+      // Check server health first
+      const serverHealthy = await checkServerHealth();
+      if (!serverHealthy) {
+        throw new Error('Server is not responding');
+      }
+
+      // Prepare payloads
       const contextPayload = {
         bestSubject: results.maxSubjectName,
         subjectScore: results.subjectPercentages[results.maxSubjectName],
         bestPersonalityTrait: results.maxPersonalityTrait,
         personalityScore: results.traitPercentages[results.maxPersonalityTrait],
-        dateOfSubmission: results.timestamp,
+        dateOfSubmission: new Date().toISOString(),
         section: 'network-board'
       };
 
-      // Prepare the API payload
       const apiPayload = {
         username: state.username,
         traitPercentages: results.traitPercentages,
@@ -27,13 +45,15 @@ export const useSubmitResults = () => {
         preferredSubject: results.preferredSubject,
         bestSubject: results.maxSubjectName,
         bestPersonalityTrait: results.maxPersonalityTrait,
-        timestamp: results.timestamp
+        timestamp: new Date().toISOString()
       };
 
-      // Update context state first
-      updateState(contextPayload);
+      console.log('📦 Payloads prepared:', {
+        context: contextPayload,
+        api: apiPayload
+      });
 
-      // Make API request
+      // Make the request
       const response = await fetch('http://localhost:8000/api/user-result', {
         method: 'POST',
         headers: {
@@ -41,15 +61,23 @@ export const useSubmitResults = () => {
         },
         body: JSON.stringify(apiPayload)
       });
-      
+
       if (!response.ok) {
-        throw new Error('Failed to submit to network board');
+        throw new Error(`Server error: ${response.status}`);
       }
 
+      const data = await response.json();
+      console.log('✨ Server response:', data);
+
+      updateState(contextPayload);
       navigate('/network-board');
       return true;
     } catch (error) {
-      console.error('Error submitting results:', error);
+      console.error('❌ Submit failed:', {
+        message: error.message,
+        type: error.name,
+        serverRunning: await checkServerHealth()
+      });
       return false;
     }
   }, [updateState, state.username, navigate]);

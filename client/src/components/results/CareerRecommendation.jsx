@@ -37,11 +37,6 @@ const CareerRecommendation = ({ maxSubjectScore, maxPersonalityScore }) => {
   // get career recommendations from feedback database, use the maxSubjectScore and maxPersonalityScore as a search key.
   const careerFeedback = getCareerFeedback(maxSubjectScore, maxPersonalityScore);
 
-  console.log('Max Subject Score:', maxSubjectScore);
-  console.log('Max Personality Score:', maxPersonalityScore);
-  console.log('Top Scores:', topScores); // Debug log
-  console.log('Career Feedback:', careerFeedback); // Debug log
-
   return (
     <div className="p-8 space-y-8">
       <h2 className="text-2xl font-bold">Career Recommendations</h2>

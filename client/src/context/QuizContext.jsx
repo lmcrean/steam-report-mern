@@ -8,16 +8,9 @@ export const QuizProvider = ({ children }) => {
   const [state, setState] = useState(INITIAL_STATE);
 
   const updateState = useCallback((updates) => {
-    console.log('📝 QuizProvider - Updating State:', updates);
     setState(prev => {
       const actualUpdates = typeof updates === 'function' ? updates(prev) : updates;
       const newState = { ...prev, ...actualUpdates };
-      console.log('✨ QuizProvider - New State:', {
-        section: newState.section,
-        hasTraitPercentages: !!newState.traitPercentages,
-        hasSubjectPercentages: !!newState.subjectPercentages,
-        isReady: newState.isReady
-      });
       return newState;
     });
   }, []);

@@ -17,27 +17,14 @@ const QuizResults = () => {
     preferredTrait,
     preferredSubject
   } = state;
-  
-  console.log('🎯 QuizResults - Current State:', {
-    traitPercentages,
-    subjectPercentages,
-    isReady: state.isReady
-  });
-  
+
   const { 
     maxPersonalityTrait,
     maxSubjectName,
     isReady
   } = usePrepareResult();
-  
-  console.log('📊 QuizResults - Prepared Results:', {
-    maxPersonalityTrait,
-    maxSubjectName,
-    isReady
-  });
 
   if (!isReady) {
-    console.log('⏳ Results not ready yet');
     return <div>Preparing your results...</div>;
   }
 

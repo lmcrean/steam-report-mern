@@ -27,8 +27,6 @@ const SubjectTieBreaker = () => {
       [selectedSubject]: subjectPercentages[selectedSubject] + 1 
     };
 
-    console.log('🔍 Updated scores:', updatedScores);
-
     // Pass directly to validation
     validateSubjectScores(updatedScores, selectedSubject);
   };

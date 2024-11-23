@@ -4,11 +4,6 @@ import { QuizContext } from './QuizContext';
 export const usePrepareResult = () => {
   const { state, updateState } = useContext(QuizContext);
   
-  console.log('🔍 usePrepareResult - Initial State:', {
-    traitPercentages: state.traitPercentages,
-    subjectPercentages: state.subjectPercentages
-  });
-  
   const prepareResults = () => {
     const { traitPercentages, subjectPercentages, preferredTrait, preferredSubject } = state;
     
@@ -36,16 +31,13 @@ export const usePrepareResult = () => {
       isReady: true
     };
 
-    console.log('✅ Prepared Results:', results);
     return results;
   };
 
   useEffect(() => {
-    console.log('🔄 usePrepareResult useEffect triggered');
     if (state.traitPercentages && state.subjectPercentages) {
       const results = prepareResults();
       if (results) {
-        console.log('📤 Updating context with prepared results');
         updateState(results);
       }
     }
