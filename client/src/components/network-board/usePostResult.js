@@ -48,10 +48,12 @@ export const useSubmitResults = () => {
         timestamp: new Date().toISOString()
       };
 
-      console.log('📦 Payloads prepared:', {
-        context: contextPayload,
-        api: apiPayload
-      });
+      console.log('📦 Payloads prepared:\n' + 
+        'Context Payload:\n' +
+        JSON.stringify(contextPayload, null, 2) +
+        '\n\nAPI Payload:\n' +
+        JSON.stringify(apiPayload, null, 2)
+      );
 
       // Make the request
       const response = await fetch('http://localhost:8000/api/user-result', {

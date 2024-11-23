@@ -3,13 +3,8 @@ import cors from "cors";
 import AWS from 'aws-sdk';
 import dotenv from 'dotenv';
 
-// Startup validation
-console.log('🔍 Starting server with environment check:');
-console.log('  • NODE_ENV:', process.env.NODE_ENV);
-console.log('  • PORT:', process.env.PORT || 8000);
-console.log('  • AWS_REGION:', process.env.AWS_REGION);
-
 dotenv.config();
+
 
 const TABLE_NAME = process.env.DYNAMODB_TABLE_NAME || 'default-table-name';
 
@@ -18,6 +13,7 @@ const app = Express();
 // Enhanced middleware logging
 app.use(cors());
 app.use(Express.json());
+
 console.log('⚙️ Express middleware configured:', {
   cors: '✓',
   jsonParser: '✓'
