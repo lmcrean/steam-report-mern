@@ -6,14 +6,9 @@ import { useSubmitResults } from '../network-board/usePostResult';
 import { usePrepareResult } from '../../context/usePrepareResult';
 
 const QuizResults = () => {
-  const { state, submitToNetworkBoard } = useContext(QuizContext);
+  const { state } = useContext(QuizContext);
   const navigate = useNavigate();
   const submitResults = useSubmitResults();
-  const { 
-    maxPersonalityTrait,
-    maxSubjectName,
-    isReady
-  } = usePrepareResult();
   
   const { 
     traitPercentages,
@@ -21,8 +16,27 @@ const QuizResults = () => {
     preferredTrait,
     preferredSubject
   } = state;
+  
+  console.log('🎯 QuizResults - Current State:', {
+    traitPercentages,
+    subjectPercentages,
+    isReady: state.isReady
+  });
+  
+  const { 
+    maxPersonalityTrait,
+    maxSubjectName,
+    isReady
+  } = usePrepareResult();
+  
+  console.log('📊 QuizResults - Prepared Results:', {
+    maxPersonalityTrait,
+    maxSubjectName,
+    isReady
+  });
 
   if (!isReady) {
+    console.log('⏳ Results not ready yet');
     return <div>Preparing your results...</div>;
   }
 

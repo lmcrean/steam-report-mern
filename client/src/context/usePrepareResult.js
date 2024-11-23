@@ -1,12 +1,21 @@
-import { useEffect } from 'react';
-import { useContext } from 'react';
+import { useEffect, useContext } from 'react';
 import { QuizContext } from './QuizContext';
 
 export const usePrepareResult = () => {
-  const { state } = useContext(QuizContext);
+  const { state, updateState } = useContext(QuizContext);
+  
+  console.log('🔍 usePrepareResult - Initial State:', {
+    traitPercentages: state.traitPercentages,
+    subjectPercentages: state.subjectPercentages
+  });
   
   const prepareResults = () => {
     const { traitPercentages, subjectPercentages, preferredTrait, preferredSubject } = state;
+    
+    if (!traitPercentages || !subjectPercentages) {
+      console.warn('⚠️ Missing percentages data:', { traitPercentages, subjectPercentages });
+      return null;
+    }
     
     // Calculate max scores and find corresponding names
     const maxPersonalityScore = Math.max(...Object.values(traitPercentages));
@@ -19,22 +28,28 @@ export const usePrepareResult = () => {
     const maxSubjectName = Object.entries(subjectPercentages)
       .find(([subject, score]) => score === maxSubjectScore)?.[0];
 
-    return {
+    const results = {
       maxPersonalityScore,
       maxSubjectScore,
       maxPersonalityTrait,
       maxSubjectName,
       isReady: true
     };
+
+    console.log('✅ Prepared Results:', results);
+    return results;
   };
 
   useEffect(() => {
+    console.log('🔄 usePrepareResult useEffect triggered');
     if (state.traitPercentages && state.subjectPercentages) {
       const results = prepareResults();
-      // Here you would update the context with the prepared results
-      // dispatch({ type: 'SET_PREPARED_RESULTS', payload: results });
+      if (results) {
+        console.log('📤 Updating context with prepared results');
+        updateState(results);
+      }
     }
-  }, [state.traitPercentages, state.subjectPercentages]);
+  }, [state.traitPercentages, state.subjectPercentages, updateState]);
 
   return {
     maxPersonalityScore: state.maxPersonalityScore,

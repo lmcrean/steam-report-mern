@@ -11,6 +11,8 @@ import { QuizProvider, QuizContext } from './context/QuizContext';
 import PersonalityTieBreaker from './components/personality/PersonalityTieBreaker';
 import './App.css';
 import SubjectTieBreaker from './components/subject/SubjectTieBreaker';
+import NetworkBoard from './components/network-board/NetworkBoard';
+import { BrowserRouter } from 'react-router-dom';
 
 const QuizFlow = () => {
   const { state } = useContext(QuizContext);
@@ -30,6 +32,8 @@ const QuizFlow = () => {
         return <SubjectTieBreaker />;
       case 'results':
         return <QuizResults />;
+      case 'network-board':
+        return <NetworkBoard />;
       default:
         console.warn('⚠️ App: Unknown section:', state.section);
         return <MenuScreen />;
@@ -50,9 +54,11 @@ const QuizFlow = () => {
 
 const App = () => {
   return (
-    <QuizProvider>
-      <QuizFlow />
-    </QuizProvider>
+    <BrowserRouter>
+      <QuizProvider>
+        <QuizFlow />
+      </QuizProvider>
+    </BrowserRouter>
   );
 };
 

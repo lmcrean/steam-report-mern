@@ -3,7 +3,7 @@
 // Import necessary libraries and hooks
 import React, { useMemo, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserContext } from '../../contexts/UserContext';
+import { QuizContext } from '../../context/QuizContext';
 import { useGetNetworkBoard } from './useGetNetworkBoard';
 import { useDeleteResult } from './useDeleteResult';
 import { useResetQuizContext } from '../../context/useResetQuizContext';
@@ -13,7 +13,7 @@ const NetworkBoard = () => {
   const { networkData, loading, error, fetchNetworkBoardData } = useGetNetworkBoard();
   const deleteUserResult = useDeleteResult(fetchNetworkBoardData);
   const { resetQuiz, resetToStart } = useResetQuizContext();
-  const { username } = useContext(UserContext);
+  const { state } = useContext(QuizContext);
   const navigate = useNavigate();
 
   const handleDelete = async (id) => {
@@ -73,7 +73,7 @@ const NetworkBoard = () => {
             </thead>
             <tbody>
               {sortedNetworkData.map((entry, index) => (
-                <tr key={entry.id} className={entry.username === username ? 'current-user' : ''}>
+                <tr key={entry.id} className={entry.username === state.username ? 'current-user' : ''}>
                   <td>{index + 1}</td>
                   <td>{entry.username}</td>
                   <td>{entry.bestSubject}</td>
@@ -83,7 +83,7 @@ const NetworkBoard = () => {
                   <td>{entry.preferredEnvironment}</td>
                   <td>{new Date(entry.dateOfSubmission).toLocaleDateString()}</td>
                   <td>
-                    {entry.username === username && (
+                    {entry.username === state.username && (
                       <button 
                         className="delete-button"
                         onClick={() => handleDelete(entry.id)}
