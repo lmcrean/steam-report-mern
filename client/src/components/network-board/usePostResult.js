@@ -29,9 +29,7 @@ export const useSubmitResults = () => {
 
       // Get the environment from results
       const preferredEnvironment = results.preferredEnvironment;
-
-      console.log('🔄 Preferred Environment from State (currently FAILing to Render, expecting a result such as: collaborative and dynamic):\n' + preferredEnvironment);
-
+      
       // Prepare payloads
       const contextPayload = {
         bestSubject: results.maxSubjectName,
@@ -54,13 +52,6 @@ export const useSubmitResults = () => {
         preferredEnvironment: preferredEnvironment,
         timestamp: new Date().toISOString()
       };
-
-      console.log('📦 Payloads prepared:\n' + 
-        'Context Payload:\n' +
-        JSON.stringify(contextPayload, null, 2) +
-        '\n\nAPI Payload:\n' +
-        JSON.stringify(apiPayload, null, 2)
-      );
 
       // Make the request
       console.log('📤 Sending request to:', 'http://localhost:8000/api/user-result');

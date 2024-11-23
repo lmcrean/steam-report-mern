@@ -36,12 +36,6 @@ export const usePrepareResult = () => {
       isReady: true
     };
 
-    console.log('🎯 Prepared results with environment:', {
-      subject: maxSubjectName,
-      trait: maxPersonalityTrait,
-      environment: careerFeedback.environment
-    });
-
     return results;
   };
 
@@ -49,10 +43,6 @@ export const usePrepareResult = () => {
     if (state.traitPercentages && state.subjectPercentages) {
       const results = prepareResults();
       if (results) {
-        console.log('🔄 Updating state with prepared results:', {
-          ...results,
-          preferredEnvironment: results.preferredEnvironment
-        });
         updateState({
           ...results,
           preferredEnvironment: results.preferredEnvironment

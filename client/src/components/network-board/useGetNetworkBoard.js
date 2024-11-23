@@ -38,14 +38,29 @@ export const useGetNetworkBoard = () => {
           id: item.id,
           username: item.username,
           bestSubject: item.bestSubject,
-          bestTrait: item.bestPersonalityTrait
+          bestTrait: item.bestPersonalityTrait,
+          dateField: item.dateOfSubmission,
+          timestamp: item.timestamp,
+          allDateFields: Object.keys(item).filter(key => 
+            key.toLowerCase().includes('date') || 
+            key.toLowerCase().includes('time')
+          )
         }))
       });
       
-      setNetworkData(data);
+      const processedData = data.map(item => {
+        console.log('🕒 Processing item dates:', {
+          id: item.id,
+          dateOfSubmission: item.dateOfSubmission,
+          timestamp: item.timestamp
+        });
+        return item;
+      });
+      
+      setNetworkData(processedData);
       console.log('💾 Network data saved to state');
       setLoading(false);
-      return data;
+      return processedData;
     } catch (error) {
       console.error('❌ Network board error:', {
         message: error.message,

@@ -59,8 +59,6 @@ const QuizResults = () => {
       timestamp: new Date().toISOString()
     };
 
-    console.log('🔄 Preferred Environment in handleSubmitResults:' + preferredEnvironment);
-
     try {
       await submitResults(results);
       navigate('/network-board');
