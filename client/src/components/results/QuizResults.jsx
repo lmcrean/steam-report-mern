@@ -4,6 +4,7 @@ import CareerRecommendation from './CareerRecommendation';
 import { useNavigate } from 'react-router-dom';
 import { useSubmitResults } from '../network-board/usePostResult';
 import { usePrepareResult } from '../../context/usePrepareResult';
+import NetworkBoardSubmitButton from '../network-board/NetworkBoardSubmitButton';
 
 const QuizResults = () => {
   const { state } = useContext(QuizContext);
@@ -69,7 +70,12 @@ const QuizResults = () => {
       timestamp: new Date().toISOString()
     };
 
-    await submitResults(results);
+    try {
+      await submitResults(results);
+      navigate('/network-board');
+    } catch (error) {
+      console.error('Failed to submit results:', error);
+    }
   };
 
   return (
@@ -107,14 +113,8 @@ const QuizResults = () => {
         maxPersonalityScore={maxPersonalityTrait}
       />
 
-      {/* Add submission button */}
       <div className="mt-8 flex justify-center">
-        <button
-          onClick={handleSubmitResults}
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          Share Results to Network Board
-        </button>
+        <NetworkBoardSubmitButton onSubmit={handleSubmitResults} />
       </div>
     </div>
   );

@@ -25,8 +25,8 @@ export async function verifyCareerRecommendations(page, testCase) {
     });
   }
 
-  // Wait for and click the submit to network board button
-  const submitButton = await page.waitForSelector('button:has-text("Submit to Network Board")', {
+  // Wait for and click the share results button
+  const submitButton = await page.waitForSelector('button:has-text("Share Results to Network Board")', {
     state: 'visible',
     timeout: 2000
   });
