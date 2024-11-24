@@ -9,18 +9,42 @@ export const QuizProvider = ({ children }) => {
 
   const updateState = useCallback((updates) => {
     setState(prev => {
+      if (updates === INITIAL_STATE) {
+        console.log('Performing complete state reset with:', INITIAL_STATE);
+        const newState = { ...INITIAL_STATE };
+        
+        // Expose context to window for testing
+        if (window) {
+          window.quizContext = { state: newState };
+        }
+        
+        return newState;
+      }
+
+      // Otherwise, perform partial update
       const actualUpdates = typeof updates === 'function' ? updates(prev) : updates;
+      console.log('Performing partial update with:', actualUpdates);
 
       const newState = { 
         ...prev, 
-        ...actualUpdates,
-        // Ensure preferredEnvironment persists if it exists
-        preferredEnvironment: actualUpdates.preferredEnvironment || prev.preferredEnvironment
+        ...actualUpdates 
       };
+
+      // Expose context to window for testing
+      if (window) {
+        window.quizContext = { state: newState };
+      }
 
       return newState;
     });
   }, []);
+
+  // Initial exposure of context to window
+  React.useEffect(() => {
+    if (window) {
+      window.quizContext = { state };
+    }
+  }, [state]);
 
   const value = {
     state,

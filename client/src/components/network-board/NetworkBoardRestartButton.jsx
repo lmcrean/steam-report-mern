@@ -8,8 +8,6 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 
 const NetworkBoardRestartButton = ({ onRefresh, resultId }) => {
-  console.log('RestartButton received props:', { resultId });
-
   const [showModal, setShowModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const { state } = useContext(QuizContext);
@@ -19,20 +17,12 @@ const NetworkBoardRestartButton = ({ onRefresh, resultId }) => {
   const { resetQuiz } = useResetQuizContext();
 
   const handleRestart = async () => {
+    console.log('handleRestart initiated');
     setIsDeleting(true);
     try {
-      console.log('Restart attempt:', {
-        username: state.username,
-        resultId,
-        stateId: state.id,
-        hasUsername: Boolean(state.username),
-        hasResultId: Boolean(resultId)
-      });
-
       if (state.username && resultId) {
-        console.log('Attempting to delete result with ID:', resultId);
+        console.log('Attempting delete with:', { username: state.username, resultId });
         const success = await deleteUserResult(resultId);
-        console.log('Delete result success:', success);
         
         if (success) {
           await onRefresh();
@@ -40,16 +30,16 @@ const NetworkBoardRestartButton = ({ onRefresh, resultId }) => {
         } else {
           throw new Error('Failed to delete result');
         }
-      } else {
-        console.log('Missing required data:', {
-          username: state.username,
-          resultId
-        });
       }
+
+      // Reset quiz state
       resetQuiz();
-      navigate('/menu');
+      
+      // Force a complete reset by reloading the page and redirecting
+      window.location.href = '/menu';
+      
     } catch (error) {
-      console.error('Delete error:', error);
+      console.error('Error in handleRestart:', error);
       showAlert(`Error restarting quiz: ${error.message}`);
     } finally {
       setIsDeleting(false);
