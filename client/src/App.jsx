@@ -13,6 +13,7 @@ import './App.css';
 import SubjectTieBreaker from './components/subject/SubjectTieBreaker';
 import NetworkBoard from './components/network-board/NetworkBoard';
 import { BrowserRouter } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 // Create an Alert Context
 export const AlertContext = React.createContext(null);

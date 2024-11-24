@@ -1,30 +1,29 @@
 /**
- * Handles deleting the current user's result from the network board
+ * Handles restarting the quiz and deleting the current user's result
  * @param {Page} page - Playwright page object
  */
 export async function deleteUserResult(page) {
-  // Wait for the network board table to be visible
   await page.waitForSelector('.network-board table');
+  // Wait for the restart button to be visible
+  await page.waitForSelector('.restart-quiz-button');
 
-  // Find and click the first "Delete my result" button
-  const deleteButton = await page.locator('button:has-text("Delete my result")').first();
+  // Click the restart button
+  await page.click('.restart-quiz-button');
+
+  // Wait for modal to appear and click confirm
+  await page.waitForSelector('.modal');
   
-  // Verify the button exists before clicking
-  if (await deleteButton.count() === 0) {
-    throw new Error('No delete button found - current user result may not be in the table');
-  }
-
-  // Click delete and wait for DELETE response
-  const deleteResponse = await Promise.all([
+  // Click the danger button to confirm restart
+  const [deleteResponse] = await Promise.all([
     page.waitForResponse(response => 
       response.url().includes('/api/user-result/') && 
       response.request().method() === 'DELETE'
     ),
-    deleteButton.click()
+    page.click('.confirm-delete')  // Note: click comes second in the array
   ]);
 
   // Extract count information from DELETE response
-  const deleteData = await deleteResponse[0].json();
+  const deleteData = await deleteResponse.json();
   const { counts } = deleteData;
   
   if (counts) {

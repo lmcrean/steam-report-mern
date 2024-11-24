@@ -11,11 +11,17 @@ const TABLE_NAME = process.env.DYNAMODB_TABLE_NAME || 'default-table-name';
 const app = Express();
 
 // Enhanced middleware logging
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://steamreport.lauriecrean.dev'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type']
+}));
+
 app.use(Express.json());
 
 console.log('⚙️ Express middleware configured:', {
-  cors: '✓',
+  cors: '✓ (with credentials)',
   jsonParser: '✓'
 });
 

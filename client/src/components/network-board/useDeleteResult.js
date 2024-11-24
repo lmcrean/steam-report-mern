@@ -2,23 +2,44 @@ import { useCallback } from 'react';
 
 export const useDeleteResult = (onDeleteSuccess) => {
   const deleteUserResult = useCallback(async (id) => {
+    console.log('useDeleteResult called with ID:', id);
+
+    if (!id) {
+      console.error('No ID provided to deleteUserResult');
+      return false;
+    }
+
     try {
       const response = await fetch(`http://localhost:8000/api/user-result/${id}`, {
         method: 'DELETE',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        }
       });
       
+      console.log('Delete response:', {
+        ok: response.ok,
+        status: response.status
+      });
+
       if (!response.ok) {
-        throw new Error('Failed to delete user result');
+        const errorData = await response.text();
+        throw new Error(`Failed to delete user result: ${errorData}`);
       }
 
-      // Call the success callback (usually to refresh the network board data)
       if (onDeleteSuccess) {
         await onDeleteSuccess();
       }
 
       return true;
     } catch (error) {
-      console.error('Error deleting user result:', error);
+      // More specific error handling
+      if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
+        console.error('CORS or network error:', error);
+        throw new Error('Network error - please check server connection');
+      }
+      console.error('Error in deleteUserResult:', error);
       return false;
     }
   }, [onDeleteSuccess]);

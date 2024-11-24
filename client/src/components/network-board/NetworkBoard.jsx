@@ -8,6 +8,7 @@ import { useGetNetworkBoard } from './useGetNetworkBoard';
 import { useDeleteResult } from './useDeleteResult';
 import { useResetQuizContext } from '../../context/useResetQuizContext';
 import { AlertContext } from '../../App';
+import NetworkBoardRestartButton from './NetworkBoardRestartButton';
 
 // Define the NetworkBoard component
 const NetworkBoard = () => {
@@ -24,6 +25,11 @@ const NetworkBoard = () => {
   const sortedNetworkData = useMemo(() => {
     return [...networkData].sort((a, b) => b.subjectScore - a.subjectScore);
   }, [networkData]);
+
+  // Add this memoized value to get the current user's result
+  const currentUserResult = useMemo(() => {
+    return sortedNetworkData.find(entry => entry.username === state.username);
+  }, [sortedNetworkData, state.username]);
 
   // 3. Event handlers
   const handleDelete = async (id) => {
@@ -44,11 +50,6 @@ const NetworkBoard = () => {
     } finally {
       setDeleteStatus({ loading: false, error: null });
     }
-  };
-
-  const handleRestartQuiz = () => {
-    resetToStart();
-    navigate('/menu');
   };
 
   // 4. Format date function (not a hook)
@@ -102,12 +103,10 @@ const NetworkBoard = () => {
     <div className="network-board">
       <h2>Network Board</h2>
       <div className="actions-container">
-        <button 
-          className="restart-quiz-button"
-          onClick={handleRestartQuiz}
-        >
-          Restart Quiz
-        </button>
+        <NetworkBoardRestartButton 
+          onRefresh={fetchNetworkBoardData}
+          resultId={currentUserResult?.id}
+        />
       </div>
       <table>
         <thead>

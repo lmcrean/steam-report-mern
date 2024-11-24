@@ -11,6 +11,7 @@
            NB[NetworkBoard]
            DB[Delete Button]
            RQB[Restart Quiz Button]
+           RQM[Restart Quiz Modal]
            SNB[Submit Results Button]
        end
 
@@ -114,5 +115,5 @@
        class QC,NA,QC2 core
        class Functionality functionality
        class API,API2 api
-       class RQB,DB,NS,SNB buttons
+       class RQB,DB,NS,SNB,RQM buttons
 ```
