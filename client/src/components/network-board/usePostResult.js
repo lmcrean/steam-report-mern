@@ -10,7 +10,6 @@ export const useSubmitResults = () => {
     try {
       const response = await fetch('http://localhost:8000/health');
       const data = await response.json();
-      console.log('🏥 Server health check:', data);
       return data.status === 'ok';
     } catch (error) {
       console.error('❌ Server health check failed:', error);
@@ -19,7 +18,6 @@ export const useSubmitResults = () => {
   };
 
   const submitResults = useCallback(async (results) => {
-    console.log('🚀 Starting submitResults');
     try {
       // Check server health first
       const serverHealthy = await checkServerHealth();
@@ -54,7 +52,6 @@ export const useSubmitResults = () => {
       };
 
       // Make the request
-      console.log('📤 Sending request to:', 'http://localhost:8000/api/user-result');
       const response = await fetch('http://localhost:8000/api/user-result', {
         method: 'POST',
         headers: {
@@ -62,8 +59,6 @@ export const useSubmitResults = () => {
         },
         body: JSON.stringify(apiPayload)
       });
-
-      console.log('📥 Response status:', response.status, response.statusText);
       
       if (!response.ok) {
         const errorText = await response.text().catch(e => 'No error text available');
@@ -71,7 +66,6 @@ export const useSubmitResults = () => {
       }
 
       const data = await response.json();
-      console.log('✨ Server response:', data);
 
       updateState(contextPayload);
       navigate('/network-board');

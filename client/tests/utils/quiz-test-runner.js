@@ -10,6 +10,8 @@ import {
 import { verifyResultsText } from './quiz-runners/resultsTextCheck';
 import { verifyCareerRecommendations } from './quiz-runners/careerRecommendation';
 import { verifyNetworkBoard } from './quiz-runners/networkBoard';
+import { deleteUserResult } from './quiz-runners/deleteUserResult';
+
 export async function runQuizTestCase(page, testCase, subjectsData) {
   await startQuiz(page);
   await completePersonalitySection(page, testCase.personalityAnswers);
@@ -45,4 +47,9 @@ export async function runQuizTestCase(page, testCase, subjectsData) {
     console.error('Network Board verification failed:', error);
     throw error;
   }
+
+  // TODO: Add delete user result button test
+  await deleteUserResult(page, testCase);
+
+  // TODO: re run test and this time just restart quiz (once, working place before delete user Result)
 }

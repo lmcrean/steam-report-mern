@@ -1,12 +1,13 @@
 // NetworkBoard.jsx
 
 // Import necessary libraries and hooks
-import React, { useMemo, useEffect, useContext } from 'react';
+import React, { useMemo, useEffect, useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { QuizContext } from '../../context/QuizContext';
 import { useGetNetworkBoard } from './useGetNetworkBoard';
 import { useDeleteResult } from './useDeleteResult';
 import { useResetQuizContext } from '../../context/useResetQuizContext';
+import { AlertContext } from '../../App';
 
 // Define the NetworkBoard component
 const NetworkBoard = () => {
@@ -16,6 +17,8 @@ const NetworkBoard = () => {
   const { resetQuiz, resetToStart } = useResetQuizContext();
   const { state } = useContext(QuizContext);
   const navigate = useNavigate();
+  const [deleteStatus, setDeleteStatus] = useState({ loading: false, error: null });
+  const { showAlert } = useContext(AlertContext);
 
   // 2. Memoized values
   const sortedNetworkData = useMemo(() => {
@@ -24,9 +27,22 @@ const NetworkBoard = () => {
 
   // 3. Event handlers
   const handleDelete = async (id) => {
-    const success = await deleteUserResult(id);
-    if (success) {
-      resetQuiz();
+    setDeleteStatus({ loading: true, error: null });
+    try {
+      const success = await deleteUserResult(id);
+      if (success) {
+        await fetchNetworkBoardData();
+        
+        showAlert('Result successfully deleted');
+        resetQuiz();
+      } else {
+        throw new Error('Failed to delete result');
+      }
+    } catch (error) {
+      setDeleteStatus({ loading: false, error: error.message });
+      showAlert(`Error deleting result: ${error.message}`);
+    } finally {
+      setDeleteStatus({ loading: false, error: null });
     }
   };
 
@@ -122,12 +138,20 @@ const NetworkBoard = () => {
               </td>
               <td>
                 {entry.username === state.username && (
-                  <button 
-                    className="delete-button"
-                    onClick={() => handleDelete(entry.id)}
-                  >
-                    Delete my result
-                  </button>
+                  <>
+                    <button 
+                      className="delete-button"
+                      onClick={() => handleDelete(entry.id)}
+                      disabled={deleteStatus.loading}
+                    >
+                      {deleteStatus.loading ? 'Deleting...' : 'Delete my result'}
+                    </button>
+                    {deleteStatus.error && (
+                      <div className="error-message">
+                        {deleteStatus.error}
+                      </div>
+                    )}
+                  </>
                 )}
               </td>
             </tr>

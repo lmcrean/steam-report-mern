@@ -158,6 +158,77 @@ app.get('/api/network-board', async (req, res) => {
   }
 });
 
+// Add DELETE endpoint for user results
+app.delete('/api/user-result/:id', async (req, res) => {
+  console.log('🗑️ Received delete request for ID:', req.params.id);
+
+  try {
+    // Get initial count
+    const initialScan = await dynamoDB.scan({
+      TableName: TABLE_NAME,
+      Select: 'COUNT'
+    }).promise();
+    
+    console.log(`📊 Initial record count: ${initialScan.Count}`);
+
+    // Delete the item
+    const params = {
+      TableName: TABLE_NAME,
+      Key: {
+        id: req.params.id
+      }
+    };
+
+    console.log('🔍 Attempting to delete from DynamoDB:', {
+      tableName: TABLE_NAME,
+      id: req.params.id
+    });
+
+    await dynamoDB.delete(params).promise();
+
+    // Get final count
+    const finalScan = await dynamoDB.scan({
+      TableName: TABLE_NAME,
+      Select: 'COUNT'
+    }).promise();
+
+    console.log(`📊 Final record count: ${finalScan.Count}`);
+    console.log(`📉 Difference: ${initialScan.Count - finalScan.Count} record(s) deleted`);
+
+    if (finalScan.Count === initialScan.Count - 1) {
+      console.log('✅ Successfully verified deletion - count decreased by 1');
+    } else {
+      console.warn('⚠️ Unexpected count after deletion', {
+        expected: initialScan.Count - 1,
+        actual: finalScan.Count
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'User result deleted successfully',
+      timestamp: new Date().toISOString(),
+      counts: {
+        before: initialScan.Count,
+        after: finalScan.Count,
+        difference: initialScan.Count - finalScan.Count
+      }
+    });
+  } catch (error) {
+    console.error('❌ Error deleting user result:', {
+      error: error.message,
+      code: error.code,
+      id: req.params.id
+    });
+    
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 // Server startup
 const server = app.listen(8000, () => {
   console.log(`

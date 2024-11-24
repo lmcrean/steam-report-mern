@@ -47,7 +47,7 @@
 
        subgraph NetworkBoardAPI ["Network Board API"]
            UPRA[usePostResult]
-           UGRA[useGetResult]
+           UGRA[useGetNetworkBoard]
            UDR[useDeleteResult]
            URQC[useResetQuizContext]
            API[API]

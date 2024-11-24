@@ -1,5 +1,5 @@
 // App.jsx
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import MainLayout from './components/layout/MainLayout';
 import Header from './components/layout/Header';
 import MenuScreen from './components/menu/MenuScreen';
@@ -13,6 +13,31 @@ import './App.css';
 import SubjectTieBreaker from './components/subject/SubjectTieBreaker';
 import NetworkBoard from './components/network-board/NetworkBoard';
 import { BrowserRouter } from 'react-router-dom';
+
+// Create an Alert Context
+export const AlertContext = React.createContext(null);
+
+// Create an Alert Provider component
+const AlertProvider = ({ children }) => {
+  const [alert, setAlert] = useState(null);
+
+  const showAlert = (message) => {
+    setAlert(message);
+    // Clear alert after 3 seconds
+    setTimeout(() => setAlert(null), 3000);
+  };
+
+  return (
+    <AlertContext.Provider value={{ showAlert }}>
+      {children}
+      {alert && (
+        <div className="alert fixed top-4 right-4 bg-white shadow-lg rounded-lg p-4 z-50">
+          {alert}
+        </div>
+      )}
+    </AlertContext.Provider>
+  );
+};
 
 const QuizFlow = () => {
   const { state } = useContext(QuizContext);
@@ -55,9 +80,11 @@ const QuizFlow = () => {
 const App = () => {
   return (
     <BrowserRouter>
-      <QuizProvider>
-        <QuizFlow />
-      </QuizProvider>
+      <AlertProvider>
+        <QuizProvider>
+          <QuizFlow />
+        </QuizProvider>
+      </AlertProvider>
     </BrowserRouter>
   );
 };
