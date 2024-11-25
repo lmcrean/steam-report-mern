@@ -1,6 +1,7 @@
 import { useCallback, useContext } from 'react';
 import { QuizContext } from '../../context/QuizContext';
 import { useNavigate } from 'react-router-dom';
+import { getApiUrl } from '../../config/environment';
 
 export const useSubmitResults = () => {
   const { state, updateState } = useContext(QuizContext);
@@ -8,7 +9,7 @@ export const useSubmitResults = () => {
 
   const checkServerHealth = async () => {
     try {
-      const response = await fetch('http://localhost:8000/health');
+      const response = await fetch(`${getApiUrl()}/health`);
       const data = await response.json();
       return data.status === 'ok';
     } catch (error) {
@@ -52,7 +53,7 @@ export const useSubmitResults = () => {
       };
 
       // Make the request
-      const response = await fetch('http://localhost:8000/api/user-result', {
+      const response = await fetch(`${getApiUrl()}/api/user-result`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -77,7 +78,7 @@ export const useSubmitResults = () => {
         status: error.response?.status,
         statusText: error.response?.statusText,
         serverRunning: await checkServerHealth(),
-        endpoint: 'http://localhost:8000/api/user-result'
+        endpoint: `${getApiUrl()}/api/user-result`
       });
       return false;
     }

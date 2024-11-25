@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { getApiUrl } from '../../config/environment';
 
 export const useGetNetworkBoard = () => {
   const [networkData, setNetworkData] = useState([]);
@@ -6,17 +7,15 @@ export const useGetNetworkBoard = () => {
   const [error, setError] = useState(null);
 
   const fetchNetworkBoardData = useCallback(async () => {
-    
     try {
       if (!navigator.onLine) {
         throw new Error('No internet connection');
       }
 
-      
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-      const response = await fetch('http://localhost:8000/api/network-board', {
+      const response = await fetch(`${getApiUrl()}/api/network-board`, {
         signal: controller.signal
       });
       clearTimeout(timeoutId);
@@ -40,7 +39,7 @@ export const useGetNetworkBoard = () => {
         message: error.message,
         type: error.name,
         online: navigator.onLine,
-        endpoint: 'http://localhost:8000/api/network-board'
+        endpoint: `${getApiUrl()}/api/network-board`
       });
       setError(`Failed to load: ${error.message}`);
       setLoading(false);

@@ -1,4 +1,7 @@
 import fetch from 'node-fetch';
+import { getApiUrl } from '../src/config/environment';
+
+const API_URL = getApiUrl();
 
 const TEST_USER = {
   username: 'test_user_' + Date.now(),
@@ -14,7 +17,7 @@ async function testNetworkBoard() {
   let testUserId;
   try {
     // Test POST request
-    const postResponse = await fetch('http://localhost:8000/api/user-result', {
+    const postResponse = await fetch(`${API_URL}/api/user-result`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -25,7 +28,7 @@ async function testNetworkBoard() {
     console.log('POST Response:', await postResponse.json());
 
     // Test GET request
-    const getResponse = await fetch('http://localhost:8000/api/network-board');
+    const getResponse = await fetch(`${API_URL}/api/network-board`);
     const networkData = await getResponse.json();
     console.log('GET Response:', networkData);
 
@@ -36,7 +39,7 @@ async function testNetworkBoard() {
     // Add DELETE test
     if (foundUser?.id) {
       testUserId = foundUser.id;
-      const deleteResponse = await fetch(`http://localhost:8000/api/user-result/${testUserId}`, {
+      const deleteResponse = await fetch(`${API_URL}/api/user-result/${testUserId}`, {
         method: 'DELETE'
       });
       console.log('DELETE Response:', await deleteResponse.json());
@@ -48,7 +51,7 @@ async function testNetworkBoard() {
     // Cleanup if test failed before delete
     if (testUserId) {
       try {
-        await fetch(`http://localhost:8000/api/user-result/${testUserId}`, {
+        await fetch(`${API_URL}/api/user-result/${testUserId}`, {
           method: 'DELETE'
         });
       } catch (e) {

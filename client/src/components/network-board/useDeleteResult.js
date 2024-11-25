@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { getApiUrl } from '../../config/environment';
 
 export const useDeleteResult = (onDeleteSuccess) => {
   const deleteUserResult = useCallback(async (id) => {
@@ -10,7 +11,7 @@ export const useDeleteResult = (onDeleteSuccess) => {
     }
 
     try {
-      const response = await fetch(`http://localhost:8000/api/user-result/${id}`, {
+      const response = await fetch(`${getApiUrl()}/api/user-result/${id}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: {
