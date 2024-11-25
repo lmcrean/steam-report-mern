@@ -3,7 +3,7 @@ const ENV = {
     API_URL: 'http://localhost:8000'
   },
   production: {
-    API_URL: 'https://api.steamreport.lauriecrean.dev' //TODO: use vercel to deploy api
+    API_URL: 'https://steamreport.lauriecrean.dev/api' //TODO: use vercel to deploy api
   }
 };
 

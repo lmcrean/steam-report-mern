@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import { getApiUrl } from '../src/config/environment';
+import { getApiUrl } from '../src/config/environment.js';
 
 const API_URL = getApiUrl();
 

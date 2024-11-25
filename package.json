@@ -1,6 +1,11 @@
 {
   "dependencies": {
     "docsify": "^4.13.1",
+    "node-fetch": "^3.3.2",
     "repo-to-one-file": "^1.0.2"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "cd client && npm install && npm run build"
   }
 }
