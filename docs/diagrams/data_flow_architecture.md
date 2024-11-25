@@ -9,9 +9,8 @@
            NS[NextSection Button]
            R[Results]
            NB[NetworkBoard]
-           DB[Delete Button]
            RQB[Restart Quiz Button]
-           RQM[Restart Quiz Modal]
+           RQM[Restart Quiz Modal Button]
            SNB[Submit Results Button]
        end
 
@@ -91,13 +90,12 @@
        UPRA -->|"POST request to API"| API
        API -->|"GET request from API to Network Board"| UGRA
        UGRA --> NB
-       NB --> DB
-       DB --> UDR
+       NB --> RQB
+       RQB --> RQM
+       RQM --> UDR
        UDR -->|"DELETE request to API"| API2
        API2 -->|"Reset quiz context"| URQC
        URQC -->|"reset Context and restart quiz"| M
-       NB --> RQB
-       RQB --> URQC
 
 
        classDef flow fill:royalblue,stroke:#ff9800,color:white

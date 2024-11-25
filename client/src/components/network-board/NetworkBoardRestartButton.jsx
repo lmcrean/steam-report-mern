@@ -17,11 +17,10 @@ const NetworkBoardRestartButton = ({ onRefresh, resultId }) => {
   const { resetQuiz } = useResetQuizContext();
 
   const handleRestart = async () => {
-    console.log('handleRestart initiated');
     setIsDeleting(true);
     try {
       if (state.username && resultId) {
-        console.log('Attempting delete with:', { username: state.username, resultId });
+        
         const success = await deleteUserResult(resultId);
         
         if (success) {
@@ -35,8 +34,8 @@ const NetworkBoardRestartButton = ({ onRefresh, resultId }) => {
       // Reset quiz state
       resetQuiz();
       
-      // Force a complete reset by reloading the page and redirecting
-      window.location.href = '/menu';
+      // Use navigate instead of window.location
+      navigate('/menu');
       
     } catch (error) {
       console.error('Error in handleRestart:', error);

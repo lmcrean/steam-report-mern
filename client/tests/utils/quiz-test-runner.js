@@ -12,6 +12,7 @@ import { verifyCareerRecommendations } from './quiz-runners/careerRecommendation
 import { verifyNetworkBoard } from './quiz-runners/networkBoard';
 import { deleteUserResult } from './quiz-runners/deleteUserResult';
 import { checkContextRestarted } from './quiz-runners/checkContextRestarted';
+import { checkQuizRestart } from './quiz-runners/checkQuizRestart';
 export async function runQuizTestCase(page, testCase, subjectsData) {
   await startQuiz(page);
   await completePersonalitySection(page, testCase.personalityAnswers);
@@ -49,7 +50,8 @@ export async function runQuizTestCase(page, testCase, subjectsData) {
   }
 
   await deleteUserResult(page, testCase);
-  await checkContextRestarted(page);
+  await checkQuizRestart(page);
+  await checkContextRestarted(page, testCase);
   // TODO: check User Context has reset after restart quiz via delete button
   // TODO: re run test and this time just restart quiz (once, working place before delete user Result)
   // TODO: check that the user context has been reset after restarting quiz via simple restart.

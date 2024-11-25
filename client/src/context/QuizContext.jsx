@@ -10,7 +10,7 @@ export const QuizProvider = ({ children }) => {
   const updateState = useCallback((updates) => {
     setState(prev => {
       if (updates === INITIAL_STATE) {
-        console.log('Performing complete state reset with:', INITIAL_STATE);
+        
         const newState = { ...INITIAL_STATE };
         
         // Expose context to window for testing
@@ -23,7 +23,7 @@ export const QuizProvider = ({ children }) => {
 
       // Otherwise, perform partial update
       const actualUpdates = typeof updates === 'function' ? updates(prev) : updates;
-      console.log('Performing partial update with:', actualUpdates);
+      
 
       const newState = { 
         ...prev, 
