@@ -15,7 +15,7 @@ app.use(cors({
   origin: [
     'http://localhost:3000',
     'https://steamreport.lauriecrean.dev',
-    'https://api.steamreport.lauriecrean.dev'
+    'https://steamreport.lauriecrean.dev/api'
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
