@@ -1,14 +1,38 @@
-import Express from "express";
-import cors from "cors";
+import express from 'express';
+import cors from 'cors';
 import AWS from 'aws-sdk';
 import dotenv from 'dotenv';
-
-dotenv.config();
-
+import fs from 'fs';
 
 const TABLE_NAME = process.env.DYNAMODB_TABLE_NAME || 'default-table-name';
 
-const app = Express();
+dotenv.config();
+
+console.log('API Starting...');
+console.log('Environment:', process.env.NODE_ENV);
+
+const app = express();
+
+// Basic middleware
+app.use(cors());
+app.use(express.json());
+
+// Test route
+app.get('/api/test', (req, res) => {
+    res.json({ message: 'API is working' });
+});
+
+// Debug route
+app.get('/debug', (req, res) => {
+    res.json({
+        message: 'Debug endpoint',
+        env: process.env.NODE_ENV,
+        currentDirectory: __dirname
+    });
+});
+
+// Export the app
+export default app;
 
 // Enhanced middleware logging
 app.use(cors({
@@ -22,7 +46,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type']
 }));
 
-app.use(Express.json());
+app.use(express.json());
 
 console.log('⚙️ Express middleware configured:', {
   cors: '✓ (with credentials)',
@@ -264,4 +288,14 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     aws: process.env.AWS_REGION ? 'configured' : 'missing'
   });
+});
+
+app.get('/debug', (req, res) => {
+    res.json({
+        message: 'Debug endpoint',
+        env: process.env.NODE_ENV,
+        currentDirectory: __dirname,
+        files: fs.readdirSync('.'),
+        distFiles: fs.existsSync('./dist') ? fs.readdirSync('./dist') : 'No dist folder'
+    });
 });
