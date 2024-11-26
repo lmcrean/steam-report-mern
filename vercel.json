@@ -25,12 +25,16 @@
             "dest": "/api/index.js"
         },
         {
-            "src": "/debug",
-            "dest": "/api/index.js"
+            "src": "^/assets/(.*)",
+            "dest": "/dist/assets/$1"
         },
         {
-            "src": "/assets/(.*)",
-            "dest": "/dist/assets/$1"
+            "src": "^/vite.svg",
+            "dest": "/dist/vite.svg"
+        },
+        {
+            "src": "^/tailwind.svg",
+            "dest": "/dist/tailwind.svg"
         },
         {
             "handle": "filesystem"
