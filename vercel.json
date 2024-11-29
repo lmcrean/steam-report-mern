@@ -25,23 +25,19 @@
             "dest": "/api/index.js"
         },
         {
-            "src": "^/assets/(.*)",
-            "dest": "/dist/assets/$1"
+            "src": "/assets/(.*)",
+            "dest": "/client/dist/assets/$1"
         },
         {
-            "src": "^/vite.svg",
-            "dest": "/dist/vite.svg"
-        },
-        {
-            "src": "^/tailwind.svg",
-            "dest": "/dist/tailwind.svg"
+            "src": "/(vite|tailwind).svg",
+            "dest": "/client/dist/$1.svg"
         },
         {
             "handle": "filesystem"
         },
         {
             "src": "/(.*)",
-            "dest": "/dist/index.html"
+            "dest": "/client/dist/index.html"
         }
     ]
 }

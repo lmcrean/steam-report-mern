@@ -6,7 +6,7 @@
   },
   "type": "module",
   "scripts": {
-    "start": "node api/index.js",
+    "start": "node api/index.js && cd client && npm install && npm run build",
     "vercel-build": "cd client && npm install && npm run build"
   }
 }
