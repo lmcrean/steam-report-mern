@@ -39,7 +39,9 @@ app.use(cors({
   origin: [
     'http://localhost:3000',
     'https://steamreport.lauriecrean.dev',
-    'https://steamreport.lauriecrean.dev/api'
+    'https://steamreport.lauriecrean.dev/api',
+    'https://steam-report-frontend.vercel.app/',
+    'https://steam-report-frontend.vercel.app/api'
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
