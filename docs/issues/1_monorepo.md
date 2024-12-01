@@ -3,7 +3,6 @@
 
 How can I maintain a monorepo structure while correctly serving both the frontend and API from Vercel? I'd prefer not to split into separate deployments if possible, as the monorepo structure helps with CORS and security issues, particularly in Safari browsers.
 
-## Problem Description
 I'm working on a MERN stack application with the following structure:
 
 ```
@@ -13,8 +12,12 @@ steam-report-mern/
 ├── client/
 │   ├── dist/
 │   ├── src/
-│   └── package.json
-└── vercel.json
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   ├── index.html
+│   ├── package.json
+│   ├── vite.config.js
+│   └── vercel.json
 ```
 
 When deploying from the root directory:
@@ -26,17 +29,73 @@ However, when deploying from the `client` directory:
 - ✅ Frontend works perfectly
 - ❌ Can't access the API
 
-## What I've Tried
+# Testing Method with vercel build and Invoke-WebRequest
 
-### 1. Root Deployment Configuration
+The tests are conducted with `vercel build` and `Invoke-WebRequest` from a Windows PowerShell terminal.
 
-I have tried most combinations of dist/ and client/ in order to locate the root directory. This is the Vercel file that deploys the API but not the frontend. It seems that `distDir` has to have the value `dist` in order to serve the frontend.
+`vercel build` is run from the root directory. This should build both the API and the frontend ready to be deployed.
 
-I also have this same file in the client directory, which deploys the frontend but not the API.
+It should return something like this when run locally, and of course can be checked in the vercel build log when deployed.
 
-I'm willing to predict this as the key problem file. Specifically the routes section.
+```bash
+vercel build
+```
 
-Have 2 builds, one for the API and one for the frontend is espected to solve the issue.
+should return something like this:
+
+```bash
+vite v4.3.3 building for production...
+✓ 157 modules transformed.
+client/dist/index.html                                 0.47 kB │ gzip:  0.31 kB
+client/dist/assets/index-212a1c80.css                249.45 kB │ gzip: 35.03 kB
+client/dist/assets/personalityQuestions-7ebff02e.js    6.98 kB │ gzip:  2.78 kB
+client/dist/assets/index-73d86b56.js                 255.70 kB │ gzip: 83.07 kB
+✓ built in 1.62s
+```
+
+If successful, the `Invoke-WebRequest` command will return a 200 status code for both the API and the frontend.
+
+- The Frontend is expected to serve the static assets from the `dist` directory and deploy to `http://steamreport.lauriecrean.dev/`.
+
+- The API is expected to be deployed to `http://steamreport.lauriecrean.dev/api/`. Specifically the endpoint `http://steamreport.lauriecrean.dev/api/test` should return a 200 status code with a JSON body containing `{"message":"API is working"}`.
+
+- The following commands should be used to test the API and frontend:
+
+```bash
+Invoke-WebRequest -Uri "https://steamreport.lauriecrean.dev/" -Method GET -UseBasicParsing
+Invoke-WebRequest -Uri "https://steamreport.lauriecrean.dev/api/test" -Method GET -UseBasicParsing
+```
+
+should return a 200 status code for the API and a 404 status code for the frontend.
+
+```bash
+PS C:\Projects\steam-report-mern> Invoke-WebRequest -Uri "https://steamreport.lauriecrean.dev/api/test" -Method GET -UseBasicParsing 
+
+
+StatusCode        : 200
+StatusDescription : OK
+Content           : {"message":"API is working"}
+```
+
+```bash
+Invoke-WebRequest -Uri "https://steamreport.lauriecrean.dev/" -Method GET -UseBasicParsing
+
+
+StatusCode        : 200
+StatusDescription : OK
+```
+
+# Problem Files
+
+The key problem files are:
+
+- `client/vercel.json` which handles the deployment
+- `client/vite.config.js` which handles the build process
+- `client/package.json` which handles the dependencies and build script
+
+Testing was done with using the root folder, and achieved an API only deployment. Seeing as the frontend was working when deployed from the client directory, it seems more desirable to work from the client directory -- and try and get the API working from there.
+
+## 1. client/vercel.json
 
 ```json
 {
@@ -75,26 +134,7 @@ Have 2 builds, one for the API and one for the frontend is espected to solve the
 }
 ```
 
-### 1.2 Package.json:
-
-I've tried setting up the start script to run the build command in the client directory.
-
-```json
-{
-  "dependencies": {
-    "docsify": "^4.13.1",
-    "node-fetch": "^3.3.2",
-    "repo-to-one-file": "^1.0.2"
-  },
-  "type": "module",
-  "scripts": {
-    "start": "node api/index.js && cd client && npm install && npm run build",
-    "vercel-build": "cd client && npm install && npm run build"
-  }
-}
-```
-
-### 1.3 Vite config:
+## 2. client/vite.config.js
 
 ```js
 import { defineConfig } from 'vite'
@@ -117,190 +157,111 @@ export default defineConfig({
 });
 ```
 
-### 2. Verification Tests
-```bash
-# API works
-curl -I https://steamreport.lauriecrean.dev/api/test
-# Returns 200 OK
+## 3. client/package.json
 
-# Frontend fails
-curl -I https://steamreport.lauriecrean.dev/
-# Returns 404 Not Found
-
-# Assets fail
-curl -I https://steamreport.lauriecrean.dev/assets/index-212a1c80.css
-# Returns 404 Not Found
+```json
+{
+  "dependencies": {
+    "docsify": "^4.13.1",
+    "node-fetch": "^3.3.2",
+    "repo-to-one-file": "^1.0.2"
+  },
+  "type": "module",
+  "scripts": {
+    "start": "node api/index.js && cd client && npm install && npm run build",
+    "vercel-build": "cd client && npm install && npm run build"
+  }
+}
 ```
 
-### 3. Build Output
-The build process completes successfully:
+
+## 1.1 "builds" section in client/vercel.json
+
+```json
+   "distDir": "dist"
+```
+
+I have tried changing "distDir" value from `dist` to `client/dist` in the client build, but that didn't work. It returned `Error: No Output Directory named "dist" found after the Build completed. You can configure the Output Directory in your Project Settings.`
+
+I don't think the builds are the problem, seeing as we get the return message:
+
 ```bash
-PS C:\Projects\steam-report-mern> vercel build 
-Vercel CLI 35.1.0
-Detected `package-lock.json` generated by npm 7+
-Running "npm run vercel-build"
-
-> client@0.0.0 vercel-build
-> vite build
-
 vite v4.3.3 building for production...
 ✓ 157 modules transformed.
 dist/index.html                                 0.47 kB │ gzip:  0.31 kB
 dist/assets/index-212a1c80.css                249.45 kB │ gzip: 35.03 kB
 dist/assets/personalityQuestions-7ebff02e.js    6.98 kB │ gzip:  2.78 kB
 dist/assets/index-73d86b56.js                 255.70 kB │ gzip: 83.07 kB
-✓ built in 1.71s
-Installing dependencies...
-
-up to date in 696ms
-
-✅  Build Completed in .vercel\output [9s]
+✓ built in 1.54s
 ```
 
+regardless of the vite config, the build process completes successfully.
+
+### 1.2.1: "dest" combinations in Vercel.json routes section
+
+```json
+        {
+            "dest": "/api/index.js"
+        },
+        {
+            "dest": "/assets/$1"
+        },
+        {
+            "dest": "/$1.svg"
+        },
+        {
+            "dest": "/index.html"
+        }
+    ]
+```
+
+I have tried removing the /client/dist from the routes section, but that didn't work. The hope was that this would correctly serve the frontend from the root directory.
 
 
-## Environment
-- Vite for frontend build
-- Node.js backend
-- Vercel CLI 35.1.0
+### 1.3.1: Vite config "outDir" value:
+
+I have tried changing the "outDir" value from `dist` to `client/dist` in the client vite config this did change the build log
+
+```bash
+vite v4.3.3 building for production...
+✓ 157 modules transformed.
+client/dist/index.html                                 0.47 kB │ gzip:  0.31 kB
+client/dist/assets/index-212a1c80.css                249.45 kB │ gzip: 35.03 kB
+client/dist/assets/personalityQuestions-7ebff02e.js    6.98 kB │ gzip:  2.78 kB
+client/dist/assets/index-73d86b56.js                 255.70 kB │ gzip: 83.07 kB
+✓ built in 1.62s
+```
+
+using `/client/dist` in the vite config changes the build log to
+
+```bash
+vite v4.3.3 building for production...
+✓ 157 modules transformed.
+../../../client/dist/index.html                                 0.47 kB │ gzip:  0.31 kB
+../../../client/dist/assets/index-212a1c80.css                249.45 kB │ gzip: 35.03 kB        
+../../../client/dist/assets/personalityQuestions-7ebff02e.js    6.98 kB │ gzip:  2.78 kB        
+../../../client/dist/assets/index-73d86b56.js                 255.70 kB │ gzip: 83.07 kB        
+✓ built in 1.72s
+Installing dependencies...
+```
+
+## 1.2 Package.json:
+
+I've tried setting up the start script to run the build command in the client directory.
+
+---
+
+# Project Environment
+- Vite 4.3.3
+- Vercel CLI 39.1.1
 - Node v20.5.1
 - npm 10.2.5
+- Codebase: https://github.com/lmcrean/steam-report-mern
 
 Any insights would be greatly appreciated!
 
 
-Codebase: https://github.com/lmcrean/steam-report-mern
+# Next Steps
 
-
-
-## Error Messages in full for CURL VERIFICATION TESTS
-
-```bash
-
-PS C:\Projects\steam-report-mern> curl -I https://steamreport.lauriecrean.dev/
-
-cmdlet Invoke-WebRequest at command pipeline position 1
-Supply values for the following parameters:
-Uri: 
-PS C:\Projects\steam-report-mern> Invoke-WebRequest -Uri "https://steamreport.lauriecrean.dev/" -Method HEAD
->>                                                              Invoke-WebRequest : The remote server returned an error: (404)  Not Found.                                                      At line:1 char:1                                                
-+ Invoke-WebRequest -Uri 
-"https://steamreport.lauriecrean.dev/" -Method ...
-+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-~~~~~~~~
-    + CategoryInfo          : InvalidOperation: (System.Net.Ht 
-   tpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebExcep  
-  tion
-    + FullyQualifiedErrorId : WebCmdletWebResponseException,Mi 
-   crosoft.PowerShell.Commands.InvokeWebRequestCommand
- 
-PS C:\Projects\steam-report-mern> Invoke-WebRequest -Uri "https://steamreport.lauriecrean.dev/assets/index-212a1c80.css" -Method HEAD
->> 
-Invoke-WebRequest : The remote server returned an error: (404) 
-Not Found.
-At line:1 char:1
-+ Invoke-WebRequest -Uri 
-"https://steamreport.lauriecrean.dev/assets/in ...
-+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-~~~~~~~~
-    + CategoryInfo          : InvalidOperation: (System.Net.Ht 
-   tpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebExcep  
-  tion
-    + FullyQualifiedErrorId : WebCmdletWebResponseException,Mi 
-   crosoft.PowerShell.Commands.InvokeWebRequestCommand
-
-PS C:\Projects\steam-report-mern> Invoke-WebRequest -Uri "https://steamreport.lauriecrean.dev/api/test" -Method HEAD
->>
-
-
-StatusCode        : 200
-StatusDescription : OK
-Content           :
-RawContent        : HTTP/1.1 200 OK
-                    Access-Control-Allow-Headers: Origin,       
-                    X-Requested-With, Content-Type, Accept      
-                    Access-Control-Allow-Methods:
-                    GET,HEAD,PUT,PATCH,POST,DELETE
-                    Access-Control-Allow-Origin: *
-                    Age: 0
-                    Str...
-Forms             : {}
-Headers           : {[Access-Control-Allow-Headers, Origin,     
-                    X-Requested-With, Content-Type, Accept],    
-                    [Access-Control-Allow-Methods,
-                    GET,HEAD,PUT,PATCH,POST,DELETE],
-                    [Access-Control-Allow-Origin, *], [Age,     
-                    0]...}
-Images            : {}
-InputFields       : {}
-Links             : {}
-ParsedHtml        : System.__ComObject
-RawContentLength  : 0
-
-
-
-PS C:\Projects\steam-report-mern> Invoke-WebRequest -Uri "https://steamreport.lauriecrean.dev/index.html" -Method HEAD
-Invoke-WebRequest : The remote server returned an error: (404)     
-Not Found.
-At line:1 char:1
-+ Invoke-WebRequest -Uri
-"https://steamreport.lauriecrean.dev/index.htm ...
-+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
-~~~~~~~~
-    + CategoryInfo          : InvalidOperation: (System.Net.Ht     
-   tpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebExcep      
-  tion
-    + FullyQualifiedErrorId : WebCmdletWebResponseException,Mi     
-   crosoft.PowerShell.Commands.InvokeWebRequestCommand
-```
-
-
-### 3.1 Vercel Build Output
-
-```bash
-[18:00:26.215] Running build in Washington, D.C., USA (East) – iad1
-[18:00:27.163] Retrieving list of deployment files...
-[18:00:28.592] Downloading 5574 deployment files...
-[18:01:16.189] Restored build cache from previous deployment (9HU6RPtTe5k1ujqAvye6vj2EWBZK)
-[18:01:16.384] Running "vercel build"
-[18:01:18.249] Vercel CLI 39.1.1
-[18:01:19.176] WARN! Due to `builds` existing in your configuration file, the Build and Development Settings defined in your Project Settings will not apply. Learn More: https://vercel.link/unused-build-settings
-[18:01:21.023] Installing dependencies...
-[18:01:22.491] npm warn EBADENGINE Unsupported engine {
-[18:01:22.491] npm warn EBADENGINE   package: 'amqplib@0.5.2',
-[18:01:22.492] npm warn EBADENGINE   required: { node: '>=0.8 <=9' },
-[18:01:22.493] npm warn EBADENGINE   current: { node: 'v20.18.1', npm: '10.8.2' }
-[18:01:22.493] npm warn EBADENGINE }
-[18:01:23.285] 
-[18:01:23.286] up to date in 2s
-[18:01:23.286] 
-[18:01:23.287] 122 packages are looking for funding
-[18:01:23.287]   run `npm fund` for details
-[18:01:23.309] Running "npm run vercel-build"
-[18:01:26.071] 
-[18:01:26.077] > client@0.0.0 vercel-build
-[18:01:26.082] > vite build
-[18:01:26.086] 
-[18:01:26.795] [36mvite v4.3.3 [32mbuilding for production...[36m[39m
-[18:01:26.834] transforming...
-[18:01:30.702] [32m✓[39m 157 modules transformed.
-[18:01:30.883] rendering chunks...
-[18:01:31.082] computing gzip size...
-[18:01:31.159] [2mdist/[22m[32mindex.html                               [39m[1m[2m  0.47 kB[22m[1m[22m[2m │ gzip:  0.31 kB[22m
-[18:01:31.160] [2mdist/[22m[2massets/[22m[35mindex-212a1c80.css                [39m[1m[2m249.45 kB[22m[1m[22m[2m │ gzip: 34.87 kB[22m
-[18:01:31.161] [2mdist/[22m[2massets/[22m[36mpersonalityQuestions-7ebff02e.js  [39m[1m[2m  6.98 kB[22m[1m[22m[2m │ gzip:  2.75 kB[22m
-[18:01:31.161] [2mdist/[22m[2massets/[22m[36mindex-73d86b56.js                 [39m[1m[2m255.70 kB[22m[1m[22m[2m │ gzip: 83.12 kB[22m
-[18:01:31.164] [32m✓ built in 4.37s[39m
-[18:01:31.244] Installing dependencies...
-[18:01:32.585] 
-[18:01:32.586] up to date in 1s
-[18:01:32.586] 
-[18:01:32.586] 57 packages are looking for funding
-[18:01:32.587]   run `npm fund` for details
-[18:01:35.642] Build Completed in /vercel/output [15s]
-[18:01:36.055] Deploying outputs...
-[18:01:42.986] 
-[18:01:43.262] Deployment completed
-[18:02:11.930] Uploading build cache [46.76 MB]...
-[18:02:12.571] Build cache uploaded: 641.226ms
-```
+1. TODO Deploy from the client directory and try and get the API working.
+2. TODO document findings in new stackoverflow post.

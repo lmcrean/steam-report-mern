@@ -9,7 +9,7 @@
     "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "test": "playwright test --ui --timeout=600000",
-    "vercel-build": "vite build"
+    "vercel-build": "npm install && npm run build"
   },
   "dependencies": {
     "aws-sdk": "^2.1692.0",

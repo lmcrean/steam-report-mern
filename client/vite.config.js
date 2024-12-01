@@ -9,7 +9,7 @@ export default defineConfig({
     assetsDir: 'assets',
     emptyOutDir: true,
   },
-  base: '',
+  base: './',
   css: {
     postcss: {
      plugins: [tailwindcss],
