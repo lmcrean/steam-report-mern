@@ -263,5 +263,7 @@ Any insights would be greatly appreciated!
 
 # Next Steps
 
-1. TODO Deploy from the client directory and try and get the API working.
-2. TODO document findings in new stackoverflow post.
+- TODO Tuesday:
+    - [ ] Debug further back in development, try and get the API working in the console.log.
+- TODO Wednesday:
+    - [ ] Fix the bug.

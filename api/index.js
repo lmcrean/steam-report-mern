@@ -18,16 +18,23 @@ app.use(cors());
 app.use(express.json());
 
 // Test route
-app.get('/api/test', (req, res) => {
-    res.json({ message: 'API is working' });
+app.get('/test', (req, res) => {
+    console.log('Test route hit');
+    res.json({ 
+        message: 'API is working',
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV
+    });
 });
 
 // Debug route
 app.get('/debug', (req, res) => {
+    console.log('Debug route hit');
     res.json({
         message: 'Debug endpoint',
         env: process.env.NODE_ENV,
-        currentDirectory: __dirname
+        currentDirectory: process.cwd(),
+        timestamp: new Date().toISOString()
     });
 });
 
@@ -37,7 +44,8 @@ export default app;
 // Enhanced middleware logging
 app.use(cors({
   origin: [
-    'http://localhost:3000',
+    'https://steam-report-frontend-khosanq59-lmcreans-projects.vercel.app',
+    'https://steam-report-frontend.vercel.app',
     'https://steamreport.lauriecrean.dev',
     'https://steamreport.lauriecrean.dev/api',
     'https://steam-report-frontend.vercel.app/',
@@ -293,11 +301,11 @@ app.get('/health', (req, res) => {
 });
 
 app.get('/debug', (req, res) => {
+    console.log('Debug route hit');
     res.json({
         message: 'Debug endpoint',
         env: process.env.NODE_ENV,
-        currentDirectory: __dirname,
-        files: fs.readdirSync('.'),
-        distFiles: fs.existsSync('./dist') ? fs.readdirSync('./dist') : 'No dist folder'
+        currentDirectory: process.cwd(),
+        timestamp: new Date().toISOString()
     });
 });
