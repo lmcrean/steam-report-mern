@@ -1,6 +1,12 @@
 {
+  "scripts": {
+    "build": "cd client && npm install --include=dev && npm run build"
+  },
   "dependencies": {
     "docsify": "^4.13.1",
     "repo-to-one-file": "^1.0.2"
+  },
+  "devDependencies": {
+    "vite": "^4.3.2"
   }
 }
