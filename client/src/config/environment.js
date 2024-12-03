@@ -1,9 +1,9 @@
 const ENV = {
   development: {
-    API_URL: 'http://localhost:8000'
+    API_URL: 'http://localhost:8000/api' // TODO update this
   },
   production: {
-    API_URL: 'https://steamreport.lauriecrean.dev/api' //TODO: use vercel to deploy api, follow diagram in docs/diagrams/deployment_architecture.md
+    API_URL: 'https://steamreport.lauriecrean.dev/api' // TODO update this
   }
 };
 
