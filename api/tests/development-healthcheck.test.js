@@ -80,8 +80,14 @@ describe('Development API Health Check', () => {
   });
 
   test('health endpoint returns OK status', async () => {
+    console.log('Testing development health endpoint:', `${API_URL}/health`);
     const response = await fetch(`${API_URL}/health`);
     const data = await response.json();
+    
+    console.log('Development health check response:', {
+      status: response.status,
+      data
+    });
     
     expect(response.status).toBe(200);
     expect(data.status).toBe('ok');
