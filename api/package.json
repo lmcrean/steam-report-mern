@@ -5,7 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:dev": "node --experimental-vm-modules node_modules/jest/bin/jest.js development-healthcheck.test.js",
+    "test:prod": "node --experimental-vm-modules node_modules/jest/bin/jest.js production-healthcheck.test.js",
     "dev": "nodemon index.js",
     "start": "node index.js"
   },
@@ -20,6 +22,7 @@
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {
+    "jest": "^29.0.0",
     "nodemon": "^2.0.22"
   }
 }

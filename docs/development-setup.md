@@ -42,7 +42,7 @@ The application requires running two separate servers in development:
 
 ```
 ┌─────────────────┐         ┌──────────────────┐         ┌─────────────┐
-│   React App     │   →→→   │   Express API    │   →→→   │   DynamoDB  │
+│   React App     │   ���→→   │   Express API    │   →→→   │   DynamoDB  │
 │  localhost:3000 │         │  localhost:8000  │         │             │
 └─────────────────┘         └──────────────────┘         └─────────────┘
 ```
@@ -193,4 +193,86 @@ npm run dev
 [nodemon] watching path(s): *.*
 [nodemon] watching extensions: js,mjs,json
 [nodemon] starting `node index.js`
+```
+
+#### Vite
+The frontend uses Vite as its development server and build tool, configured in `client/package.json`:
+
+```javascript
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.0.0",
+    "vite": "^4.3.9"
+  }
+}
+```
+
+Benefits of Vite:
+- Extremely fast hot module replacement (HMR)
+- Built-in support for React
+- Optimized build process
+- Development server with instant updates
+
+To see Vite in action:
+```bash
+cd client
+npm run dev
+
+  VITE v4.3.9  ready in 326 ms
+  ➜  Local:   http://localhost:3000/
+  ➜  Network: use --host to expose
+  ➜  press h to show help
+```
+
+#### Playwright
+End-to-end testing is handled by Playwright, configured in `client/playwright.config.js`:
+
+```javascript
+{
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.35.1"
+  }
+}
+```
+
+Benefits of Playwright:
+- Cross-browser testing
+- Automatic wait capabilities
+- Network request interception
+- Visual regression testing
+- Test isolation
+
+Running Playwright tests:
+```bash
+cd client
+npm run test       # Run tests in headless mode
+npm run test:ui    # Run tests with UI mode
+```
+
+#### Development Server Architecture
+The development environment uses multiple tools working together:
+
+```
+┌─────────────┐    ┌──────────────┐    ┌───────────────┐
+│   Vite Dev  │    │   Nodemon    │    │   Playwright  │
+│   Server    │    │   (Express)  │    │   (Testing)   │
+│  Port 3000  │    │  Port 8000   │    │   Port auto  │
+└─────────────┘    └──────────────┘    └───────────────┘
+      ↓                   ↓                    ↓
+┌─────────────────────────────────────────────────────┐
+│                  Development Flow                    │
+├─────────────────────────────────────────────────────┤
+│ 1. Vite serves frontend with hot reloading          │
+│ 2. Nodemon watches API changes                      │
+│ 3. Playwright runs automated tests                  │
+└─────────────────────────────────────────────────────┘
 ```

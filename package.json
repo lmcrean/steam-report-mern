@@ -1,6 +1,9 @@
 {
   "scripts": {
-    "build": "cd client && npm install --include=dev && npm run build"
+    "build": "cd client && npm install --include=dev && npm run build",
+    "test": "jest",
+    "test:dev": "cd api && npm run test:dev",
+    "test:prod": "cd api && npm run test:prod"
   },
   "dependencies": {
     "docsify": "^4.13.1",
