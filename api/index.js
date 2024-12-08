@@ -10,16 +10,38 @@ const TABLE_NAME = process.env.DYNAMODB_TABLE_NAME || 'default-table-name';
 
 const app = Express();
 
-// Enhanced middleware logging
+// CORS configuration
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:8000',
+  'https://steamreport.lauriecrean.dev',
+  'https://www.steamreport.lauriecrean.dev',
+  /https:\/\/steam-report-mern.*\.vercel\.app$/
+];
+
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'https://steamreport.lauriecrean.dev',
-    'https://steamreport.lauriecrean.dev/api'
-  ],
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Check if the origin is allowed
+    const isAllowed = allowedOrigins.some(allowedOrigin => {
+      if (allowedOrigin instanceof RegExp) {
+        return allowedOrigin.test(origin);
+      }
+      return allowedOrigin === origin;
+    });
+    
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      console.log('🚫 Blocked request from origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type']
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(Express.json());
@@ -239,16 +261,6 @@ app.delete('/api/user-result/:id', async (req, res) => {
   }
 });
 
-app.use((req, res, next) => {
-  console.log('📥 Incoming request:', {
-    method: req.method,
-    path: req.path,
-    baseUrl: req.baseUrl,
-    originalUrl: req.originalUrl
-  });
-  next();
-});
-
 // Server startup
 const server = app.listen(8000, () => {
   console.log(`
@@ -273,17 +285,23 @@ app.get(['/health', '/api/health'], (req, res) => {
     path: req.path,
     baseUrl: req.baseUrl,
     originalUrl: req.originalUrl,
-    env: process.env.NODE_ENV
+    env: process.env.NODE_ENV,
+    origin: req.headers.origin
   });
   
   res.json({ 
     status: 'ok',
     timestamp: new Date().toISOString(),
     aws: process.env.AWS_REGION ? 'configured' : 'missing',
+    env: process.env.NODE_ENV,
     debug: {
       path: req.path,
       baseUrl: req.baseUrl,
-      originalUrl: req.originalUrl
+      originalUrl: req.originalUrl,
+      cors: {
+        origin: req.headers.origin,
+        allowed: allowedOrigins.map(o => o instanceof RegExp ? o.toString() : o)
+      }
     }
   });
 });

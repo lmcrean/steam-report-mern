@@ -35,8 +35,8 @@ export default defineConfig({
 
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    // baseURL: 'http://steamreport.lauriecrean.dev',
-    baseURL: 'http://localhost:3000',
+    baseURL: 'http://steamreport.lauriecrean.dev',
+    // baseURL: 'http://localhost:3000',
     /* Collect trace when retrying the failed test */
     trace: 'on-first-retry',
     /* Take screenshot on failure */
