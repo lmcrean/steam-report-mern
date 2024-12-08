@@ -239,6 +239,16 @@ app.delete('/api/user-result/:id', async (req, res) => {
   }
 });
 
+app.use((req, res, next) => {
+  console.log('📥 Incoming request:', {
+    method: req.method,
+    path: req.path,
+    baseUrl: req.baseUrl,
+    originalUrl: req.originalUrl
+  });
+  next();
+});
+
 // Server startup
 const server = app.listen(8000, () => {
   console.log(`
@@ -257,11 +267,26 @@ const server = app.listen(8000, () => {
   process.exit(1);
 });
 
-// Health check endpoint
-app.get('/health', (req, res) => {
+// health endpoint to handle both paths for dev and prod
+app.get(['/health', '/api/health'], (req, res) => {
+  console.log('🔍 Health check request received:', {
+    path: req.path,
+    baseUrl: req.baseUrl,
+    originalUrl: req.originalUrl,
+    env: process.env.NODE_ENV
+  });
+  
   res.json({ 
     status: 'ok',
     timestamp: new Date().toISOString(),
-    aws: process.env.AWS_REGION ? 'configured' : 'missing'
+    aws: process.env.AWS_REGION ? 'configured' : 'missing',
+    debug: {
+      path: req.path,
+      baseUrl: req.baseUrl,
+      originalUrl: req.originalUrl
+    }
   });
 });
+
+// Export the Express app as a serverless function
+export default app;
