@@ -103,6 +103,8 @@ export const personalityQuestions = [
 ];
 
 // Descriptions of each personality trait
+// This is not actually used in the web client yet
+// TODO: Port to Kotlin
 export const traitDescriptions = {
   Openness: "Reflects your willingness to embrace new experiences and ideas, showing curiosity and creativity in approaching life's challenges.",
   Conscientiousness: "Indicates your level of organization, attention to detail, and dedication to completing tasks effectively and reliably.",

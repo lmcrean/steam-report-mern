@@ -352,6 +352,7 @@ export const feedbackDatabase = {
 };
 
 // Helper function to get career feedback based on STEAM category and OCEAN trait
+// TODO: Port to Kotlin
 export const getCareerFeedback = (steamCategory, oceanTrait) => {
   const key = `${steamCategory} and ${oceanTrait}`;
   return feedbackDatabase[key] || {

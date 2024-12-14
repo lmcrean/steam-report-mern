@@ -292,6 +292,7 @@ export const subjects = {
 };
 
 // Function to get questions for a specific subject
+// TODO: Port to Kotlin
 export const getSubjectQuestions = async (subject) => {
   try {
     // Since we now have the questions embedded, we can return them directly
@@ -307,6 +308,7 @@ export const getSubjectQuestions = async (subject) => {
 };
 
 // Utility function to get random questions for a subject
+// TODO: Port to Kotlin
 export const getRandomQuestions = (subject, count = 10) => {
   try {
     const allQuestions = subjects[subject].questions;
