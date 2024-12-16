@@ -1,4 +1,5 @@
-export const feedbackDatabase = {
+export const feedbackDatabase = { // [ ] migrate to JSON version 
+  // FIXME: test this
   "Science and Openness": {
     highest_STEAM: "Science",
     highest_OCEAN: "Openness",
@@ -352,7 +353,8 @@ export const feedbackDatabase = {
 };
 
 // Helper function to get career feedback based on STEAM category and OCEAN trait
-// TODO: Port to Kotlin
+// TODO: 
+// [ ] Port to Kotlin 
 export const getCareerFeedback = (steamCategory, oceanTrait) => {
   const key = `${steamCategory} and ${oceanTrait}`;
   return feedbackDatabase[key] || {

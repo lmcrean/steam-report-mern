@@ -1,4 +1,5 @@
 // Questions from the OCEAN personality test
+// [ ] migrate to JSON version
 export const personalityQuestions = [
   {
     trait: "Openness",
