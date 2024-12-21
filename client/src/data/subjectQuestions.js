@@ -291,20 +291,3 @@ export const subjects = {
     ]
   }
 };
-
-// Function to get questions for a specific subject
-// TODO: Port to Kotlin
-// export const getSubjectQuestions = async (subject) => {
-//   try {
-//     // Since we now have the questions embedded, we can return them directly
-//     const subjectData = subjects[subject];
-//     if (!subjectData) {
-//       throw new Error(`Subject ${subject} not found`);
-//     }
-//     return subjectData.questions;
-//   } catch (error) {
-//     console.error(`Error getting ${subject} questions:`, error);
-//     return [];
-//   }
-// };
-
