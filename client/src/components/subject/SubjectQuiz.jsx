@@ -1,7 +1,8 @@
 // SubjectQuiz.jsx
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useSubjectScoring } from './useSubjectScoring';
-import { subjects, getRandomQuestions } from '../../data/subjectQuestions';
+import { subjects } from '../../data/subjectQuestions';
+import { getRandomQuestions } from '../../data/getRandomQuestions';
 import ProgressBar from '../shared/ProgressBar';
 import RadioGroup from '../shared/RadioGroup';
 import QuizNavigation from '../shared/QuizNavigation';

@@ -294,29 +294,17 @@ export const subjects = {
 
 // Function to get questions for a specific subject
 // TODO: Port to Kotlin
-export const getSubjectQuestions = async (subject) => {
-  try {
-    // Since we now have the questions embedded, we can return them directly
-    const subjectData = subjects[subject];
-    if (!subjectData) {
-      throw new Error(`Subject ${subject} not found`);
-    }
-    return subjectData.questions;
-  } catch (error) {
-    console.error(`Error getting ${subject} questions:`, error);
-    return [];
-  }
-};
+// export const getSubjectQuestions = async (subject) => {
+//   try {
+//     // Since we now have the questions embedded, we can return them directly
+//     const subjectData = subjects[subject];
+//     if (!subjectData) {
+//       throw new Error(`Subject ${subject} not found`);
+//     }
+//     return subjectData.questions;
+//   } catch (error) {
+//     console.error(`Error getting ${subject} questions:`, error);
+//     return [];
+//   }
+// };
 
-// Utility function to get random questions for a subject
-// TODO: Port to Kotlin
-export const getRandomQuestions = (subject, count = 10) => {
-  try {
-    const allQuestions = subjects[subject].questions;
-    const shuffled = [...allQuestions].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, count);
-  } catch (error) {
-    console.error(`Error getting random questions for ${subject}:`, error);
-    return [];
-  }
-};

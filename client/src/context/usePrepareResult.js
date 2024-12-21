@@ -1,6 +1,6 @@
 import { useEffect, useContext } from 'react';
 import { QuizContext } from './QuizContext';
-import { getCareerFeedback } from '../data/feedbackDatabase';
+import { getCareerFeedback } from '../data/getCareerFeedback';
 
 export const usePrepareResult = () => {
   const { state, updateState } = useContext(QuizContext);

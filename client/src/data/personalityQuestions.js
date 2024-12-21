@@ -102,14 +102,3 @@ export const personalityQuestions = [
     statement: "I frequently feel overwhelmed by stress and pressure.\nWhen juggling work and personal responsibilities in the\nfuture, I could often feel overwhelmed by the demands of\ndaily life, feeling stressed and under pressure, which can\naffect my overall well-being."
   }
 ];
-
-// Descriptions of each personality trait
-// This is not actually used in the web client yet
-// TODO: Port to Kotlin
-export const traitDescriptions = {
-  Openness: "Reflects your willingness to embrace new experiences and ideas, showing curiosity and creativity in approaching life's challenges.",
-  Conscientiousness: "Indicates your level of organization, attention to detail, and dedication to completing tasks effectively and reliably.",
-  Extraversion: "Shows how energized you are by social interactions and your comfort level with being in groups or meeting new people.",
-  Agreeableness: "Represents your tendency to be cooperative, compassionate, and considerate of others' feelings and needs.",
-  Neuroticism: "Reflects your emotional sensitivity and how you respond to stress, affecting your ability to maintain emotional stability."
-};

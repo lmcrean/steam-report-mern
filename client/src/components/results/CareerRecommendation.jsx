@@ -1,7 +1,7 @@
 // CareerRecommendation.jsx
 import React, { useContext, useState } from 'react';
 import { QuizContext } from '../../context/QuizContext';
-import { getCareerFeedback } from '../../data/feedbackDatabase';
+import { getCareerFeedback } from '../../data/getCareerFeedback';
 import { useNavigate } from 'react-router-dom';
 
 const CareerRecommendation = ({ maxSubjectScore, maxPersonalityScore }) => {
