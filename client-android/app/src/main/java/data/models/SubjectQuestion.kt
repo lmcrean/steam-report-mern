@@ -15,6 +15,7 @@ Key differences from web version:
 - Structured for Moshi JSON parsing
 - Maintains same data structure for compatibility
 */
+
 @JsonClass(generateAdapter = true)
 data class Subject(
     val description: String,  // e.g. "Tests your understanding of scientific principles..."
