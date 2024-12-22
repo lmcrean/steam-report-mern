@@ -1,38 +1,30 @@
-class Repository(private val context: Context) {
-    private val gson = Gson()
+package data
 
-    fun loadSubjects(): Map<String, Subject> {
-        val json = context.assets.open("subjects.json").bufferedReader().use { it.readText() }
-        return gson.fromJson(json, object : TypeToken<Map<String, Subject>>() {}.type)
+import android.content.Context
+import com.squareup.moshi.Moshi
+import java.io.IOException
+
+/*
+Purpose: Base repository class providing common JSON loading functionality
+Structure:
+- Abstract base class for all repositories
+- Provides shared Moshi instance for JSON parsing
+- Common asset loading utilities
+
+Key functionality:
+- JSON file loading from assets
+- Moshi instance management
+*/
+abstract class Repository(private val context: Context) {
+    protected val moshi: Moshi = Moshi.Builder().build()
+
+    protected fun loadJsonFromAssets(fileName: String): String {
+        return try {
+            context.assets.open(fileName)
+                .bufferedReader()
+                .use { it.readText() }
+        } catch (e: IOException) {
+            throw IOException("Error reading $fileName from assets", e)
+        }
     }
-
-    fun loadFeedback(): Map<String, FeedbackData> {
-        val json = context.assets.open("feedback.json").bufferedReader().use { it.readText() }
-        return gson.fromJson(json, object : TypeToken<Map<String, FeedbackData>>() {}.type)
-    }
-
-    fun loadPersonality(): PersonalityData {
-        val json = context.assets.open("personality.json").bufferedReader().use { it.readText() }
-        return gson.fromJson(json, PersonalityData::class.java)
-    }
-}
-
-// Data classes to match JSON structure
-data class PersonalityData(
-    val questions: List<PersonalityQuestion>,
-    val traitDescriptions: Map<String, String>
-)
-
-data class PersonalityQuestion(
-    val trait: String,
-    val statement: String
-)
-
-data class FeedbackData(
-    val highest_STEAM: String,
-    val highest_OCEAN: String,
-    val environment: String,
-    val thrive: String,
-    val feedback: String,
-    val recommendedCareers: List<String>
-) 
+} 
