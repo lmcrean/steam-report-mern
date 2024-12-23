@@ -1,5 +1,4 @@
-export const feedbackDatabase = { // [ ] migrate to JSON version 
-  // FIXME: test this
+export const feedbackDatabase = {
   "Science and Openness": {
     highest_STEAM: "Science",
     highest_OCEAN: "Openness",

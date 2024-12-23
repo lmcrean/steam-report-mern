@@ -1,5 +1,4 @@
 // Subject definitions with descriptions and icons
-// [ ] migrate to JSON version
 export const subjects = {
   Science: {
     description: "Tests your understanding of scientific principles, space exploration, biology, and natural phenomena.",

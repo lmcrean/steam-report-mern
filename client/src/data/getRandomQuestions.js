@@ -1,5 +1,4 @@
 // Utility function to get random questions for a subject
-// TODO: Port to Kotlin
 import { subjects } from './subjectQuestions';
 
 export const getRandomQuestions = (subject, count = 10) => {
