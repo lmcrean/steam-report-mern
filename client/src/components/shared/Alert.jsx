@@ -29,7 +29,7 @@ const Alert = ({
         {onClose && (
           <button
             onClick={onClose}
-            className="ml-3 inline-flex flex-shrink-0 justify-center items-center h-5 w-5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+            className="ml-3 inline-flex flex-shrink-0 justify-center items-center h-5 w-5 rounded-full hover:bg-black/5 dark:hover:bg-dark/5 transition-colors"
           >
             <span className="sr-only">Close</span>
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

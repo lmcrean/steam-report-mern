@@ -63,7 +63,7 @@ export const ResultsChart = ({ data, type = 'bar', xKey, yKey }) => {
                 const data = payload[0].payload;
                 const isHighest = Number(data.score) === maxScore;
                 return (
-                  <div className="bg-white p-2 shadow-lg border rounded">
+                  <div className="bg-dark p-2 shadow-lg border rounded">
                     <p className="font-medium">
                       {data.fullTrait || data.trait || data.subject}
                       {data.isPreferred && ' (Preferred)'}
@@ -249,7 +249,7 @@ export const ScoreCard = ({ title, score, isHighest, isPreferred, extraClasses =
 );
 
 export const ResultsSection = ({ title, children }) => (
-  <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-sm">
+  <div className="bg-dark dark:bg-slate-800 rounded-lg p-6 shadow-sm">
     <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
       {title}
     </h3>

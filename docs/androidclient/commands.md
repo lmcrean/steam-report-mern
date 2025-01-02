@@ -30,6 +30,7 @@ Here's the complete sequence of what happens during `clean build`:
    2. Configure project plugins
    3. Validate project configuration
    // TODO: Currently stuck here - Compose Compiler plugin configuration failing with Kotlin 2.0
+   // [ ] TOP: Begin new template for Android Client with successful build, start with original -- build locally in seperate repo, but test at key points
    4. Initialize build environment
 
 1. **Clean Phase**

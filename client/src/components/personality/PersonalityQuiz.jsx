@@ -72,10 +72,10 @@ const PersonalityQuiz = () => {
     <div className="max-w-2xl mx-auto p-6">
       <div className="mb-6">
         <div className="flex justify-between mb-2">
-          <span className="text-sm text-gray-600">Question {currentQuestionIndex + 1} of 25</span>
-          <span className="text-sm text-gray-600">{progress.toFixed(0)}% Complete</span>
+          <span className="text-sm text-gray-600 dark:text-gray-300">Question {currentQuestionIndex + 1} of 25</span>
+          <span className="text-sm text-gray-600 dark:text-gray-300">{progress.toFixed(0)}% Complete</span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
           <div 
             className="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-in-out"
             style={{ width: `${progress}%` }}
@@ -83,12 +83,12 @@ const PersonalityQuiz = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">OCEAN Personality Test</h2>
-        <div className="text-sm text-gray-600 mb-4">
+      <div className="bg-dark dark:bg-slate-800 rounded-lg shadow-lg p-6 mb-6">
+        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">OCEAN Personality Test</h2>
+        <div className="text-sm text-gray-600 dark:text-gray-300 mb-4">
           Testing trait: {currentQuestion.trait}
         </div>
-        <p className="text-gray-700 mb-6">{currentQuestion.statement}</p>
+        <p className="text-gray-700 dark:text-gray-200 mb-6">{currentQuestion.statement}</p>
 
         <div className="grid grid-cols-9 gap-2 mb-6" role="radiogroup">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((value) => (
@@ -108,7 +108,7 @@ const PersonalityQuiz = () => {
                 className={`block p-4 rounded-lg text-center transition-all ${
                   selectedValue === value
                     ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 hover:bg-gray-200'
+                    : 'bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-gray-900 dark:text-gray-200'
                 }`}
               >
                 {value}
@@ -117,7 +117,7 @@ const PersonalityQuiz = () => {
           ))}
         </div>
 
-        <div className="flex justify-between items-center text-sm text-gray-600 mb-6">
+        <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-300 mb-6">
           <span>Strongly Disagree</span>
           <span>Neutral</span>
           <span>Strongly Agree</span>

@@ -161,14 +161,14 @@ const SubjectQuiz = () => {
     <div className="space-y-6">
       <div className="space-y-2">
         <ProgressBar progress={parseFloat(overallProgress)} total={100} />
-        <div className="flex justify-between text-sm text-gray-600">
+        <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
           <span>Overall Progress: {overallProgress}%</span>
           <span>{currentSubject} Progress: {subjectProgress}%</span>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-sm">
-        <h2 className="text-xl font-semibold mb-4">
+      <div className="bg-dark dark:bg-slate-800 rounded-lg p-6 shadow-sm">
+        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
           STEAM Subject Quiz
         </h2>
         <div className="space-y-6">
@@ -182,7 +182,7 @@ const SubjectQuiz = () => {
           </div>
 
           <div className="p-4 bg-gray-50 dark:bg-slate-700 rounded-lg">
-            <p className="text-lg font-medium mb-2">
+            <p className="text-lg font-medium mb-2 text-gray-900 dark:text-white">
               {question.question}
             </p>
             <p className="text-gray-600 dark:text-gray-300 text-sm">

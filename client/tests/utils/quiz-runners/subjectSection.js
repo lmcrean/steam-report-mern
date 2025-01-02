@@ -5,7 +5,7 @@ export async function completeSubjectSection(page, answers, subjectsData) {
       const shouldBeCorrect = answers[subject][i] === 1;
       
       // Wait for question to load
-      await page.waitForSelector('.bg-white', { timeout: 5000 });
+      await page.waitForSelector('.bg-dark', { timeout: 5000 });
       const headerText = await page.locator('.text-gray-600').first().textContent();
       const questionText = await page.locator('.bg-gray-50 p.text-lg').textContent();
       

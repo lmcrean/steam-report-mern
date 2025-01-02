@@ -32,7 +32,7 @@ const PersonalityTieBreaker = () => {
 
   return (
     <div className="max-w-2xl mx-auto p-6">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+      <div className="bg-dark dark:bg-gray-800 rounded-lg shadow-lg p-6">
         <h2 className="text-2xl font-bold mb-4">We Found a Tie!</h2>
         <p className="text-gray-600 dark:text-gray-300 mb-6">
           These personality traits scored equally high. Please select the one that best represents you:

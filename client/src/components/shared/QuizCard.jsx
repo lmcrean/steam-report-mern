@@ -8,7 +8,7 @@ const QuizCard = ({
 }) => {
   return (
     <div className={`w-full max-w-2xl mx-auto ${className}`}>
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden">
+      <div className="bg-dark dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden">
         {title && (
           <div className="px-6 py-4 bg-gray-50 dark:bg-slate-700 border-b border-gray-200 dark:border-slate-600">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
@@ -17,7 +17,7 @@ const QuizCard = ({
           </div>
         )}
         
-        <div className="p-6">
+        <div className="p-6 text-gray-900 dark:text-white">
           {children}
         </div>
 

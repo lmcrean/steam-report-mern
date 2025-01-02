@@ -1,5 +1,5 @@
 // App.jsx
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import MainLayout from './components/layout/MainLayout';
 import Header from './components/layout/Header';
 import MenuScreen from './components/menu/MenuScreen';
@@ -32,7 +32,7 @@ const AlertProvider = ({ children }) => {
     <AlertContext.Provider value={{ showAlert }}>
       {children}
       {alert && (
-        <div className="alert fixed top-4 right-4 bg-white shadow-lg rounded-lg p-4 z-50">
+        <div className="alert fixed top-4 right-4 bg-dark shadow-lg rounded-lg p-4 z-50">
           {alert}
         </div>
       )}
@@ -79,8 +79,31 @@ const QuizFlow = () => {
 };
 
 const App = () => {
+  const [isDark, setIsDark] = useState(() => {
+    const storedPreference = localStorage.getItem('darkMode');
+    return storedPreference === null ? true : storedPreference === 'true';
+  });
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('darkMode', isDark);
+  }, [isDark]);
+
+  const toggleDark = () => setIsDark(!isDark);
+
   return (
     <BrowserRouter>
+      <button
+        onClick={toggleDark}
+        className="fixed top-4 right-4 z-50 p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white"
+        aria-label="Toggle dark mode"
+      >
+        {isDark ? '🌞' : '🌙'}
+      </button>
       <AlertProvider>
         <QuizProvider>
           <QuizFlow />
