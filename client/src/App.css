@@ -74,3 +74,35 @@ body:is(.dark) {
   opacity: 0;
   transition: opacity 300ms ease-in-out;
 }
+
+@font-face {
+  font-family: 'Actor';
+  src: url('/Actor-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'OtomanopeeOne';
+  src: url('/OtomanopeeOne-Regular.ttf') format('truetype');
+}
+
+/* Apply OtomanopeeOne to all headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'OtomanopeeOne', sans-serif;
+  font-weight: 300 !important;
+  color: antiquewhite !important;
+}
+
+/* Apply Actor to body and paragraphs */
+body, p, div, span, button, input {
+  font-family: 'Actor', sans-serif;
+  color: antiquewhite !important;
+}
+
+.paths-list {
+  display: flex;
+  left: 0;
+  flex-direction: column;
+  align-items: baseline;
+  margin-left: 100px;
+  margin-top: 20px;
+}

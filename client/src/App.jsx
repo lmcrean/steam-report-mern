@@ -97,13 +97,6 @@ const App = () => {
 
   return (
     <BrowserRouter>
-      <button
-        onClick={toggleDark}
-        className="fixed top-4 right-4 z-50 p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white"
-        aria-label="Toggle dark mode"
-      >
-        {isDark ? '🌞' : '🌙'}
-      </button>
       <AlertProvider>
         <QuizProvider>
           <QuizFlow />

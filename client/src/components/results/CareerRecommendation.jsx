@@ -61,7 +61,7 @@ const CareerRecommendation = ({ maxSubjectScore, maxPersonalityScore }) => {
 
         <div>
           <h3 className="text-xl font-semibold">Recommended Career Paths</h3>
-          <ul className="list-disc pl-5">
+          <ul className="list-disc pl-5 paths-list">
             {careerFeedback.recommendedCareers?.map((career, index) => (
               <li key={index}>{career}</li>
             ))}
