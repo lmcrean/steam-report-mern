@@ -11,6 +11,9 @@
     "test": "playwright test --ui --timeout=600000"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "@vitejs/plugin-react": "^4.0.0",
     "autoprefixer": "^10.4.20",
     "aws-sdk": "^2.1692.0",
@@ -20,7 +23,7 @@
     "react-bootstrap": "^2.10.5",
     "react-dom": "^18.2.0",
     "react-router-dom": "^7.0.1",
-    "recharts": "^2.13.1",
+    "recharts": "^2.15.0",
     "repo-to-one-file": "^1.0.2",
     "tailwind": "^4.0.0",
     "tailwindcss": "^3.4.14",

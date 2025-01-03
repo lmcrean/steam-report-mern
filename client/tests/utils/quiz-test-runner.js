@@ -8,11 +8,13 @@ import {
   handleSubjectTieBreaker 
 } from './quiz-runners/subjectTieBreaker';
 import { verifyResultsText } from './quiz-runners/resultsTextCheck';
+import { verifyPieChartToggle } from './quiz-runners/verifyPieChartToggle';
 import { verifyCareerRecommendations } from './quiz-runners/careerRecommendation';
 import { verifyNetworkBoard } from './quiz-runners/networkBoard';
 import { deleteUserResult } from './quiz-runners/deleteUserResult';
 import { checkContextRestarted } from './quiz-runners/checkContextRestarted';
 import { checkQuizRestart } from './quiz-runners/checkQuizRestart';
+
 export async function runQuizTestCase(page, testCase, subjectsData) {
   await startQuiz(page);
   await completePersonalitySection(page, testCase.personalityAnswers);
@@ -41,6 +43,15 @@ export async function runQuizTestCase(page, testCase, subjectsData) {
   }
 
   await verifyResultsText(page, testCase);
+  
+  // Verify pie chart toggle functionality
+  try {
+    await verifyPieChartToggle(page);
+  } catch (error) {
+    console.error('Pie chart toggle verification failed:', error);
+    throw error;
+  }
+
   await verifyCareerRecommendations(page, testCase);
   try {
     await verifyNetworkBoard(page, testCase);
