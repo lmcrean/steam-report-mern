@@ -71,25 +71,21 @@ const SubjectQuiz = () => {
 
   const handleAnswer = (value) => {
     setCurrentAnswer(value);
-  };
+    
+    // Automatically advance after selection
+    const currentQuestionData = getCurrentQuestionData();
+    const answerResult = checkAnswer(currentQuestionData, value);
+    
+    // Create new answers array
+    const newAnswers = [...answers];
+    newAnswers[currentQuestion] = answerResult;
+    setAnswers(newAnswers);
 
-  const handleNext = () => {
-    if (currentAnswer !== null) {
-      const currentQuestionData = getCurrentQuestionData();
-      const answerResult = checkAnswer(currentQuestionData, currentAnswer);
-      
-      // Create new answers array
-      const newAnswers = [...answers];
-      newAnswers[currentQuestion] = answerResult;
-      setAnswers(newAnswers);
-
-      if (currentQuestion < totalQuestions - 1) {
-        setCurrentQuestion(currentQuestion + 1);
-        setCurrentAnswer(null);
-      } else {
-
-        setQuizCompleted(true);
-      }
+    if (currentQuestion < totalQuestions - 1) {
+      setCurrentQuestion(currentQuestion + 1);
+      setCurrentAnswer(null);
+    } else {
+      setQuizCompleted(true);
     }
   };
 
@@ -195,11 +191,6 @@ const SubjectQuiz = () => {
             value={currentAnswer}
             onChange={handleAnswer}
             name="subject-answer"
-          />
-
-          <QuizNavigation
-            onNext={handleNext}
-            canProgress={currentAnswer !== null}
           />
         </div>
       </div>

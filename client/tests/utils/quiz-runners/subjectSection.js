@@ -24,9 +24,6 @@ export async function completeSubjectSection(page, answers, subjectsData) {
         // Select and click the appropriate answer
         await selectAnswer(options, questionData, shouldBeCorrect);
         
-        // Navigate to next question
-        await navigateToNext(page);
-        
       } catch (error) {
         await handleAnswerError(error, page, subject, i);
       }
@@ -84,12 +81,6 @@ async function selectAnswer(options, questionData, shouldBeCorrect) {
     }
     await incorrectOption.element.click();
   }
-}
-
-async function navigateToNext(page) {
-  await page.waitForTimeout(100);
-  await page.getByRole('button', { name: 'Next' }).click();
-  await page.waitForTimeout(200);
 }
 
 function logQuestionMatchingError(questionText, subject, availableQuestions) {
