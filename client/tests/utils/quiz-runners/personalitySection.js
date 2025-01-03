@@ -3,7 +3,6 @@ export async function completePersonalitySection(page, answers) {
   for (const trait of Object.keys(answers)) {
     for (const answer of answers[trait]) {
       await page.getByRole('radio', { name: String(answer) }).click();
-      await page.getByRole('button', { name: 'Next' }).click();
     }
   }
   

@@ -99,7 +99,30 @@ const PersonalityQuiz = () => {
                 name="rating"
                 value={value}
                 checked={selectedValue === value}
-                onChange={() => setSelectedValue(value)}
+                onChange={() => {
+                  setSelectedValue(value);
+                  // Automatically advance after selection
+                  const answer = {
+                    value: value,
+                    trait: questions[currentQuestionIndex].trait,
+                    questionIndex: currentQuestionIndex,
+                  };
+                  
+                  const newAnswers = [...answers];
+                  newAnswers[currentQuestionIndex] = answer;
+                  setAnswers(newAnswers);
+
+                  if (currentQuestionIndex < 24) {
+                    setCurrentQuestionIndex(currentQuestionIndex + 1);
+                    setSelectedValue(null);
+                  } else {
+                    const success = calculateAndSubmitScores(newAnswers);
+                    if (!success) {
+                      console.error('❌ Failed to submit personality scores');
+                      setError('Please answer all questions before proceeding.');
+                    }
+                  }
+                }}
                 className="absolute h-full w-full opacity-0 cursor-pointer"
                 aria-label={value.toString()}
               />
@@ -123,11 +146,6 @@ const PersonalityQuiz = () => {
           <span>Strongly Agree</span>
         </div>
       </div>
-
-      <QuizNavigation 
-        onNext={handleNextQuestion}
-        canProgress={selectedValue !== null}
-      />
     </div>
   );
 };
