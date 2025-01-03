@@ -56,13 +56,13 @@ const NetworkBoardRestartButton = ({ onRefresh, resultId }) => {
       </Button>
 
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
-        <Modal.Header closeButton>
+        <Modal.Header className="dark:bg-slate-700 border-0" closeButton>
           <Modal.Title>Restart Quiz?</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className="dark:bg-slate-700 border-0">
           This will delete your current results and start a new quiz.
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer className="dark:bg-slate-700 border-0">
           <Button 
             variant="secondary" 
             onClick={() => setShowModal(false)}
