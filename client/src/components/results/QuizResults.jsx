@@ -68,39 +68,61 @@ const QuizResults = () => {
   };
 
   return (
-    <div className="p-8 space-y-8">
-      <h2 className="text-2xl font-bold mb-6">Your Results</h2>
+    <div className="p-4 md:p-8 space-y-8">
+      <div>
+        <h2 className="text-2xl font-bold mb-6">Your Results</h2>
+        
+        {/* First Row - Top Scores */}
+        <div className="mb-12">          
+          <CareerRecommendation 
+            maxSubjectScore={maxSubjectName}
+            maxPersonalityScore={maxPersonalityTrait}
+            layout="top-images"
+          />
+          <p className="text-center text-lg mb-8">{maxSubjectName} and {maxPersonalityTrait} were your top scores</p>
+        </div>
 
-      {/* Personality Scores */}
-      <div className="space-y-4">
-        <h3 className="text-xl font-semibold">Personality Traits</h3>
-        <div className="space-y-2">
-          {Object.entries(traitPercentages).map(([trait, score]) => (
-            <div key={trait} className="flex justify-between">
-              <span className={getTraitColor(trait, score)}>{trait}</span>
-              <span>{score}%</span>
+        {/* Second Row - Detailed Information */}
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Scores Section - First Column */}
+          <div className="w-full lg:w-1/4 space-y-8">
+            {/* Personality Scores */}
+            <div className="space-y-4">
+              <h3 className="text-xl font-semibold">Personality Traits</h3>
+              <div className="space-y-2">
+                {Object.entries(traitPercentages).map(([trait, score]) => (
+                  <div key={trait} className="flex justify-between">
+                    <span className={getTraitColor(trait, score)}>{trait}</span>
+                    <span>{score}%</span>
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
+
+            {/* Subject Scores */}
+            <div className="space-y-4">
+              <h3 className="text-xl font-semibold">Subject Areas</h3>
+              <div className="space-y-2">
+                {Object.entries(subjectPercentages).map(([subject, score]) => (
+                  <div key={subject} className="flex justify-between">
+                    <span className={getSubjectColor(subject, score)}>{subject}</span>
+                    <span>{score}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Career Recommendations Section split into columns */}
+          <div className="w-full lg:w-3/4 flex flex-col lg:flex-row gap-8">
+            <CareerRecommendation 
+              maxSubjectScore={maxSubjectName}
+              maxPersonalityScore={maxPersonalityTrait}
+              layout="split-content"
+            />
+          </div>
         </div>
       </div>
-
-      {/* Subject Scores */}
-      <div className="space-y-4">
-        <h3 className="text-xl font-semibold">Subject Areas</h3>
-        <div className="space-y-2">
-          {Object.entries(subjectPercentages).map(([subject, score]) => (
-            <div key={subject} className="flex justify-between">
-              <span className={getSubjectColor(subject, score)}>{subject}</span>
-              <span>{score}%</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <CareerRecommendation 
-        maxSubjectScore={maxSubjectName}
-        maxPersonalityScore={maxPersonalityTrait}
-      />
 
       <div className="mt-8 flex justify-center">
         <NetworkBoardSubmitButton onSubmit={handleSubmitResults} />
