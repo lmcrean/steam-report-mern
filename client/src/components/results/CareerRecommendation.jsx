@@ -47,6 +47,24 @@ const CareerRecommendation = ({ maxSubjectScore, maxPersonalityScore }) => {
           <p>{topScores}</p>
         </div>
 
+        {/* Trait Images Section */}
+        <div className="flex justify-center gap-8 my-8">
+          <div className="text-center">
+            <img 
+              src={careerFeedback.imagePaths.steam} 
+              alt={`${maxSubjectScore} trait`}
+              className="w-64 h-64 object-cover rounded-lg shadow-lg"
+            />
+          </div>
+          <div className="text-center">
+            <img 
+              src={careerFeedback.imagePaths.ocean} 
+              alt={`${maxPersonalityScore} trait`}
+              className="w-64 h-64 object-cover rounded-lg shadow-lg"
+            />
+          </div>
+        </div>
+
         <div>
           <h3 className="text-xl font-semibold">Environment</h3>
           <p>Choose a workplace that is {state.preferredEnvironment}</p>
