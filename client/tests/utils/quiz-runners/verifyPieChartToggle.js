@@ -14,19 +14,19 @@ export async function verifyPieChartToggle(page) {
 
   // Wait for pie charts to be rendered
   try {
-    await page.waitForSelector('div[class*="recharts-wrapper"]', {
+    await page.waitForSelector('canvas', {
       state: 'visible',
       timeout: 2000
     });
-    console.log('Found recharts wrapper');
+    console.log('Found Chart.js canvas');
   } catch (error) {
-    console.error('Failed to find recharts wrapper:', error);
+    console.error('Failed to find Chart.js canvas:', error);
     await page.screenshot({ path: 'pie-chart-debug.png' });
     throw error;
   }
 
   // Verify that both pie charts are present
-  const pieCharts = await page.$$('div[class*="recharts-wrapper"]');
+  const pieCharts = await page.$$('canvas');
   console.log(`Found ${pieCharts.length} pie charts`);
   if (pieCharts.length !== 2) {
     throw new Error(`Expected 2 pie charts, but found ${pieCharts.length}`);
