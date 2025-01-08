@@ -6,7 +6,9 @@
     "test:prod": "cd api && npm run test:prod"
   },
   "dependencies": {
+    "chart.js": "^4.4.7",
     "docsify": "^4.13.1",
+    "react-chartjs-2": "^5.3.0",
     "repo-to-one-file": "^1.0.2"
   },
   "devDependencies": {
