@@ -1,15 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExpand } from '@fortawesome/free-solid-svg-icons';
 
+// Register Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
+/**
+ * ScorePieChart Component
+ * Renders a pie chart visualization of score data using Chart.js
+
+ * 
+ */
 const ScorePieChart = ({ data, onFullScreen }) => {
-  const chartData = {
+  // Transform the input data into Chart.js compatible format
+  const chartData = React.useMemo(() => ({
     labels: Object.keys(data),
     datasets: [
       {
@@ -19,7 +27,7 @@ const ScorePieChart = ({ data, onFullScreen }) => {
         borderWidth: 0,
       },
     ],
-  };
+  }), [data]);
 
   const options = {
     responsive: true,
@@ -55,7 +63,7 @@ const ScorePieChart = ({ data, onFullScreen }) => {
   };
 
   return (
-    <div className="relative w-full flex items-center justify-center">
+    <div className="relative w-full flex items-center justify-center" data-testid="pie-chart-container">
       <div className="relative w-full max-w-[300px] aspect-square">
         <button 
           onClick={onFullScreen}
@@ -68,7 +76,10 @@ const ScorePieChart = ({ data, onFullScreen }) => {
           <Pie 
             data={chartData} 
             options={options}
-          />
+            data-testid="pie-chart"
+          /> {/* ISSUE - TODO: chartData does not render in test view 
+          [ ] - add a test to check if the chartData retrieves the data as expected
+          */}
         </div>
       </div>
     </div>
