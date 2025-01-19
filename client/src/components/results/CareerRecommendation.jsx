@@ -1,54 +1,54 @@
 // CareerRecommendation.jsx
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import { QuizContext } from '../../context/QuizContext';
 import { getCareerFeedback } from '../../data/getCareerFeedback';
-import { useNavigate } from 'react-router-dom';
 
-const CareerRecommendation = ({ maxSubjectScore, maxPersonalityScore, layout = 'default' }) => {
-  const { state, submitToNetworkBoard } = useContext(QuizContext);
-  const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+const CareerRecommendation = ({ 
+  maxSubjectScore, 
+  maxPersonalityScore, 
+  subjectScore,
+  personalityScore,
+  layout = 'default' 
+}) => {
+  const { state } = useContext(QuizContext);
   
-  const handleSubmitToNetworkBoard = async () => {
-    setIsSubmitting(true);
-    
-    const results = {
-      username: state.username,
-      bestSubject: maxSubjectScore,
-      bestPersonalityTrait: maxPersonalityScore,
-      subjectScore: state.subjectScores[maxSubjectScore],
-      personalityScore: state.personalityScores[maxPersonalityScore],
-      preferredEnvironment: state.preferredEnvironment,
-      dateOfSubmission: new Date().toISOString()
-    };
-
-    const success = await submitToNetworkBoard(results);
-    
-    if (success) {
-      navigate('/network-board');
-    }
-    
-    setIsSubmitting(false);
-  };
-
   // get career recommendations from feedback database
   const careerFeedback = getCareerFeedback(maxSubjectScore, maxPersonalityScore);
 
   const ImagesSection = () => (
-    <div className={`flex ${layout === 'top-images' ? 'flex-col md:flex-row' : 'flex-col'} justify-center gap-4 md:gap-8 my-4 md:my-8`}>
-      <div className="text-center">
-        <img 
-          src={careerFeedback.imagePaths.steam} 
-          alt={`${maxSubjectScore} trait`}
-          className="w-full md:w-64 h-48 md:h-64 object-cover rounded-lg shadow-lg"
-        />
-      </div>
-      <div className="text-center">
-        <img 
-          src={careerFeedback.imagePaths.ocean} 
-          alt={`${maxPersonalityScore} trait`}
-          className="w-full md:w-64 h-48 md:h-64 object-cover rounded-lg shadow-lg"
-        />
+    <div className="flex flex-col items-center">
+      <div className="flex flex-col md:flex-row justify-center gap-8 md:gap-16">
+        {/* Subject Score Image */}
+        <div className="text-center space-y-4">
+          <div className="relative">
+            <img 
+              src={careerFeedback.imagePaths.steam} 
+              alt={`${maxSubjectScore} trait`}
+              className="w-64 h-64 object-cover rounded-lg shadow-lg"
+            />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold">Top Subject Score</h3>
+            <p className="text-xl text-blue-600">{maxSubjectScore}</p>
+            <p className="text-lg">{subjectScore}%</p>
+          </div>
+        </div>
+
+        {/* Personality Score Image */}
+        <div className="text-center space-y-4">
+          <div className="relative">
+            <img 
+              src={careerFeedback.imagePaths.ocean} 
+              alt={`${maxPersonalityScore} trait`}
+              className="w-64 h-64 object-cover rounded-lg shadow-lg"
+            />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold">Top Personality Trait</h3>
+            <p className="text-xl text-blue-600">{maxPersonalityScore}</p>
+            <p className="text-lg">{personalityScore}%</p>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -85,30 +85,24 @@ const CareerRecommendation = ({ maxSubjectScore, maxPersonalityScore, layout = '
     </div>
   );
 
+  // Return only images for top-images layout
   if (layout === 'top-images') {
     return <ImagesSection />;
   }
 
-  if (layout === 'split-content') {
-    return (
-      <>
-        {/* Content Column */}
-        <div className="w-full lg:w-1/2">
-          <h2 className="text-2xl font-bold mb-6">Career Recommendations</h2>
-          <ContentSection />
-        </div>
-        {/* Career Paths Column */}
-        <div className="w-full lg:w-1/2">
-          <CareerPathsSection />
-        </div>
-      </>
-    );
+  // Return only content for content-only layout
+  if (layout === 'content-only') {
+    return <ContentSection />;
+  }
+
+  // Return only career paths for career-paths-only layout
+  if (layout === 'career-paths-only') {
+    return <CareerPathsSection />;
   }
 
   // Default mobile layout
   return (
     <div className="p-4 md:p-8 space-y-6 md:space-y-8">
-      <h2 className="text-2xl font-bold">Career Recommendations</h2>
       <div className="space-y-4">
         <ImagesSection />
         <ContentSection />
