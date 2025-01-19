@@ -25,7 +25,7 @@ const PieChartSection = ({ data, title }) => {
   return (
     <div className="w-full">
       <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white text-center">{title}</h3>
-      <div className="h-[400px]" data-testid={`${title.toLowerCase().replace(' ', '-')}-chart`}>
+      <div className="h-[400px] w-[550px] m-auto" data-testid={`${title.toLowerCase().replace(' ', '-')}-chart`}> 
         <ResponsiveContainer width="100%" height="100%" debounce={0}>
           <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
             <Pie
@@ -64,7 +64,13 @@ const ScorePieChart = ({ personalityData, subjectData }) => {
   return (
     <div data-testid="charts-container" className="w-full">
       <h2 className="text-2xl font-bold mb-8 text-center">Detailed Score Breakdown</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-20">
+        {/* TODO
+         - [ ] Fix responsive issues
+            - [ ] Cropping in desktop view
+            - [ ] Desktop view expecting permanent centering on page spills off-centre to the right, blocked by a container somewhere on the left, 
+            - [ ] Make mobile view more compact
+        */}
         <PieChartSection 
           data={personalityData} 
           title="Personality Traits"
