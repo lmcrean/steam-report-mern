@@ -1,8 +1,7 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import { QuizContext } from '../../context/QuizContext';
 import CareerRecommendation from './CareerRecommendation';
 import ScorePieChart from './ScorePieChart';
-import PieChartModal from './PieChartModal';
 import { useNavigate } from 'react-router-dom';
 import { useSubmitResults } from '../network-board/usePostResult';
 import { usePrepareResult } from '../../context/usePrepareResult';
@@ -12,8 +11,6 @@ const QuizResults = () => {
   const { state } = useContext(QuizContext);
   const navigate = useNavigate();
   const submitResults = useSubmitResults();
-  const [showPieCharts, setShowPieCharts] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   
   const { 
     traitPercentages,
@@ -28,6 +25,22 @@ const QuizResults = () => {
     maxSubjectName,
     isReady
   } = usePrepareResult();
+
+  const handleSubmitToNetworkBoard = async () => {
+    const success = await submitResults({
+      maxSubjectName,
+      maxPersonalityTrait,
+      subjectPercentages,
+      traitPercentages,
+      preferredTrait,
+      preferredSubject,
+      preferredEnvironment
+    });
+    
+    if (success) {
+      navigate('/network-board');
+    }
+  };
 
   if (!isReady) {
     return <div>Preparing your results...</div>;
@@ -60,40 +73,31 @@ const QuizResults = () => {
     }, {});
   };
 
-  const ToggleSwitch = () => (
-    <div className="flex items-center justify-center mb-6">
-      <span className="mr-3 text-sm">Breakdown</span>
-      <label className="relative inline-flex items-center cursor-pointer">
-        <input
-          type="checkbox"
-          className="sr-only peer"
-          checked={showPieCharts}
-          onChange={() => setShowPieCharts(!showPieCharts)}
+  const relativeTraitPercentages = calculateRelativePercentages(traitPercentages);
+  const relativeSubjectPercentages = calculateRelativePercentages(subjectPercentages);
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      {/* Row 1: Heading and Images */}
+      <div className="mb-12">
+        <h2 className="text-3xl font-bold text-center mb-2">Your Results</h2>
+        <p className="text-center text-lg mb-8">{maxSubjectName} and {maxPersonalityTrait} are your best match!</p>
+        <CareerRecommendation 
+          maxSubjectScore={maxSubjectName}
+          maxPersonalityScore={maxPersonalityTrait}
+          subjectScore={subjectPercentages[maxSubjectName]}
+          personalityScore={traitPercentages[maxPersonalityTrait]}
+          layout="top-images"
         />
-        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-      </label>
-      <span className="ml-3 text-sm">Pie Chart</span>
-    </div>
-  );
+      </div>
 
-  const ScoresSection = () => {
-    const relativeTraitPercentages = calculateRelativePercentages(traitPercentages);
-    const relativeSubjectPercentages = calculateRelativePercentages(subjectPercentages);
-
-    return (
-      <div className="w-full lg:w-1/4 space-y-8">
-        <ToggleSwitch />
-        {/* Personality Scores */}
-        <div className="space-y-4">
-          <h3 className="text-xl font-semibold">Personality Traits</h3>
-          {showPieCharts ? (
-            <div className="aspect-square w-full">
-              <ScorePieChart 
-                data={relativeTraitPercentages}
-                onFullScreen={() => setIsModalOpen(true)}
-              />
-            </div>
-          ) : (
+      {/* Row 2: Three Column Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+        {/* Column 1: Score Breakdowns */}
+        <div className="space-y-8">
+          {/* Personality Scores */}
+          <div className="space-y-4">
+            <h3 className="text-xl font-semibold">Personality Traits</h3>
             <div className="space-y-2">
               {Object.entries(traitPercentages).map(([trait, score]) => (
                 <div key={trait} className="flex justify-between">
@@ -102,20 +106,11 @@ const QuizResults = () => {
                 </div>
               ))}
             </div>
-          )}
-        </div>
+          </div>
 
-        {/* Subject Scores */}
-        <div className="space-y-4">
-          <h3 className="text-xl font-semibold">Subject Areas</h3>
-          {showPieCharts ? (
-            <div className="aspect-square w-full">
-              <ScorePieChart 
-                data={relativeSubjectPercentages}
-                onFullScreen={() => setIsModalOpen(true)}
-              />
-            </div>
-          ) : (
+          {/* Subject Scores */}
+          <div className="space-y-4">
+            <h3 className="text-xl font-semibold">Subject Areas</h3>
             <div className="space-y-2">
               {Object.entries(subjectPercentages).map(([subject, score]) => (
                 <div key={subject} className="flex justify-between">
@@ -124,71 +119,44 @@ const QuizResults = () => {
                 </div>
               ))}
             </div>
-          )}
+          </div>
         </div>
 
-        <PieChartModal 
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+        {/* Column 2: Environment and Feedback */}
+        <div>
+          <CareerRecommendation 
+            maxSubjectScore={maxSubjectName}
+            maxPersonalityScore={maxPersonalityTrait}
+            subjectScore={traitPercentages[maxSubjectName]}
+            personalityScore={traitPercentages[maxPersonalityTrait]}
+            layout="content-only"
+          />
+        </div>
+
+        {/* Column 3: Career Paths */}
+        <div>
+          <CareerRecommendation 
+            maxSubjectScore={maxSubjectName}
+            maxPersonalityScore={maxPersonalityTrait}
+            subjectScore={traitPercentages[maxSubjectName]}
+            personalityScore={traitPercentages[maxPersonalityTrait]}
+            layout="career-paths-only"
+          />
+        </div>
+      </div>
+
+      {/* Row 3: Pie Charts */}
+      <div className="mb-12">
+        <h3 className="text-2xl font-semibold text-center mb-8">Detailed Score Breakdown</h3>
+        <ScorePieChart 
           personalityData={relativeTraitPercentages}
           subjectData={relativeSubjectPercentages}
         />
       </div>
-    );
-  };
 
-  const handleSubmitResults = async () => {
-    const results = {
-      traitPercentages,
-      subjectPercentages,
-      preferredTrait,
-      preferredSubject,
-      maxPersonalityTrait,
-      maxSubjectName,
-      preferredEnvironment,
-      timestamp: new Date().toISOString()
-    };
-
-    try {
-      await submitResults(results);
-      navigate('/network-board');
-    } catch (error) {
-      console.error('Failed to submit results:', error);
-    }
-  };
-
-  return (
-    <div className="p-4 md:p-8 space-y-8">
-      <div>
-        <h2 className="text-2xl font-bold mb-6">Your Results</h2>
-        
-        {/* First Row - Top Scores */}
-        <div className="mb-12">          
-          <CareerRecommendation 
-            maxSubjectScore={maxSubjectName}
-            maxPersonalityScore={maxPersonalityTrait}
-            layout="top-images"
-          />
-          <p className="text-center text-lg mb-8">{maxSubjectName} and {maxPersonalityTrait} were your top scores</p>
-        </div>
-
-        {/* Second Row - Detailed Information */}
-        <div className="flex flex-col lg:flex-row gap-8">
-          <ScoresSection />
-
-          {/* Career Recommendations Section split into columns */}
-          <div className="w-full lg:w-3/4 flex flex-col lg:flex-row gap-8">
-            <CareerRecommendation 
-              maxSubjectScore={maxSubjectName}
-              maxPersonalityScore={maxPersonalityTrait}
-              layout="split-content"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-8 flex justify-center">
-        <NetworkBoardSubmitButton onSubmit={handleSubmitResults} />
+      {/* Network Board Submit Button */}
+      <div className="flex justify-center network-board">
+        <NetworkBoardSubmitButton onSubmit={handleSubmitToNetworkBoard} />
       </div>
     </div>
   );
