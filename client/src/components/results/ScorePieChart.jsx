@@ -25,9 +25,9 @@ const PieChartSection = ({ data, title }) => {
   return (
     <div className="w-full flex flex-col items-center mb-16">
       <h3 className="text-lg font-semibold mb-8 text-gray-900 dark:text-white text-center">{title}</h3>
-      <div className="w-full max-w-[800px] aspect-[16/9]" data-testid={`${title.toLowerCase().replace(' ', '-')}-chart`}> 
+      <div className="w-full max-w-[800px] aspect-[4/3] relative" data-testid={`${title.toLowerCase().replace(' ', '-')}-chart`}> 
         <ResponsiveContainer width="100%" height="100%" debounce={0}>
-          <PieChart margin={{ top: 20, right: 100, bottom: 20, left: 100 }}>
+          <PieChart>
             <Pie
               data={chartData}
               cx="50%"
@@ -49,9 +49,19 @@ const PieChartSection = ({ data, title }) => {
             </Pie>
             <Tooltip content={<CustomTooltip />} />
             <Legend 
-              wrapperStyle={{ color: 'currentColor' }}
+              wrapperStyle={{ 
+                position: 'absolute',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                bottom: '0',
+                width: '100%',
+                marginTop: '40px',
+                color: 'currentcolor'
+              }}
               verticalAlign="bottom"
               align="center"
+              layout="horizontal"
+              iconType="circle"
             />
           </PieChart>
         </ResponsiveContainer>
