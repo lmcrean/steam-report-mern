@@ -25,7 +25,7 @@ const PieChartSection = ({ data, title }) => {
   return (
     <div className="w-full flex flex-col items-center mb-16">
       <h3 className="text-lg font-semibold mb-8 text-gray-900 dark:text-white text-center">{title}</h3>
-      <div className="w-full max-w-[800px] aspect-[4/3] relative" data-testid={`${title.toLowerCase().replace(' ', '-')}-chart`}> 
+      <div className="w-full max-w-[800px] min-h-[400px] aspect-[4/3] relative" data-testid={`${title.toLowerCase().replace(' ', '-')}-chart`}> 
         <ResponsiveContainer width="110%" height="100%" debounce={0}>
           <PieChart>
             <Pie
@@ -35,7 +35,6 @@ const PieChartSection = ({ data, title }) => {
               outerRadius="70%"
               fill="#8884d8"
               dataKey="value"
-              label={({ name, value }) => `${name} (${value.toFixed(0)}%)`}
               labelLine={true}
               isAnimationActive={false}
               minAngle={5}
@@ -55,7 +54,6 @@ const PieChartSection = ({ data, title }) => {
                 transform: 'translateX(-50%)',
                 bottom: '0',
                 width: '100%',
-                marginTop: '40px',
                 color: 'currentcolor'
               }}
               verticalAlign="bottom"
