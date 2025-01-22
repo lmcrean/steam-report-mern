@@ -23,16 +23,16 @@ const PieChartSection = ({ data, title }) => {
     .sort((a, b) => b.value - a.value);
 
   return (
-    <div className="w-full">
-      <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white text-center">{title}</h3>
-      <div className="h-[400px] w-[550px] m-auto" data-testid={`${title.toLowerCase().replace(' ', '-')}-chart`}> 
+    <div className="w-full flex flex-col items-center mb-16">
+      <h3 className="text-lg font-semibold mb-8 text-gray-900 dark:text-white text-center">{title}</h3>
+      <div className="w-full max-w-[800px] aspect-[16/9]" data-testid={`${title.toLowerCase().replace(' ', '-')}-chart`}> 
         <ResponsiveContainer width="100%" height="100%" debounce={0}>
-          <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+          <PieChart margin={{ top: 20, right: 100, bottom: 20, left: 100 }}>
             <Pie
               data={chartData}
               cx="50%"
               cy="50%"
-              outerRadius={120}
+              outerRadius="70%"
               fill="#8884d8"
               dataKey="value"
               label={({ name, value }) => `${name} (${value.toFixed(0)}%)`}
@@ -62,15 +62,8 @@ const PieChartSection = ({ data, title }) => {
 
 const ScorePieChart = ({ personalityData, subjectData }) => {
   return (
-    <div data-testid="charts-container" className="w-full">
-      <h2 className="text-2xl font-bold mb-8 text-center">Detailed Score Breakdown</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-20">
-        {/* TODO
-         - [ ] Fix responsive issues
-            - [ ] Cropping in desktop view
-            - [ ] Desktop view expecting permanent centering on page spills off-centre to the right, blocked by a container somewhere on the left, 
-            - [ ] Make mobile view more compact
-        */}
+    <div data-testid="charts-container" className="w-full max-w-[1200px] mx-auto px-4">
+      <div className="flex flex-col">
         <PieChartSection 
           data={personalityData} 
           title="Personality Traits"
