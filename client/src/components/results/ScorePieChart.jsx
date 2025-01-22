@@ -26,7 +26,7 @@ const PieChartSection = ({ data, title }) => {
     <div className="w-full flex flex-col items-center mb-16">
       <h3 className="text-lg font-semibold mb-8 text-gray-900 dark:text-white text-center">{title}</h3>
       <div className="w-full max-w-[800px] aspect-[4/3] relative" data-testid={`${title.toLowerCase().replace(' ', '-')}-chart`}> 
-        <ResponsiveContainer width="100%" height="100%" debounce={0}>
+        <ResponsiveContainer width="110%" height="100%" debounce={0}>
           <PieChart>
             <Pie
               data={chartData}
