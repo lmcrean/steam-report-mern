@@ -1,7 +1,7 @@
 {
   "scripts": {
     "build": "cd client && npm install --include=dev && npm run build",
-    "test": "jest",
+    "test": "vitest",
     "test:dev": "cd api && npm run test:dev",
     "test:prod": "cd api && npm run test:prod"
   },
@@ -12,6 +12,10 @@
     "repo-to-one-file": "^1.0.2"
   },
   "devDependencies": {
-    "vite": "^4.3.2"
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.2.0",
+    "jsdom": "^26.0.0",
+    "vite": "^4.3.2",
+    "vitest": "^1.6.1"
   }
 }
